@@ -40,13 +40,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_countries',
 
     # Third-party
     'rest_framework',
 
     # Local
-    'clients.apps.ClientsConfig',
-    # 'invoices',
+    'core',
+    'clients',
+    'invoices',
+    'locations',
     # 'audit',
     # 'users',
     'celery',

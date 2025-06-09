@@ -1,35 +1,6 @@
+from core.models import ActiveManager, TimeStampedModel
 from django.db import models
-from django.utils import timezone
-
-
-class TimeStampedModel(models.Model):
-
-    """Abstract base model with timestamp and soft delete fields."""
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(null=True, blank=True)
-
-    class Meta:
-        abstract = True
-
-    def soft_delete(self):
-        """Mark instance as deleted with timestamp."""
-        self.deleted_at = timezone.now()
-        self.save()
-
-    def restore(self):
-        """Restore soft-deleted instance."""
-        self.deleted_at = None
-        self.save()
-
-
-class ActiveManager(models.Manager):
-
-    """Manager to filter out soft-deleted records."""
-
-    def get_queryset(self):
-        return super().get_queryset().filter(deleted_at__isnull=True)
+from locations.models import City, Country, GlobalRegion, State
 
 
 class Industry(TimeStampedModel):
@@ -37,7 +8,7 @@ class Industry(TimeStampedModel):
     """Model for an industry."""
 
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=128, unique=True)
+    name = models.CharField(max_length=128, unique=True, default='uncategorized')
 
     objects = ActiveManager()
     all_objects = models.Manager()
@@ -51,34 +22,27 @@ class Industry(TimeStampedModel):
         return self.name
 
 
-class Location(TimeStampedModel):
-
-    """Model for a location."""
-
-    id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=128, unique=True)
-
-    objects = ActiveManager()
-    all_objects = models.Manager()
-
-    class Meta:
-        ordering = ['id']
-        verbose_name = "Location"
-        verbose_name_plural = "Locations"
-
-    def __str__(self):
-        return self.name
-
-
 class Organization(TimeStampedModel):
 
     """Model for an organization."""
 
     id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, default='uncategorized')
     industry = models.ForeignKey(Industry, on_delete=models.SET_NULL, null=True, blank=True)
-    head_office = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True, related_name='org_head_office')
-    current_workplace = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True, related_name='org_current_workplace')
+    current_org_head_office = models.ForeignKey(
+        City,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='org_current_head_office'
+    )
+    current_org_city = models.ForeignKey(
+        City,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='org_current_city'
+    )
 
     objects = ActiveManager()
     all_objects = models.Manager()
@@ -94,17 +58,22 @@ class Organization(TimeStampedModel):
 
 class ClientOrganization(models.Model):
 
-    """Model for client-organization association."""
+    """Model for client-organization affiliation."""
 
     client = models.ForeignKey('Client', on_delete=models.CASCADE)
     organization = models.ForeignKey('Organization', on_delete=models.CASCADE)
     from_date = models.DateField(null=True, blank=True)
     to_date = models.DateField(null=True, blank=True)
-    previous_workplace = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
+    corporate_affiliation_city = models.ForeignKey(
+        City,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
 
     class Meta:
-        verbose_name = "Previous Business Affiliation"
-        verbose_name_plural = "Previous Business Affiliations"
+        verbose_name = "Corporate Affiliation"
+        verbose_name_plural = "Corporate Affiliations"
         unique_together = ('client', 'organization', 'from_date')
 
     def __str__(self):
@@ -119,27 +88,57 @@ class Client(TimeStampedModel):
     name = models.CharField(max_length=255)
     email = models.EmailField(max_length=100, unique=True)
     phone = models.CharField(max_length=15, blank=True)
-    current_company = models.ForeignKey(
+
+    current_organization = models.ForeignKey(
         Organization,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='client_current_company'
+        related_name='client_current_organization'
     )
-    current_company_location = models.ForeignKey(
-        Location,
+    current_org_city = models.ForeignKey(
+        City,
         on_delete=models.SET_NULL,
         null=True,
-        blank=True,
-    )
-    current_company_joining_day = models.DateField(null=True, blank=True)
-    past_companies = models.ManyToManyField(
-        Organization,
-        through='ClientOrganization',
-        related_name='client_past_companies',
         blank=True
     )
-    industry = models.ForeignKey(Industry, on_delete=models.SET_NULL, null=True, blank=True)
+    current_org_joining_day = models.DateField(null=True, blank=True)
+
+    # Location granularity fields
+    current_country = models.ForeignKey(
+        Country,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='clients'
+    )
+    current_state = models.ForeignKey(
+        State,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='clients'
+    )
+    current_region = models.ForeignKey(
+        GlobalRegion,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='clients'
+    )
+
+    other_orgs = models.ManyToManyField(
+        Organization,
+        through='ClientOrganization',
+        related_name='other_organizations',
+        blank=True
+    )
+    industry = models.ForeignKey(
+        Industry,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
 
     objects = ActiveManager()
     all_objects = models.Manager()

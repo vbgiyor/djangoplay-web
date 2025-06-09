@@ -37,7 +37,7 @@ skip = ["migrations"]
 [tool.ruff]
 line-length = 255
 target-version = "py310"
-exclude = [".git", "__pycache__", "migrations", "*/migrations/*", ".venv", "venv", "env"]
+exclude = [".git", "__pycache__", "migrations", "*/migrations/*", ".venv", "venv", "env", "/backend/*"]
 
 [tool.ruff.lint]
 select = [
