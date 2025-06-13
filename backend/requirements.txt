@@ -6,3 +6,6 @@ phonenumbers==9.0.6
 django_countries>=7.6.1
 djangorestframework-bulk
 django_filters
+pytest>=8.3.5
+django-cities
+django-cities-light

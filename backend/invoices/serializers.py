@@ -35,7 +35,7 @@ class InvoiceBaseSerializer(serializers.ModelSerializer):
             'payment_method',
             'payment_reference',
             'notes',
-            'pdf',
+            'docs',
             'created_at',
             'updated_at',
         ]
@@ -46,7 +46,7 @@ class InvoiceReadSerializer(InvoiceBaseSerializer):
     client = ClientInvoicePurposeSerializer(read_only=True)
     status_display = serializers.CharField(source='status.name', read_only=True)
     payment_method_display = serializers.CharField(source='payment_method.name', read_only=True)
-    pdf_url = serializers.SerializerMethodField()
+    docs_url = serializers.SerializerMethodField()
     is_overdue = serializers.SerializerMethodField()
 
     class Meta(InvoiceBaseSerializer.Meta):
@@ -54,14 +54,14 @@ class InvoiceReadSerializer(InvoiceBaseSerializer):
             'client',
             'status_display',
             'payment_method_display',
-            'pdf_url',
+            'docs_url',
             'is_overdue',
         ]
 
-    def get_pdf_url(self, obj):
-        if obj.pdf:
+    def get_docs_url(self, obj):
+        if obj.docs:
             request = self.context.get('request')
-            return request.build_absolute_uri(obj.pdf.url) if request else obj.pdf.url
+            return request.build_absolute_uri(obj.docs.url) if request else obj.docs.url
         return None
 
     def get_is_overdue(self, obj):
@@ -76,8 +76,8 @@ class InvoiceWriteSerializer(InvoiceBaseSerializer):
         if issue_date:
             try:
                 issue_date = timezone.datetime.strptime(issue_date, '%Y-%m-%d').date()
-            except ValueError:
-                raise serializers.ValidationError("Invalid issue date format. Use YYYY-MM-DD.")
+            except ValueError as err:
+                raise serializers.ValidationError("Invalid issue date format. Use YYYY-MM-DD.") from err
         else:
             issue_date = timezone.now().date()
 

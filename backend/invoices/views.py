@@ -21,10 +21,10 @@ class InvoiceViewSet(viewsets.ModelViewSet):
 
     """
     ViewSet for handling invoices:
-    - Listing/filtering
-    - Creating/updating
-    - Soft deletion
-    - Custom actions: mark_paid, cancel.
+        - Listing/filtering
+        - Creating/updating
+        - Soft deletion
+        - Custom actions: mark_paid, cancel.
     """
 
     permission_classes = [permissions.IsAuthenticated, IsNotSoftDeleted]

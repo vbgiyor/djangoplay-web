@@ -196,3 +196,4 @@ cython_debug/
 staticfiles/
 project_tree.txt
 ruff
+media

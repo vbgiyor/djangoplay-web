@@ -53,6 +53,7 @@ ignore = [
     "E203",  # Whitespace before ':', ignored for black compatibility
     "D100",  # Missing docstring in public module
     "D104",  # Missing docstring in public package
+    "D205",  #blank line required between summary line and description
     "D211",  # No blank line before class
     "D212",  # Multi-line docstring summary should start at the first line
     "D101",  # Missing docstring in public class
