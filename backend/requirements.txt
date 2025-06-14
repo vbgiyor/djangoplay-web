@@ -1,0 +1,11 @@
+Django==4.2.11
+djangorestframework==3.15.1
+djangorestframework-simplejwt>=5.3.1
+ruff==0.11.12
+phonenumbers==9.0.6
+django_countries>=7.6.1
+djangorestframework-bulk
+django_filters
+pytest>=8.3.5
+django-cities
+django-cities-light

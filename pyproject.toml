@@ -1,0 +1,76 @@
+[project]
+name = "paystream"
+version = "0.1.0"
+description = "PaystreamA modern, full-stack **PayStream** built with **Django + React**. Designed for small businesses and freelancers to manage clients, invoices, payments, and uploaded PDFs—securely, intuitively, and efficiently."
+authors = [
+    {name = "Shekhar Bhosale", email = "vbgiyor@gmail.com"},
+]
+dependencies = [
+    "Django>=4.2,<5.0",
+    "djangorestframework>=3.14,<4.0",    
+    "psycopg2-binary=2.9.9",
+    "python-dotenv>=1.0,<2.0",
+    "requests>=2.31,<3.0",
+]
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4,<8.0",
+    "pytest-django>=4.5,<5.0",
+    "black>=23.0,<24.0",
+    "isort>=5.12,<6.0",
+    "ruff>=0.7.0",
+    "coverage>=7.3,<8.0",
+]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.black]
+line-length = 255
+target-version = ['py310']
+
+[tool.isort]
+profile = "black"
+line_length = 255
+skip = ["migrations"]
+
+[tool.ruff]
+line-length = 255
+target-version = "py310"
+exclude = [".git", "__pycache__", "migrations", "*/migrations/*", ".venv", "venv", "env", "/backend/*"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "D",   # pydocstyle
+]
+ignore = [
+    "E203",  # Whitespace before ':', ignored for black compatibility
+    "D100",  # Missing docstring in public module
+    "D104",  # Missing docstring in public package
+    "D205",  #blank line required between summary line and description
+    "D211",  # No blank line before class
+    "D212",  # Multi-line docstring summary should start at the first line
+    "D101",  # Missing docstring in public class
+    "D102",  # Missing docstring in public method
+    "D105",  # Missing docstring in magic method
+    "D107",  # Missing docstring in __init__
+    "D103", # Missing docstring in public function
+    "D106", 
+    "E902"
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "paystream.settings"
+python_files = ["tests.py", "test_*.py"]
+addopts = "--cov --cov-report=html"
