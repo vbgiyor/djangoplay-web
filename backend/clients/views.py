@@ -6,88 +6,144 @@ from rest_framework.response import Response
 from rest_framework_bulk import BulkModelViewSet
 
 from .models import Client, ClientOrganization, Organization
-from .serializers import ClientCreateSerializer, ClientOrganizationCreateSerializer, ClientOrganizationReadSerializer, ClientSerializer, OrganizationCreateSerializer, OrganizationSerializer
+from .serializers import (
+    ClientCreateSerializer,
+    ClientOrganizationCreateSerializer,
+    ClientOrganizationReadSerializer,
+    ClientSerializer,
+    OrganizationCreateSerializer,
+    OrganizationSerializer,
+)
 
 
 class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 10
-    page_size_query_param = 'page_size'
-    max_page_size = 100
+
+    """Custom pagination class for consistent API responses."""
+
+    page_size = 10  # Default number of items per page
+    page_size_query_param = 'page_size'  # Query param to override page size
+    max_page_size = 100  # Maximum allowed page size
+
 
 class ClientFilter(dj_filters.FilterSet):
-    current_country = dj_filters.CharFilter(field_name="current_country__name", lookup_expr='icontains')
-    current_region = dj_filters.CharFilter(field_name="current_region__name", lookup_expr='icontains')
-    current_state = dj_filters.CharFilter(field_name="current_state__name", lookup_expr='icontains')
-    current_industry = dj_filters.CharFilter(field_name="current_industry__name", lookup_expr='icontains')
-    current_organization = dj_filters.CharFilter(field_name="current_organization__name", lookup_expr='icontains')
+
+    """Filter set for Client model with case-insensitive search on related fields."""
+
+    current_country = dj_filters.CharFilter(
+        field_name="current_country__name",
+        lookup_expr='icontains')
+    current_region = dj_filters.CharFilter(
+        field_name="current_region__name",
+        lookup_expr='icontains')
+    current_state = dj_filters.CharFilter(
+        field_name="current_state__name",
+        lookup_expr='icontains')
+    current_industry = dj_filters.CharFilter(
+        field_name="current_industry__name",
+        lookup_expr='icontains')
+    current_organization = dj_filters.CharFilter(
+        field_name="current_organization__name",
+        lookup_expr='icontains')
 
     class Meta:
         model = Client
-        fields = ['current_country', 'current_region', 'current_state', 'current_industry', 'current_organization']
+        fields = [
+            'current_country',
+            'current_region',
+            'current_state',
+            'current_industry',
+            'current_organization']
+
 
 class ClientViewSet(BulkModelViewSet, viewsets.ModelViewSet):
-    queryset = Client.objects.all()
-    serializer_class = ClientSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [dj_filters.DjangoFilterBackend, drf_filters.OrderingFilter, drf_filters.SearchFilter]
-    filterset_class = ClientFilter
-    search_fields = ['email', 'phone', 'name']
-    ordering_fields = ['created_at', 'name', 'current_org_joining_day']
-    ordering = ['created_at']
-    pagination_class = StandardResultsSetPagination
+
+    """ViewSet for managing Client instances with bulk operations."""
+
+    queryset = Client.objects.all()  # Base queryset for all clients
+    serializer_class = ClientSerializer  # Default serializer for responses
+    permission_classes = [permissions.IsAuthenticated]  # Require authentication
+    filter_backends = [
+        dj_filters.DjangoFilterBackend,
+        drf_filters.OrderingFilter,
+        drf_filters.SearchFilter]  # Enable filtering, ordering, and search
+    filterset_class = ClientFilter  # Custom filter class
+    search_fields = ['email', 'phone', 'name']  # Fields for search queries
+    ordering_fields = ['created_at', 'name', 'current_org_joining_day']  # Fields for ordering
+    ordering = ['created_at']  # Default ordering
+    pagination_class = StandardResultsSetPagination  # Custom pagination
 
     def create(self, request, *args, **kwargs):
-        is_bulk = isinstance(request.data, list)
+        """Create one or multiple Client instances."""
+        is_bulk = isinstance(request.data, list)  # Check if request is for bulk create
         serializer = ClientCreateSerializer(data=request.data, many=is_bulk)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', True)
+        """Update a Client instance with partial updates enabled."""
+        partial = kwargs.pop('partial', True)  # Allow partial updates
         instance = self.get_object()
-        serializer = ClientCreateSerializer(instance, data=request.data, partial=partial)
+        serializer = ClientCreateSerializer(
+            instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def destroy(self, request, *args, **kwargs):
+        """Delete a Client instance."""
         instance = self.get_object()
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
 class ClientOrganizationCreateViewSet(viewsets.ModelViewSet):
-    queryset = ClientOrganization.objects.all()
-    permission_classes = [permissions.IsAuthenticated]
-    pagination_class = StandardResultsSetPagination
+
+    """ViewSet for managing ClientOrganization relationships."""
+
+    queryset = ClientOrganization.objects.all()  # Base queryset for client-organization relations
+    permission_classes = [permissions.IsAuthenticated]  # Require authentication
+    pagination_class = StandardResultsSetPagination  # Custom pagination
 
     def get_serializer_class(self):
-        if self.action in ['list', 'retrieve']:
+        """Return appropriate serializer based on action."""
+        if self.action in ['list', 'retrieve']:  # Use read serializer for list/retrieve
             return ClientOrganizationReadSerializer
-        return ClientOrganizationCreateSerializer
+        return ClientOrganizationCreateSerializer  # Use create serializer for other actions
+
 
 class OrganizationViewSet(BulkModelViewSet, viewsets.ModelViewSet):
-    queryset = Organization.objects.all()
-    serializer_class = OrganizationSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    filter_backends = [dj_filters.DjangoFilterBackend, drf_filters.OrderingFilter, drf_filters.SearchFilter]
-    filterset_fields = ['industry__name', 'headquarter_city__name']
-    search_fields = ['name']
-    ordering_fields = ['created_at', 'name']
-    ordering = ['created_at']
-    pagination_class = StandardResultsSetPagination
+
+    """ViewSet for managing Organization instances with bulk operations."""
+
+    queryset = Organization.objects.all()  # Base queryset for all organizations
+    serializer_class = OrganizationSerializer  # Default serializer for responses
+    permission_classes = [permissions.IsAuthenticated]  # Require authentication
+    filter_backends = [
+        dj_filters.DjangoFilterBackend,
+        drf_filters.OrderingFilter,
+        drf_filters.SearchFilter]  # Enable filtering, ordering, and search
+    filterset_fields = ['industry__name', 'headquarter_city__name']  # Fields for filtering
+    search_fields = ['name']  # Fields for search queries
+    ordering_fields = ['created_at', 'name']  # Fields for ordering
+    ordering = ['created_at']  # Default ordering
+    pagination_class = StandardResultsSetPagination  # Custom pagination
 
     def create(self, request, *args, **kwargs):
-        is_bulk = isinstance(request.data, list)
-        serializer = OrganizationCreateSerializer(data=request.data, many=is_bulk)
+        """Create one or multiple Organization instances."""
+        is_bulk = isinstance(request.data, list)  # Check if request is for bulk create
+        serializer = OrganizationCreateSerializer(
+            data=request.data, many=is_bulk)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', True)
+        """Update an Organization instance with partial updates enabled."""
+        partial = kwargs.pop('partial', True)  # Allow partial updates
         instance = self.get_object()
-        serializer = OrganizationCreateSerializer(instance, data=request.data, partial=partial)
+        serializer = OrganizationCreateSerializer(
+            instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data, status=status.HTTP_200_OK)

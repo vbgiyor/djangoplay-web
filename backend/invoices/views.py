@@ -35,7 +35,8 @@ class InvoiceViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Return invoices that are not soft-deleted, with optional filtering."""
-        queryset = Invoice.objects.select_related('client', 'status', 'payment_method')
+        queryset = Invoice.objects.select_related(
+            'client', 'status', 'payment_method')
 
         status_code = self.request.query_params.get('status')
         client_id = self.request.query_params.get('client_id')
@@ -81,7 +82,8 @@ class InvoiceViewSet(viewsets.ModelViewSet):
 
         paid_status = InvoiceStatus.objects.filter(code='paid').first()
         if not paid_status:
-            return Response({"detail": "Status 'paid' not found."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Status 'paid' not found."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         invoice.status = paid_status
         invoice.save(update_fields=["status"])
@@ -94,9 +96,11 @@ class InvoiceViewSet(viewsets.ModelViewSet):
         if invoice.status and invoice.status.code == 'cancelled':
             return Response({"detail": "Invoice is already cancelled."})
 
-        cancelled_status = InvoiceStatus.objects.filter(code='cancelled').first()
+        cancelled_status = InvoiceStatus.objects.filter(
+            code='cancelled').first()
         if not cancelled_status:
-            return Response({"detail": "Status 'cancelled' not found."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail": "Status 'cancelled' not found."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
         invoice.status = cancelled_status
         invoice.save(update_fields=["status"])

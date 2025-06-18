@@ -1,7 +1,7 @@
 import re
 
 from core.models import ActiveManager, TimeStampedModel
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django_countries.fields import CountryField
@@ -10,20 +10,40 @@ from django_countries.fields import CountryField
 def validate_postal_code(postal_code, country_code):
     """Validate postal code based on country-specific formats."""
     patterns = {
-        'US': r'^\d{5}(-\d{4})?$',  # US: 5 digits or 5+4
-        'IN': r'^\d{6}$',           # India: 6 digits
-        'CA': r'^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$',  # Canada: A1A 1A1
+        'US': r'^\d{5}(-\d{4})?$',  # US: 5 digits or 5+4 (Washington, D.C.)
+        'IN': r'^\d{6}$',           # India: 6 digits (New Delhi)
+        'CA': r'^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$',  # Canada: A1A 1A1 (Ottawa)
         'GB': r'^[A-Z]{1,2}\d[A-Z\d]? ?\d[A-Z]{2}$',     # UK: SW1A 1AA
-        # Add more country patterns as needed
+        'SG': r'^\d{6}$',           # Singapore: 6 digits (Singapore)
+        'JP': r'^\d{3}-\d{4}$',     # Japan: 123-4567 (Tokyo)
+        'AU': r'^\d{4}$',           # Australia: 4 digits (Canberra)
+        'LU': r'^\d{4}$',           # Luxembourg: 4 digits (Luxembourg City)
+        'CH': r'^\d{4}$',           # Switzerland: 4 digits (Bern)
+        'DE': r'^\d{5}$',           # Germany: 5 digits (Berlin)
+        'CL': r'^\d{7}$',           # Chile: 7 digits (Santiago)
+        'UY': r'^\d{5}$',           # Uruguay: 5 digits (Montevideo)
+        'PA': r'^$',                # Panama: No postal codes (Panama City)
+        'QA': r'^$',                # Qatar: No postal codes (Doha)
+        'AE': r'^$',                # UAE: No postal codes (Abu Dhabi)
+        'SA': r'^\d{5}$',           # Saudi Arabia: 5 digits (Riyadh)
+        'MV': r'^\d{5}$',           # Maldives: 5 digits (Malé)
+        'ZA': r'^\d{4}$',           # South Africa: 4 digits (Pretoria)
+        'NG': r'^\d{6}$',           # Nigeria: 6 digits (Abuja)
+        'KE': r'^\d{5}$',           # Kenya: 5 digits (Nairobi)
+        'MX': r'^\d{5}$',           # Mexico: 5 digits (Mexico City)
     }
-    pattern = patterns.get(country_code, r'.*')  # Default to any string if no pattern
+    # Default to any string if no pattern
+    pattern = patterns.get(country_code, r'.*')
     if not re.match(pattern, postal_code):
-        raise ValidationError(f"Invalid postal code format for {country_code}.")
+        raise ValidationError(
+            f"Invalid postal code format for {country_code}.")
+
 
 def validate_state_country_match(state, country):
     """Ensure state belongs to the country if both are provided."""
     if state and country and state.country != country:
         raise ValidationError("State does not belong to the selected country.")
+
 
 class LocationBase(TimeStampedModel):
 
@@ -33,14 +53,15 @@ class LocationBase(TimeStampedModel):
         max_length=10,
         choices=[('country', 'Country'), ('state', 'State'), ('city', 'City')]
     )
-    code = models.CharField(max_length=10, blank=True, null=True)  # Increased max_length for flexibility
+    # Increased max_length for flexibility
+    code = models.CharField(max_length=10, blank=True, null=True)
     name = models.CharField(max_length=128)  # Added for consistency
     created_by = models.ForeignKey(
-        User, related_name='%(class)s_created',
+        settings.AUTH_USER_MODEL, related_name='%(class)s_created',
         on_delete=models.SET_NULL, null=True, blank=True
     )
     updated_by = models.ForeignKey(
-        User, related_name='%(class)s_updated',
+        settings.AUTH_USER_MODEL, related_name='%(class)s_updated',
         on_delete=models.SET_NULL, null=True, blank=True
     )
 
@@ -49,6 +70,7 @@ class LocationBase(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
 
 class GlobalRegion(models.Model):
 
@@ -78,6 +100,7 @@ class GlobalRegion(models.Model):
     def __str__(self):
         return self.name
 
+
 class Country(LocationBase):
 
     """Country model using ISO 3166-1 codes."""
@@ -92,6 +115,10 @@ class Country(LocationBase):
         ordering = ['id']
         verbose_name = "Country"
         verbose_name_plural = "Countries"
+
+    def __str__(self):
+        return self.name
+
 
 class State(LocationBase):
 
@@ -108,12 +135,17 @@ class State(LocationBase):
     def __str__(self):
         return f"{self.name}, {self.country.name}"
 
+
 class City(LocationBase):
 
     """City model supporting global addresses."""
 
     country = models.ForeignKey(Country, on_delete=models.PROTECT)
-    state = models.ForeignKey(State, on_delete=models.PROTECT, null=False, blank=False)
+    state = models.ForeignKey(
+        State,
+        on_delete=models.PROTECT,
+        null=False,
+        blank=False)
     postal_code = models.CharField(max_length=20, blank=True, null=True)
 
     objects = ActiveManager()
@@ -144,7 +176,12 @@ class City(LocationBase):
             validate_postal_code(self.postal_code, self.country.code)
         validate_state_country_match(self.state, self.country)
 
-    def add_or_get_city(self, city_name, state_name, country_name, postal_code=None):
+    def add_or_get_city(
+            self,
+            city_name,
+            state_name,
+            country_name,
+            postal_code=None):
         """Add or get city based on postal code and country/state context."""
         country = Country.objects.filter(name=country_name).first()
         if not country:
@@ -152,9 +189,13 @@ class City(LocationBase):
 
         state = State.objects.filter(name=state_name, country=country).first()
         if not state:
-            state = State.objects.create(name=state_name, country=country, location_type='state')
+            state = State.objects.create(
+                name=state_name, country=country, location_type='state')
 
-        city = City.objects.filter(name=city_name, state=state, country=country).first()
+        city = City.objects.filter(
+            name=city_name,
+            state=state,
+            country=country).first()
         if not city:
             city = City.objects.create(
                 name=city_name,

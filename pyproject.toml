@@ -62,15 +62,11 @@ ignore = [
     "D107",  # Missing docstring in __init__
     "D103", # Missing docstring in public function
     "D106", 
-    "E902"
+    "E902",
+    "D401", #First line of docstring should be in imperative mood
 ]
 
 [tool.ruff.format]
 quote-style = "double"
 indent-style = "space"
 line-ending = "lf"
-
-[tool.pytest.ini_options]
-DJANGO_SETTINGS_MODULE = "paystream.settings"
-python_files = ["tests.py", "test_*.py"]
-addopts = "--cov --cov-report=html"

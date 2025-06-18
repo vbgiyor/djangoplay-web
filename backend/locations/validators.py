@@ -7,6 +7,12 @@ from django_countries import countries
 def validate_postal_code(postal_code, country_code):
     """Validate postal code based on country-specific formats."""
     postal_code = postal_code.strip()
+
+    # Validate country code
+    if not country_code or country_code not in countries:
+        raise ValidationError(f"Invalid country code: {country_code}")
+
+    # Postal code patterns for specific countries
     patterns = {
         'US': r'^\d{5}(-\d{4})?$',  # e.g., 12345 or 12345-6789
         'CA': r'^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$',  # e.g., A1B 2C3
@@ -16,20 +22,24 @@ def validate_postal_code(postal_code, country_code):
         # Add more country patterns as needed
     }
 
+    # Check if there is a pattern for this country
     pattern = patterns.get(country_code)
-    if pattern and not re.match(pattern, postal_code):
-        raise ValidationError(
-            f"Invalid postal code format for {countries.name(country_code)}. "
-            f"Expected format: {pattern}"
-        )
-
-    if not pattern and postal_code:
-        # For countries without specific patterns, ensure length is reasonable
+    if pattern:
+        if not re.match(pattern, postal_code):
+            raise ValidationError(
+                f"Invalid postal code format for {countries.name(country_code)}. "
+                f"Expected format: {pattern} (e.g., A1B 2C3)")
+    elif postal_code:
+        # For countries without a specific pattern, ensure length is reasonable
         if len(postal_code) > 20:
             raise ValidationError("Postal code is too long.")
 
+
 def validate_state_country_match(state, country):
     """Ensure the state belongs to the specified country."""
+    if not state or not country:
+        raise ValidationError("State and country cannot be empty.")
+
     if state and country and state.country != country:
         raise ValidationError(
             f"State {state.name} does not belong to country {country.name}."

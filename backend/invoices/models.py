@@ -5,6 +5,7 @@ from core.models import ActiveManager, TimeStampedModel
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
+from locations.models import City, Country, State  # Import necessary models from locations
 
 
 class InvoiceStatus(models.Model):
@@ -63,11 +64,38 @@ class Invoice(TimeStampedModel):
     """Model for client invoices with detailed metadata."""
 
     id = models.AutoField(primary_key=True)
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='invoices')
-    invoice_number = models.CharField(max_length=20, unique=True, editable=False)
+    client = models.ForeignKey(
+        Client,
+        on_delete=models.CASCADE,
+        related_name='invoices')
+    invoice_number = models.CharField(
+        max_length=20, unique=True, editable=False)
     issue_date = models.DateField(default=timezone.now)
     due_date = models.DateField()
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+
+    # Updated to include relationship with Location models (Country, State, City)
+    country = models.ForeignKey(
+        Country,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='invoices'
+    )
+    state = models.ForeignKey(
+        State,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='invoices'
+    )
+    city = models.ForeignKey(
+        City,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='invoices'
+    )
 
     status = models.ForeignKey(
         InvoiceStatus,
@@ -108,11 +136,13 @@ class Invoice(TimeStampedModel):
         """Generate a unique invoice number in the format: DJP-{random_6_digit_number}-XXXXXX."""
         max_attempts = 1000000  # Maximum attempts to find a unique invoice number
         for i in range(1, max_attempts + 1):
-            random_prefix = random.randint(100000, 999999)  # Generate a random 6-digit number
+            # Generate a random 6-digit number
+            random_prefix = random.randint(100000, 999999)
             invoice_num = f"DJP-{random_prefix}-{i:06d}"
             if not Invoice.objects.filter(invoice_number=invoice_num).exists():
                 return invoice_num
-        raise ValueError("Could not generate unique invoice number after multiple attempts.")
+        raise ValueError(
+            "Could not generate unique invoice number after multiple attempts.")
 
     def save(self, *args, **kwargs):
         if not self.invoice_number:
@@ -134,7 +164,9 @@ class Invoice(TimeStampedModel):
     @property
     def remaining_amount(self):
         """Calculate outstanding balance."""
-        paid = sum(payment.amount for payment in self.payments.filter(deleted_at__isnull=True))
+        paid = sum(
+            payment.amount for payment in self.payments.filter(
+                deleted_at__isnull=True))
         return self.amount - paid
 
     @property
@@ -154,8 +186,14 @@ class InvoicePayment(TimeStampedModel):
     """Tracks payments against invoices."""
 
     id = models.AutoField(primary_key=True)
-    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='payments')
-    method = models.ForeignKey(PaymentMethod, on_delete=models.SET_NULL, null=True)
+    invoice = models.ForeignKey(
+        Invoice,
+        on_delete=models.CASCADE,
+        related_name='payments')
+    method = models.ForeignKey(
+        PaymentMethod,
+        on_delete=models.SET_NULL,
+        null=True)
     reference = models.CharField(max_length=100, blank=True, null=True)
     paid_at = models.DateTimeField(null=True, blank=True)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -174,9 +212,11 @@ class InvoicePayment(TimeStampedModel):
     def generate_reference(self):
         """Generate reference in format: first 4 letters of payment method + client_id + DDMM + last 4 digits of invoice number."""
         if not self.method or not self.invoice:
-            raise ValueError("Payment method and invoice are required to generate reference.")
+            raise ValueError(
+                "Payment method and invoice are required to generate reference.")
 
-        method_prefix = (self.method.name[:4].upper() if len(self.method.name) >= 4 else self.method.name.upper().ljust(4, '0'))
+        method_prefix = (self.method.name[:4].upper() if len(
+            self.method.name) >= 4 else self.method.name.upper().ljust(4, '0'))
         client_id = str(self.invoice.client.id)
         invoice_suffix = self.invoice.invoice_number[-4:]
 
@@ -193,6 +233,9 @@ class InvoicePayment(TimeStampedModel):
         """Validate non-negative payment amount and total payments not exceeding invoice amount."""
         if self.amount < 0:
             raise ValidationError("Payment amount cannot be negative.")
-        total_payments = sum(payment.amount for payment in self.invoice.payments.filter(deleted_at__isnull=True))
+        total_payments = sum(
+            payment.amount for payment in self.invoice.payments.filter(
+                deleted_at__isnull=True))
         if total_payments + self.amount > self.invoice.amount:
-            raise ValidationError("Total payments cannot exceed invoice amount.")
+            raise ValidationError(
+                "Total payments cannot exceed invoice amount.")
