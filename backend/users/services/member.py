@@ -1,13 +1,9 @@
 import logging
 from typing import Optional
-
 from django.conf import settings
 from django.core.validators import validate_email
 from django.db import transaction
 from django.utils import timezone
-from utilities.services.email.member_notifications import (
-    send_manual_verification_email_task,
-)
 from utilities.utils.general.normalize_text import normalize_text
 from utilities.utils.locations.phone_number_validations import validate_phone_number
 
@@ -289,6 +285,7 @@ class MemberService:
             )
             signup_request.save(user=created_by)
 
+            from utilities.services.email.member_notifications import send_manual_verification_email_task        
             # Async verification email via Celery
             send_manual_verification_email_task.delay(
                 member.id,

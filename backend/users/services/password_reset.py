@@ -10,7 +10,7 @@ from utilities.constants.login import (
     RESET_STATUS_SUCCESS,
     RESET_STATUS_UNSUBSCRIBED,
 )
-from utilities.services.email.flow_throttle import allow_flow
+from mailer.throttling.flow_throttle import allow_flow
 
 logger = logging.getLogger(__name__)
 UserModel = get_user_model()

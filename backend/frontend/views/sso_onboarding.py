@@ -24,7 +24,8 @@ from users.services.employee import EmployeeService
 from users.services.member import MemberService
 from users.services.signup_flow import SignupFlowService
 from users.services.signup_token_manager import SignupTokenManagerService
-from utilities.services.email.member_notifications import send_verification_email_task
+from mailer.flows.member_notifications import send_verification_email_task
+
 
 logger = logging.getLogger(__name__)
 

@@ -4,8 +4,7 @@ from typing import Optional
 
 from django.db.models import Q
 from django.utils import timezone
-from utilities.services.email.flow_throttle import allow_flow
-from utilities.services.email.member_notifications import send_support_or_bug_email_task
+from mailer.throttling.flow_throttle import allow_flow
 
 from users.models.file_upload import FileUpload
 from users.models.support import SupportTicket
@@ -154,6 +153,7 @@ class BugService:
         # -----------------------------------------------------
         # 3) Queue email notification (best effort)
         # -----------------------------------------------------
+        from mailer.flows.member_notifications import send_support_or_bug_email_task
         try:
             send_support_or_bug_email_task.delay(ticket.id)
             logger.info(

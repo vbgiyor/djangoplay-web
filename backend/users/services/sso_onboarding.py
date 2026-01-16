@@ -11,9 +11,6 @@ from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
 from policyengine.components.ssopolicies import setup_role_based_group
-from utilities.services.email.member_notifications import (
-    send_successful_signup_email_task,
-)
 
 from users.models import (
     Department,
@@ -254,6 +251,7 @@ class SSOOnboardingService:
         )
 
         # 5) Welcome email (async best-effort)
+        from utilities.services.email.member_notifications import send_successful_signup_email_task
         try:
             send_successful_signup_email_task.delay(member.id)
             request.session["first_time_signup"] = True

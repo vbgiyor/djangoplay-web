@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
-from utilities.services.email.resend_verification import (
+from mailer.flows.resend_verification import (
     resend_verification_for_email,
 )
 

@@ -7,10 +7,10 @@ from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from utilities.services.email.unverified_guard import handle_unverified_email
+from mailer.engine.unverified_guard import handle_unverified_email
 
 from users.adapters.base import BaseAdapter
-from users.adapters.email.engine import EmailEngine
+from mailer.engine.engine import EmailEngine
 from users.services.signup_flow import SignupFlowService
 from users.services.unified_login import UnifiedLoginService
 
@@ -39,6 +39,14 @@ class CustomAccountAdapter(BaseAdapter, DefaultAccountAdapter):
     ============================================================================
     """
 
+    @property
+    def email_engine(self):
+        """
+        Lazily instantiate EmailEngine.
+        Safe for Celery + request-less contexts.
+        """
+        return EmailEngine()
+    
     # ------------------------------------------------------------------ #
     # send_mail → thin delegation to EmailEngine
     # ------------------------------------------------------------------ #
@@ -61,7 +69,7 @@ class CustomAccountAdapter(BaseAdapter, DefaultAccountAdapter):
         context.pop("email_subject", None)
 
         try:
-            return EmailEngine.send(
+            return self.email_engine.send(
                 prefix,
                 email,
                 context,

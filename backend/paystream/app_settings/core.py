@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "core.apps.CoreConfig",
     "utilities.apps.UtilitiesConfig",
+    "mailer",
     "users.apps.UsersConfig",
     "locations.apps.LocationsConfig",
     "industries",

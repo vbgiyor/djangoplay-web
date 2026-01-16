@@ -4,7 +4,7 @@ from allauth.core.exceptions import ImmediateHttpResponse
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse
-from utilities.services.email.unverified_guard import handle_unverified_email
+from mailer.engine.unverified_guard import handle_unverified_email
 
 from users.services.unified_login import UnifiedLoginService
 
