@@ -1,0 +1,372 @@
+.space-theme {
+    background: linear-gradient(to bottom, #000000 0%, #000428 50%, #000000 100%) !important; /* Deep navy-black sky */
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.space-theme::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        /* Diagonal Milky Way band (bottom-left to top-right) */
+        linear-gradient(135deg, 
+            transparent 0%, 
+            rgba(255, 255, 255, 0.05) 10%, 
+            rgba(200, 180, 255, 0.12) 20%,  /* Purple tint */
+            rgba(255, 200, 150, 0.15) 30%, /* Orange glow */
+            rgba(200, 180, 255, 0.12) 40%, 
+            rgba(255, 255, 255, 0.05) 50%, 
+            transparent 60%),
+        /* Dark dust lanes within band */
+        linear-gradient(135deg, 
+            transparent 15%, 
+            rgba(40, 20, 60, 0.3) 25%, 
+            transparent 35%, 
+            rgba(40, 20, 60, 0.35) 45%, 
+            transparent 55%),
+        /* Subtle core glow (orange-yellow) */
+        radial-gradient(ellipse 40% 20% at 70% 40%, 
+            rgba(255, 200, 150, 0.08) 0%, 
+            transparent 70%);
+    pointer-events: none;
+    z-index: -2;
+    animation: band-drift 40s linear infinite alternate; /* Subtle camera pan movement */
+}
+
+@keyframes band-drift {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-30px, 15px); }
+}
+
+/* Original animations */
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+@keyframes drift {
+    0% { transform: translateX(0) translateY(0); }
+    100% { transform: translateX(-150px) translateY(50px); }
+}
+
+@keyframes streak {
+    0% { opacity: 0.8; transform: translateX(0) translateY(0) rotate(45deg); }
+    100% { opacity: 0; transform: translateX(-300px) translateY(150px) rotate(45deg); }
+}
+
+@keyframes bright-twinkle {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+.space-theme header,
+.space-theme .header-container {
+    background: rgba(0, 4, 40, 0.8) !important; /* Semi-transparent navy */
+    color: #ffffff !important; /* White text */
+}
+
+.space-theme .header-container .primary-text,
+.space-theme .header-container .text-link {
+    color: #ffcc99 !important; /* Soft orange from photo */
+}
+
+.space-theme .header-container .primary-text:hover,
+.space-theme .header-container .text-link:hover {
+    color: #ffe6cc !important;
+    text-decoration: underline;
+}
+
+.space-theme .footer-container {
+    background: rgba(0, 4, 40, 0.8) !important;
+    color: #ffffff !important;
+    padding: 1rem;
+    border-radius: 10px;
+}
+
+.space-theme .footer-container a,
+.space-theme .footer-container i {
+    color: #ffcc99 !important;
+}
+
+.space-theme .footer-container a:hover {
+    color: #ffe6cc !important;
+}
+
+.space-theme .login-container {
+    background: rgba(0, 4, 40, 0.8) !important; /* Matches sky */
+    border-radius: 10px;
+    padding: 2rem;
+    color: #ffffff !important;
+}
+
+.space-theme .login-container .card {
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+.space-theme .login-container .tab-content,
+.space-theme .login-container .tab-pane {
+    background: transparent !important;
+    border-radius: 0 !important;
+}
+
+.space-theme .login-container h2,
+.space-theme .login-container .form-label,
+.space-theme .login-container .form-check-label,
+.space-theme .login-container .social-login-label {
+    color: #ffffff !important;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+}
+
+.space-theme .login-container .nav-link,
+.space-theme .login-container .text-link {
+    color: #ffcc99 !important;
+}
+
+.space-theme .login-container .nav-link:hover,
+.space-theme .login-container .text-link:hover {
+    color: #ffe6cc !important;
+}
+
+.space-theme .login-container .error-message {
+    color: #ff9966 !important; /* Soft orange-red */
+}
+
+.space-theme .login-container .form-control {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 5px !important;
+    padding: 0.75rem !important;
+    font-size: 1rem !important;
+}
+
+.space-theme .login-container .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.space-theme .login-container .form-control:focus {
+    border-color: #ffcc99 !important;
+    outline: none !important;
+}
+
+.space-theme .login-container .btn-primary {
+    background: linear-gradient(135deg, #ffcc99, #ff9966) !important; /* Orange gradient */
+    border-color: #ffcc99 !important;
+    border-radius: 5px !important;
+    padding: 0.75rem !important;
+    font-size: 1rem !important;
+    color: #ffffff !important;
+}
+
+.space-theme .login-container .btn-primary:hover {
+    background: linear-gradient(135deg, #ffb380, #ff804d) !important;
+    border-color: #ffb380 !important;
+}
+
+.space-theme .login-container .btn-danger,
+.space-theme .login-container .google-btn {
+    background: linear-gradient(135deg, #ff9966, #ff6666) !important;
+    border-color: #ff9966 !important;
+    border-radius: 5px !important;
+    padding: 0.75rem !important;
+    font-size: 1rem !important;
+    color: #ffffff !important;
+}
+
+.space-theme .login-container .btn-danger:hover,
+.space-theme .login-container .google-btn:hover {
+    background: linear-gradient(135deg, #ff804d, #ff4d4d) !important;
+    border-color: #ff804d !important;
+}
+
+.space-theme .login-container .nav-tabs {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    background: transparent !important;
+}
+
+.space-theme .login-container .nav-tabs .nav-link {
+    color: #ffffff !important;
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    border-radius: 5px 5px 0 0 !important;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+}
+
+.space-theme .login-container .nav-tabs .nav-link:hover {
+    border-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.2) transparent !important;
+    color: #ffe6cc !important;
+}
+
+.space-theme .login-container .nav-tabs .nav-link.active {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.2) transparent !important;
+    color: #ffffff !important;
+}
+
+.space-theme .login-container .form-check-input {
+    background-color: transparent !important;
+    border: 1px solid #ffffff !important;
+}
+
+.space-theme .login-container .form-check-input:checked {
+    background-color: #ffcc99 !important;
+    border-color: #ffcc99 !important;
+}
+
+.space-theme .login-container .alert-success {
+    background: rgba(144, 238, 144, 0.1) !important;
+    border: 1px solid rgba(144, 238, 144, 0.3) !important;
+    color: #d9ffd9 !important;
+    border-radius: 5px !important;
+}
+
+.space-theme .login-container .alert-danger {
+    background: rgba(255, 153, 102, 0.1) !important;
+    border: 1px solid rgba(255, 153, 102, 0.3) !important;
+    color: #ffd9cc !important;
+    border-radius: 5px !important;
+}
+
+.space-theme .login-container .alert-info {
+    background: rgba(255, 204, 153, 0.1) !important;
+    border: 1px solid rgba(255, 204, 153, 0.3) !important;
+    color: #fff2e6 !important;
+    border-radius: 5px !important;
+}
+
+.space-theme .container {
+    color: #ffffff !important;
+}
+
+.space-theme .container .welcome-title {
+    color: #ffcc99 !important;
+    margin-bottom: 2.5rem !important;
+}
+
+.card .welcome-title {
+    margin-bottom: 40px !important;
+    display: block;
+}
+
+.space-theme .container .welcome-name {
+    color: #ffffff !important;
+}
+
+.space-theme .container .card {
+    background: rgba(0, 4, 40, 0.8) !important;
+    color: #ffffff !important;
+}
+
+.space-theme .container .card .card-label,
+.space-theme .container .card label {
+    color: #ffffff !important;
+}
+
+.space-theme .container .e-card {
+    background: linear-gradient(135deg, rgba(0, 4, 40, 0.8), rgba(0, 2, 20, 0.8)) !important;
+    color: #ffffff !important;
+}
+
+.space-theme .container .e-card:hover {
+    background: linear-gradient(135deg, #ffcc99, #ff9966) !important;
+    color: #ffffff !important;
+    transform: translateY(-10px) scale(1.02);
+}
+
+.space-theme .container .e-card .card-label {
+    color: #ffffff !important;
+}
+
+.space-theme .container .e-card .icon {
+    color: #ffcc99 !important;
+}
+
+.space-theme .container .e-card:hover .icon {
+    color: #ffffff !important;
+}
+
+.space-theme .container .e-card p {
+    color: #ffe6cc !important;
+}
+
+.space-theme .content-wrapper .container .e-card {
+    background: linear-gradient(135deg, rgba(0, 4, 40, 0.8), rgba(0, 2, 20, 0.8)) !important;
+    color: #ffffff !important;
+}
+
+.space-theme .content-wrapper .container .e-card:hover {
+    background: linear-gradient(135deg, #ffcc99, #ff9966) !important;
+    color: #ffffff !important;
+    transform: translateY(-5px) scale(1.01);
+}
+
+.space-theme .content-wrapper .container .e-card .card-label {
+    color: #ffffff !important;
+}
+
+.space-theme .content-wrapper .container .e-card .icon {
+    color: #ffcc99 !important;
+}
+
+.space-theme .content-wrapper .container .e-card:hover .icon {
+    color: #ffffff !important;
+}
+
+.space-theme .container .btn-orange-red {
+    background: linear-gradient(135deg, #ffcc99, #ff9966) !important;
+    color: #ffffff !important;
+}
+
+.space-theme .container .btn-orange-red:hover {
+    background: linear-gradient(135deg, #ffb380, #ff804d) !important;
+}
+
+.space-theme .logout-btn {
+    color: #ffcc99 !important;
+}
+
+.space-theme .logout-btn:hover {
+    color: #ffe6cc !important;
+}
+
+.space-theme .logout-btn .logout-label {
+    color: #ffffff !important;
+}
+
+.space-theme .error-container .error-heading {
+    color: #ffffff !important;
+}
+
+.space-theme .error-container .error-icon {
+    color: #ff9966 !important;
+}
+
+/* Star background overlay — non-blocking and scrollable */
+#stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* allow scroll/clicks to pass through */
+  overflow: hidden;
+  z-index: 0; /* keep it behind content */
+}
+
+/* Ensure your main content is above stars */
+body > *:not(#stars) {
+  position: relative;
+  z-index: 1;
+}
+
+/* Optional: just in case */
+body.space-theme {
+  overflow: auto !important;
+}

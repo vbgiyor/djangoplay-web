@@ -1,0 +1,66 @@
+{% extends "admin/base.html" %}
+{% load i18n static compress %}
+{% block extrastyle %}
+    {{ block.super }}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% compress css %}
+<link rel="stylesheet" href="{% static 'design/css/app/common.css' %}">
+<link rel="stylesheet" href="{% static 'design/css/themes/space.css' %}">
+<link rel="stylesheet" href="{% static 'design/css/themes/toggle.css' %}">
+    {% endcompress %}
+{% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
+
+{% block branding %}
+    <a href="{% url 'console_dashboard' %}" class="brand-link" id="jazzy-logo">
+        <img src="{% static 'elements/images/logo/logo_text.png' %}" alt="DjangoPlay Logo" class="img-fluid brand-image elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light">{{ site_header|default:_('DjangoPlay Administration') }}</span>
+    </a>
+{% endblock %}
+
+{% block nav-global %}
+    <div class="sidebar">
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                {% if request.user.avatar %}
+                    <img src="{{ request.user.avatar.url }}" class="img-circle elevation-2" alt="User Image">
+                {% else %}
+                    <img src="{% static 'images/default-avatar.png' %}" class="img-circle elevation-2" alt="User Image">
+                {% endif %}
+            </div>
+            <div class="info">
+                <a href="{% url 'console:users_employee_change' request.user.id %}" class="d-block">{{ request.user.get_full_name }}</a>
+            </div>
+        </div>
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" role="menu">
+                <li class="nav-item">
+                    <a href="{% url 'console_dashboard' %}" class="nav-link{% if request.path == '/console/dashboard/' %} active{% endif %}">
+                        <i class="nav-icon fas fa-th-large"></i>
+                        <p>{% trans "Dashboard" %}</p>
+                    </a>
+                </li>
+                {% for app in app_list %}
+                    <li class="nav-header">{{ app.name }}</li>
+                    {% for model in app.models %}
+                        <li class="nav-item">
+                            <a href="{{ model.admin_url }}" class="nav-link{% if request.path == model.admin_url %} active{% endif %}">
+                                <i class="nav-icon {{ model.icon|default:'fas fa-circle' }}"></i>
+                                <p>{{ model.name }}</p>
+                            </a>
+                        </li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </nav>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    {% include 'account/site_pages/report_bug.html' %}
+{% endblock %}

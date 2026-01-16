@@ -1,0 +1,144 @@
+{% load i18n static inlinecss %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% if ticket.is_bug_report %}
+            {% trans "New Bug Report" %}
+        {% else %}
+            {% trans "New Support Ticket" %}
+        {% endif %}
+    </title>
+    {% inlinecss "design/css/emails/usermails.css" %}
+</head>
+
+<body>
+<table width="600" cellpadding="0" cellspacing="0" class="container" style="border:1px solid #c2c2c2;">
+<tr><td align="center">
+
+    <!-- LOGO (identical for bug + support) -->
+    <table width="600" cellpadding="0" cellspacing="0" class="container">
+        <tr>
+            <td align="center" style="padding-bottom:24px; line-height:0;">
+                <table align="center" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td style="padding-right:8px;"><img src="cid:djangoplay_logo_icon" height="48" style="display:block;"></td>
+                        <td><img src="cid:djangoplay_logo_text" height="30" style="display:block; margin-top:8px;"></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr><td bgcolor="#dcdcdc" height="1" style="line-height:1px; font-size:0;">&nbsp;</td></tr>
+
+        <!-- CONTENT -->
+        <tr>
+            <td>
+                <table width="100%" cellpadding="0" cellspacing="0">
+                <tr><td class="content">
+
+                    <p>
+                        {% if ticket.is_bug_report %}
+                            {% trans "A new bug report has been submitted via the website." %}
+                        {% else %}
+                            {% trans "A new support ticket has been submitted via the website." %}
+                        {% endif %}
+                    </p>
+
+                    <!-- USER DETAILS -->
+                    <p>
+                        <strong>{% trans "Submitted by:" %}</strong><br>
+                        {{ ticket.get_full_name }}
+                        <span style="pointer-events:none; color:inherit;">
+                            (<span style="unicode-bidi:bidi-override; direction:rtl;">
+                                {{ ticket.email|slice:"::-1" }}
+                            </span>)
+                        </span>
+
+                        {% if employee_id %}
+                            <br><span style="font-size:12px; color:#6c757d;">
+                                {% trans "Employee ID:" %} {{ employee_id }}
+                            </span>
+                        {% endif %}
+                    </p>
+
+                    <!-- TICKET META BLOCKS -->
+                    <div class="highlight">
+                        <p>
+                            <span class="primary">{% trans "Ticket Number:" %}</span>
+                            <span class="ticket-number">#{{ ticket.ticket_number }}</span>
+                        </p>
+                    </div>
+
+                    <div class="subject">
+                        <p>
+                            <span class="primary">{% trans "Subject:" %}</span>
+                            <span class="ticket-subject">{{ ticket.subject }}</span>
+                        </p>
+                    </div>
+
+                    <!-- MESSAGE BLOCK -->
+                    <div class="ticket-message-box">
+                        <p class="ticket-message-label"><span class="primary">{% trans "Message:" %}</span></p>
+                        <span class="url-text">{{ ticket.message|truncatechars:350 }}</span>
+                    </div>
+
+                    <!-- ATTACHMENTS -->
+                    {% if has_attachments %}
+                    <p class="attachments-label"><strong>{% trans "Attachments:" %}</strong></p>
+                    <ul class="attachments-list">
+                        {% for name in file_names %}
+                            <li>{{ name }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+
+                    <!-- ADMIN LINK -->
+                    <p class="url-instruction">
+                        {% trans "Please log in to the DjangoPlay admin to review and respond." %}
+                    </p>
+
+                    {% if admin_url %}
+                    <p class="text-center button-wrapper">
+                        <a href="{{ admin_url }}" class="button" target="_blank" rel="noopener">
+                            {% trans "View Ticket in Admin" %}
+                        </a>
+                    </p>
+
+                    <p class="url-instruction">
+                        {% trans "If the button doesn't work, copy and paste this link:" %}
+                    </p>
+
+                    <div class="url-box">
+                        <span class="url-text">{{ admin_url }}</span>
+                    </div>
+                    {% endif %}
+
+                    <p class="closing-line">{% trans "Thank you," %}</p>
+                    <p class="closing-signature">{% trans "DjangoPlay Team" %}</p>
+
+                </td></tr>
+                </table>
+            </td>
+        </tr>
+
+        <!-- FOOTER -->
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin:0;">
+            <tr><td class="email-divider" bgcolor="#e2e8f0" height="1"></td></tr>
+            <tr>
+                <td class="confidential-note" style="padding:16px 40px 8px;">
+                {% trans "This email and any attachments are confidential and may contain legally privileged information. If you are not the intended recipient, please delete it immediately and notify the sender. Any unauthorized use, disclosure, copying, or distribution is prohibited." %}
+                </td>
+            </tr>
+            <tr><td class="footer">&copy; {% now "Y" %} {{site_name}}<br></td></tr>
+        </table>
+
+    </table>
+</td></tr>
+</table>
+
+{% endinlinecss %}
+</body>
+</html>

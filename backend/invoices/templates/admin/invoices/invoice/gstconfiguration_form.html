@@ -1,0 +1,106 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/select2.min.css' %}">
+    <style>
+        .invalid-feedback { color: #dc3545; font-size: 0.875em; display: none; }
+        .form-control.is-invalid ~ .invalid-feedback { display: block; }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{% if form.instance.pk %}Edit GST Configuration{% else %}Create GST Configuration{% endif %}</h2>
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        <div class="card mb-4">
+            <div class="card-header">GST Configuration Details</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="{{ form.hsn_sac_code.id_for_label }}" class="form-label">HSN/SAC Code</label>
+                    {{ form.hsn_sac_code }}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                    {{ form.description }}
+                    <div class="invalid-feedback">Please enter a description.</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="{{ form.cgst_rate.id_for_label }}" class="form-label">CGST Rate (%)</label>
+                        {{ form.cgst_rate }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="{{ form.sgst_rate.id_for_label }}" class="form-label">SGST Rate (%)</label>
+                        {{ form.sgst_rate }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="{{ form.igst_rate.id_for_label }}" class="form-label">IGST Rate (%)</label>
+                        {{ form.igst_rate }}
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.rate_type.id_for_label }}" class="form-label">Rate Type</label>
+                    {{ form.rate_type }}
+                    <div class="invalid-feedback">Please select a rate type.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.applicable_region.id_for_label }}" class="form-label">Applicable Region</label>
+                    {{ form.applicable_region }}
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.effective_from.id_for_label }}" class="form-label">Effective From</label>
+                        {{ form.effective_from }}
+                        <div class="invalid-feedback">Please enter a valid start date.</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.effective_to.id_for_label }}" class="form-label">Effective To</label>
+                        {{ form.effective_to }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{% url 'admin:invoices_gstconfiguration_changelist' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/select2.min.js' %}"></script>
+<script>
+    (function () {
+        'use strict';
+        $(document).ready(function() {
+            $('#id_applicable_region').select2({
+                ajax: {
+                    url: '/invoices/autocomplete/applicable_region/',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return { q: params.term };
+                    },
+                    processResults: function(data) {
+                        return { results: data.results };
+                    }
+                },
+                minimumInputLength: 1
+            });
+
+            var forms = document.querySelectorAll('.needs-validation');
+            Array.prototype.slice.call(forms).forEach(function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        });
+    })();
+</script>
+{% endblock %}

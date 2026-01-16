@@ -1,0 +1,202 @@
+{% load i18n static compress %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% trans "DjangoPlay - Unsubscribe" %}</title>
+    <link rel="icon" type="image/png" href="{% static 'elements/images/logo/logo_icon.png' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% compress css %}
+        <link rel="stylesheet" href="{% static 'design/css/app/common.css' %}">
+        <link rel="stylesheet" href="{% static 'design/css/themes/space.css' %}">
+        <link rel="stylesheet" href="{% static 'design/css/themes/toggle.css' %}">
+        <link rel="stylesheet" href="{% static 'design/css/app/unsubscribe.css' %}">
+    {% endcompress %}
+</head>
+
+<body class="unsubscribe-page">
+    <header class="header-container">
+        <a href="{% if request.user.is_authenticated %}{% url 'console_dashboard' %}{% else %}{% url 'account_login' %}{% endif %}">
+            <img src="{% static 'elements/images/logo/logo_icon.png' %}" class="logo-icon" alt="Logo">
+            <img src="{% static 'elements/images/logo/logotext-color.png' %}" class="logo" alt="Logo">
+        </a>
+    </header>
+
+    <div class="unsubscribe-container d-flex justify-content-center align-items-center">
+        <div class="card p-4 shadow-sm w-100" style="max-width: 480px;">
+
+            {% if unsubscribed %}
+                <div class="alert alert-success text-center mb-3">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>{% trans "Success!" %}</strong>
+                    {% trans "You have been unsubscribed from selected email categories." %}
+                </div>
+                <p class="text-center">{% trans "You will no longer receive emails from us." %}</p>
+
+            {% else %}
+
+                <h4 class="text-center mb-3">{% trans "Unsubscribe" %}</h4>
+
+                {% if error %}
+                    <div class="alert alert-danger text-center mb-3">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        {{ error }}
+                    </div>
+                {% endif %}
+
+                {% if show_form %}
+                    <p class="text-center mb-4">
+                        {% trans "Select the email categories you want to unsubscribe from." %}
+                    </p>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label">{% trans "Email Address" %}</label>
+                            <input type="email" class="form-control" value="{{ email }}" readonly>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{% trans "Choose Email Preferences" %}</label>
+
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="preferences" value="newsletters">
+                                <label class="form-check-label">{% trans "Newsletters" %}</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="preferences" value="offers">
+                                <label class="form-check-label">{% trans "Special Offers" %}</label>
+                            </div>
+
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" name="preferences" value="updates">
+                                <label class="form-check-label">{% trans "Product Updates" %}</label>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-paper-plane"></i> {% trans "Unsubscribe" %}
+                        </button>
+                    </form>
+                {% endif %}
+            {% endif %}
+
+        </div>
+    </div>
+
+    <footer class="footer-container">
+        <div class="links-container text-center footer-links">
+            <i class="fas fa-copyright"></i> 2025 DjangoPlay            
+            <i class="fas fa-signature"></i>
+            <a href="{% url 'frontend:license' %}" class="primary-text" target="_blank" rel="noopener noreferrer">{% trans "Apache License 2.0" %}</a>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script>
+    {% compress js %}
+        <script src="{% static 'design/js/space.js' %}"></script>
+    {% endcompress %}
+</body>
+</html>
+
+
+{% comment %} {% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% trans "Unsubscribe from DjangoPlay Emails" %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --primary: #007bff; --success: #28a745; --danger: #dc3545; --gray: #6c757d; --light: #f8f9fa; --dark: #343a40; --bg: #f5f5f5; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', sans-serif; background: linear-gradient(135deg, #1e3c72, #2a5298); color: #fff; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .container { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); max-width: 480px; width: 100%; padding: 32px; text-align: center; color: #333; }
+        .logo { display: flex; justify-content: center; align-items: center; gap: 12px; margin-bottom: 24px; }
+        .logo-icon { width: 50px; height: 50px; background: var(--primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; }
+        .logo-text { font-size: 28px; font-weight: 700; color: var(--dark); }
+        h1 { font-size: 24px; margin-bottom: 16px; color: var(--dark); }
+        p { font-size: 16px; line-height: 1.6; color: #555; margin-bottom: 24px; }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        label { display: block; font-weight: 500; margin-bottom: 8px; color: var(--dark); }
+        input[type="email"] { width: 100%; padding: 12px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; transition: border 0.3s; }
+        input[type="email"]:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,123,255,0.1); }
+        .btn { display: inline-block; padding: 12px 32px; font-size: 16px; font-weight: 500; border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s; width: 100%; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #0056b3; transform: translateY(-2px); }
+        .alert { padding: 16px; border-radius: 8px; margin: 20px 0; font-size: 15px; display: none; }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-danger { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .footer-links { margin-top: 32px; font-size: 13px; color: #777; }
+        .footer-links a { color: var(--primary); text-decoration: none; margin: 0 8px; }
+        .footer-links a:hover { text-decoration: underline; }
+        @media (max-width: 480px) { .container { padding: 24px; } .logo-text { font-size: 24px; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="logo">
+        <div class="logo-icon"><i class="fas fa-play"></i></div>
+        <div class="logo-text">DjangoPlay</div>
+    </div>
+
+    <h1>{% trans "Unsubscribe" %}</h1>
+
+    {% if unsubscribed %}
+        <div class="alert alert-success" style="display: block;">
+            <i class="fas fa-check-circle"></i>
+            <strong>{% trans "Success!" %}</strong> {% trans "You have been unsubscribed." %}
+        </div>
+        <p>{% trans "You will no longer receive emails from us." %}</p>
+    {% else %}
+        <p>{% trans "Enter your email to stop receiving emails." %}</p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success" style="display: block;">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        {% if error %}
+            <div class="alert alert-danger" style="display: block;">
+                <i class="fas fa-exclamation-triangle"></i> {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="email">{% trans "Email Address" %}</label>
+                <input type="email" id="email" name="email" value="{{ email }}" required placeholder="you@example.com" />
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-paper-plane"></i> {% trans "Unsubscribe" %}
+            </button>
+        </form>
+    {% endif %}
+
+    <div class="footer-links">
+        <a href="#">{% trans "Privacy" %}</a> •
+        <a href="#">{% trans "Terms" %}</a> •
+        <a href="#">{% trans "Support" %}</a>
+    </div>
+</div>
+
+<script>
+    // Auto-fill email from URL (optional)
+    const params = new URLSearchParams(window.location.search);
+    const email = params.get('email');
+    if (email && !document.getElementById('email').value) {
+        document.getElementById('email').value = decodeURIComponent(email);
+    }
+</script>
+</body>
+</html> {% endcomment %}

@@ -1,0 +1,33 @@
+{% if ticket.is_bug_report %}
+New Bug Report Submitted
+{% else %}
+New Support Ticket Submitted
+{% endif %}
+
+Ticket Number: #{{ ticket.ticket_number }}
+Subject: {{ ticket.subject|default:"(No subject)" }}
+
+Submitted by:
+{{ ticket.get_full_name }} ({{ ticket.email }})
+
+{% if employee_id %}
+Employee ID: {{ employee_id }}
+{% endif %}
+
+Message:
+{{ ticket.message|truncatechars:350 }}
+
+{% if has_attachments %}
+Attachments ({{ file_count }}):
+{% for name in file_names %}
+• {{ name }}
+{% endfor %}
+{% endif %}
+
+Please log in to the DjangoPlay Admin to review and respond:
+{{ admin_url }}
+
+Thank you,
+DjangoPlay Team
+
+© 2025 DjangoPlay – Confidential & Internal Use Only

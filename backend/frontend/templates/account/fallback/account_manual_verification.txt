@@ -1,0 +1,9 @@
+Hello {{ member.get_full_name|default:member.first_name }},
+
+Please click the link to verify your {{ site_name }} account:
+{{ verification_url }}
+
+This link expires in 7 days.
+
+Thank you,
+{{ site_name }} Team

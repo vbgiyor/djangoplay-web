@@ -1,0 +1,7 @@
+Hello {{ member.get_full_name|default:member.first_name }},
+
+Your {{ site_name }} account has been verified via your identity provider. You can now sign in and use the platform:
+{{ login_url }}
+
+Thank you,
+{{ site_name }} Team

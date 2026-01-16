@@ -1,0 +1,11 @@
+{% extends "api_stats_public.html" %}
+{% load i18n static %}
+{% block title %}{% trans "DjangoPlay - API Stats (Personal)" %}{% endblock %}
+{% block alerts %}
+<div class="alert alert-info mb-4">
+  <strong>Personal View:</strong> Showing only <u>your</u> API usage.
+</div>
+{% endblock %}
+
+{% load humanize %}
+

@@ -1,0 +1,280 @@
+/* Global */
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    color: #4a4a4a;     /* improved contrast */
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+table {
+    border-collapse: collapse;
+}
+
+/* Container */
+.container {
+    max-width: 600px;
+    margin: 30px auto 0 auto;
+    background: white;
+    border: 1px solid #c2c2c2c1 !important;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Header */
+.header {
+    text-align: center;
+    padding: 14px 0;      /* slightly increased */
+    background: white;
+    border-bottom: 1px solid #eee;
+}
+
+.header .logo-wrapper {
+    display: inline-block;
+    background-color: #ffffff;
+    padding: 5px 14px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.header img.icon {
+    height: 44px;        /* bigger but still compact */
+    margin-right: 8px;
+}
+
+.header img.text {
+    height: 26px;
+}
+
+.email-note {
+    font-size: 0.78rem !important;
+    color: #6c757d !important;
+    text-align: center;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+}
+
+.ticket-details {
+    margin:24px 0;
+    padding:20px;
+    background:#f8f9fa;
+    border-radius:6px;
+    border-left:4px solid #4361ee;
+}
+
+/* Content */
+.content {
+    padding: 32px;
+    line-height: 1.75;
+    font-size: 16px;      /* ⬆ readable */
+}
+.content p {
+    margin: 12px 0;
+}
+
+/* Reduce gap around button and link */
+.content p.button-wrapper,
+.content p.link-wrapper {
+    margin: 8px 0 !important;
+}
+
+/* Make the reset URL block smaller vertically */
+.content p.link-wrapper span.highlight {
+    padding: 8px !important;
+    margin: 8px 0 !important;
+}
+
+
+.content p.signature {
+    font-size: 15px;
+    color: #666;
+    margin-top: 32px;
+}
+
+/* Highlighted section */
+.highlight {
+    background: #f0f7ff;
+    border-left: 4px solid #007bff;
+    padding: 16px;
+    margin: 22px 0;
+    border-radius: 0 6px 6px 0;
+}
+.highlight p {
+    margin: 0;
+    font-size: 15px;      /* ⬆ slightly bigger */
+}
+.ticket-number,
+.ticket-subject {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ff6b35;
+    letter-spacing: 0.5px;
+}
+.highlight span.primary,
+.subject span.primary,
+.ticket-message-box .ticket-message-label span.primary {
+    font-weight: 600;
+}
+
+.highlight span.ticket-number{
+    color: #007bff;
+}
+
+/* Subject Box */
+.subject {
+    background: #f0f7ff;
+    border-left: 4px solid #ff6b35;
+    padding: 14px;
+    margin: 18px 0;
+    border-radius: 0 6px 6px 0;
+}
+.subject p {
+    margin: 0;
+    line-height: 1.6;
+    font-size: 15px;
+}
+
+/* Button */
+.button {
+    display: inline-block;
+    background: #464B92;
+    color: white !important;
+    padding: 12px 32px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;     /* ⬆ better for CTA */
+    margin: 20px 0;
+}
+
+
+.copyright {
+    text-align: center;
+    margin: 18px auto 0;
+    font-size: 13px;
+    color: #777;
+}
+
+.unsubscribe {
+    font-size: 13px;     /* ⬆ was 11.5px */
+    color: #777;
+}
+.unsubscribe a {
+    color: #6a4c93;
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+/* --- Support-to-tech specific tweaks --- */
+
+/* Message container and label */
+.ticket-message {
+    margin: 16px 0 12px;
+}
+
+.ticket-message-label {
+    margin: 0 0 4px 0;
+    font-size: 15px;
+}
+
+/* Keep this as a no-op wrapper in case HTML still has it */
+.ticket-message-box {
+    background: #f0f7ff;
+    border-left: 4px solid #464B92;
+    padding: 10px 14px;
+    margin: 4px 0 18px 0;
+    border-radius: 0 6px 6px 0;
+}
+
+
+/* Actual visible message box – compact for 1 line, flexible up to ~5 lines */
+.ticket-message-text {
+    display: block;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 7em;             /* ~5 lines */
+    overflow: hidden;
+    text-align: left !important;   /* override header/table center align */
+    margin-top: 0 !important;      /* remove unwanted top spacing */
+    padding-top: 2px !important;   /* tiny breathing space */
+}
+
+/* Attachments formatting */
+.attachments-label {
+    margin: 16px 0 8px 0;
+}
+
+.attachments-list {
+    margin: 8px 0 8px 20px;
+    padding-left: 0;
+}
+
+.attachments-list li {
+    margin: 4px 0;
+}
+
+/* Admin URL section – same visual width treatment as highlight/subject boxes */
+.button-wrapper {
+    text-align: center;
+}
+
+.url-instruction {
+    margin: 8px 0 6px 0;
+    font-size: 15px;
+}
+
+.url-box {
+    background: #f0f7ff;
+    border-left: 4px solid #007bff;
+    padding: 10px 14px;
+    margin: 4px 0 18px 0;
+    border-radius: 0 6px 6px 0;
+}
+
+.url-text {
+    display: block;
+    font-size: 12px;
+    word-break: break-all;
+}
+
+/* Closing – more generous space after signature */
+.closing-line {
+    margin: 0 0 4px 0 !important;
+    color: #333333 !important;
+    font-size: 15px !important;
+    line-height: 1.4 !important;
+}
+
+.closing-signature {
+    font-weight: 600 !important;
+    color: #333333 !important;
+    font-size: 15px !important;
+    line-height: 1.4 !important;
+    margin-bottom: 0 !important;
+}
+
+/* Confidential note – much tighter below */
+.confidential-note {
+    margin: 0 !important;
+    padding: 0 !important;   /* real padding is now inline */
+    color: #a3a3a3 !important;
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+}
+
+.footer {
+    margin: 0 !important;
+    padding: 16px 40px !important;     /* same horizontal padding as content */
+    background: #f8f9fc !important;
+    color: #666666 !important;
+    font-size: 13px !important;
+    text-align: center !important;
+}
+
+.content p:first-child {
+    margin-top: 0 !important;
+}

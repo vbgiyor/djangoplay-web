@@ -1,0 +1,209 @@
+{% extends 'admin/change_form.html' %}
+{% load static i18n %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/select2.min.css' %}">
+    <style>
+        .errors { color: red; margin-bottom: 10px; }
+        .module { margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 8px; text-align: left; }
+        .form-control { width: 100%; max-width: 300px; }
+        .invalid-feedback { color: #dc3545; font-size: 0.875em; display: none; }
+        .form-control.is-invalid ~ .invalid-feedback { display: block; }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>{% if original %}Edit Invoice #{{ original.invoice_number }}{% else %}Create Invoice{% endif %}</h1>
+    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+        {% csrf_token %}
+        {% if form.errors %}
+            <div class="errors">
+                <ul>
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ field }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+        <div class="module">
+            <h2>Invoice Details</h2>
+            <table>
+                {% for field in form %}
+                    <tr>
+                        <td><label for="{{ field.id_for_label }}">{{ field.label }}</label></td>
+                        <td>{{ field }}</td>
+                        <td>
+                            {% if field.errors %}
+                                <div class="invalid-feedback">{{ field.errors.as_text }}</div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% for formset in inline_admin_formsets %}
+            <div class="module">
+                <h2>{{ formset.opts.verbose_name_plural|capfirst }}</h2>
+                {{ formset.management_form }}
+                <table>
+                    <thead>
+                        <tr>
+                            {% for field in formset.form.base_fields %}
+                                <th>{{ field.label|capfirst }}</th>
+                            {% endfor %}
+                            {% if formset.can_delete %}
+                                <th>Delete</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for form in formset %}
+                            <tr>
+                                {% for field in form %}
+                                    <td>
+                                        {{ field }}
+                                        {% if field.errors %}
+                                            <div class="invalid-feedback">{{ field.errors.as_text }}</div>
+                                        {% endif %}
+                                        {% if field.name == 'amount' %}
+                                            <span class="remaining-balance">0.00</span>
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                                {% if formset.can_delete %}
+                                    <td>{{ form.DELETE }}</td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endfor %}
+        <div class="submit-row">
+            <input type="submit" value="{% trans 'Save' %}" class="btn btn-primary" name="_save">
+            <input type="submit" value="{% trans 'Save and continue editing' %}" class="btn btn-secondary" name="_continue">
+            <a href="{% url 'admin:invoices_invoice_changelist' %}" class="btn btn-secondary">{% trans 'Cancel' %}</a>
+        </div>
+    </form>
+
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/select2.min.js' %}"></script>
+    <script>
+        (function () {
+            'use strict';
+            // Initialize Select2 for autocomplete fields
+            $(document).ready(function() {
+                $('#id_issuer, #id_recipient, #id_billing_address, #id_billing_country, #id_billing_region').select2({
+                    ajax: {
+                        url: function() {
+                            return $(this).attr('data-ajax--url') || '/autocomplete/' + $(this).attr('id').replace('id_', '') + '/';
+                        },
+                        dataType: 'json',
+                        delay: 250,
+                        data: function(params) {
+                            return { q: params.term };
+                        },
+                        processResults: function(data) {
+                            return { results: data.results };
+                        }
+                    },
+                    minimumInputLength: 1
+                });
+
+                // Validate amount fields in payment inline forms
+                $('input[name$="amount"]').each(function() {
+                    const amountInput = $(this);
+                    const formRow = amountInput.closest('tr');
+                    const invoiceInput = formRow.find('input[name$="invoice"]');
+                    const remainingBalanceSpan = formRow.find('.remaining-balance');
+
+                    if (invoiceInput.length) {
+                        invoiceInput.on('change', function() {
+                            const invoiceId = this.value;
+                            if (invoiceId) {
+                                $.ajax({
+                                    url: `/invoices/get-remaining-amount/${invoiceId}/`,
+                                    headers: {
+                                        'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                                    },
+                                    success: function(data) {
+                                        if (data.remaining_amount !== undefined) {
+                                            amountInput.attr('max', data.remaining_amount);
+                                            remainingBalanceSpan.text(parseFloat(data.remaining_amount).toFixed(2));
+                                            amountInput.trigger('input');
+                                        } else {
+                                            console.error('Error:', data.error);
+                                            remainingBalanceSpan.text('Error');
+                                        }
+                                    },
+                                    error: function(error) {
+                                        console.error('Fetch error:', error);
+                                        remainingBalanceSpan.text('Error');
+                                    }
+                                });
+                            } else {
+                                amountInput.attr('max', '');
+                                remainingBalanceSpan.text('0.00');
+                            }
+                        });
+
+                        amountInput.on('input', function() {
+                            const maxAmount = parseFloat($(this).attr('max')) || Infinity;
+                            const enteredAmount = parseFloat($(this).val());
+                            let invalidFeedback = $(this).parent().find('.invalid-feedback');
+                            if (!invalidFeedback.length) {
+                                invalidFeedback = $('<div class="invalid-feedback"></div>');
+                                $(this).parent().append(invalidFeedback);
+                            }
+                            if (isNaN(enteredAmount) || enteredAmount <= 0) {
+                                $(this).addClass('is-invalid');
+                                invalidFeedback.text('Please enter a valid amount greater than 0.');
+                            } else if (enteredAmount > maxAmount) {
+                                $(this).addClass('is-invalid');
+                                invalidFeedback.text(`Amount cannot exceed remaining balance: ${maxAmount.toFixed(2)}`);
+                            } else {
+                                $(this).removeClass('is-invalid');
+                                invalidFeedback.text('');
+                            }
+                        });
+                    }
+                });
+
+                // Form validation
+                const form = $('form');
+                form.on('submit', function(event) {
+                    let isValid = true;
+                    $('input[name$="amount"]').each(function() {
+                        const maxAmount = parseFloat($(this).attr('max')) || Infinity;
+                        const enteredAmount = parseFloat($(this).val());
+                        let invalidFeedback = $(this).parent().find('.invalid-feedback');
+                        if (!invalidFeedback.length) {
+                            invalidFeedback = $('<div class="invalid-feedback"></div>');
+                            $(this).parent().append(invalidFeedback);
+                        }
+                        if (isNaN(enteredAmount) || enteredAmount <= 0) {
+                            isValid = false;
+                            $(this).addClass('is-invalid');
+                            invalidFeedback.text('Please enter a valid amount greater than 0.');
+                        } else if (enteredAmount > maxAmount) {
+                            isValid = false;
+                            $(this).addClass('is-invalid');
+                            invalidFeedback.text(`Amount cannot exceed remaining balance: ${maxAmount.toFixed(2)}`);
+                        }
+                    });
+                    if (!form[0].checkValidity() || !isValid) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.addClass('was-validated');
+                });
+            });
+        })();
+    </script>
+{% endblock %}

@@ -1,0 +1,47 @@
+.attachment-label {
+            display: inline-flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .attachment-label input[type="file"] {
+            display: none;
+        }
+        .attachment-label .file-input-label {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border: 1px solid #ced4da;
+            color: #202427ff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            background-color: #e9ecef;
+        }
+        .attachment-label .file-input-label:hover {
+            background-color: #e9ecef;
+        }
+        .attachment-label .pin-icon {
+            margin-right: 8px;
+            font-size: 1rem;
+        }
+        .attachment-label .format-text {
+            font-size: 0.75rem;
+            color: #6c757d;            
+            width: 100%;
+        }
+        .attachment-label .file-name {
+            font-size: 0.85rem;
+            color: #495057;
+            margin-top: 5px;
+            width: 100%;
+        }
+        .attachment-label .clear-file {
+            display: none;
+            margin-left: 10px;
+            cursor: pointer;
+            color: #dc3545;
+            font-size: 0.9rem;
+        }
+        .attachment-label .clear-file:hover {
+            color: #b02a37;
+        }

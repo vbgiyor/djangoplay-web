@@ -1,0 +1,100 @@
+body {
+  transition: background 0.5s ease, color 0.5s ease;
+}
+
+
+.theme-toggle-container {
+    position: fixed !important;
+    top: 90px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.theme-toggle {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: relative;
+    display: inline-block;
+    width: 56px;
+    height: 30px;
+    background: linear-gradient(145deg, #d1d9e6, #ffffff);
+    border-radius: 50px;
+    box-shadow: inset -2px -2px 5px #ffffff, inset 2px 2px 5px #c8d0e7;
+    transition: all 0.4s ease;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.slider::before {
+    content: "";
+    position: absolute;
+    height: 26px;
+    width: 26px;
+    left: 2px;
+    top: 2px;
+    background: radial-gradient(circle at 30% 30%, #ffffff, #dfe4f1);
+    border-radius: 50%;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2),
+                inset -1px -1px 2px #dad9de,
+                inset 1px 1px 2px #bec8e4;
+    transition: transform 0.4s ease, background 0.6s ease;
+}
+
+/* Toggle ON styles */
+.theme-toggle:checked + .slider {
+    background: linear-gradient(145deg, #4f8ef7, #1c62f2);
+    box-shadow: inset -2px -2px 5px #6fa5ff, inset 2px 2px 5px #164bd8;
+}
+
+.theme-toggle:checked + .slider::before {
+    transform: translateX(26px);
+    background: radial-gradient(circle at 30% 30%, #eaf1ff, #c0d3ff);
+}
+
+/* 🌌 Space theme toggle styles */
+.space-theme .slider {
+    background: linear-gradient(145deg, #1c1c1c, #000000);
+    box-shadow: inset -2px -2px 5px #111, inset 2px 2px 5px #222;
+}
+
+.space-theme .theme-toggle:checked + .slider {
+    background: linear-gradient(145deg, #222831, #0f0f0f);
+    box-shadow: inset -2px -2px 5px #3a3a3a, inset 2px 2px 5px #1a1a1a;
+}
+
+.space-theme .slider::before {
+    background: radial-gradient(circle at 30% 30%, #888, #2c2c2c);
+    box-shadow: 0 0 4px #00ffff88, 0 0 8px #00ffff44;
+}
+
+.space-theme .theme-toggle:checked + .slider::before {
+    transform: translateX(26px);
+    background: radial-gradient(circle at 30% 30%, #00ffff, #0d6efd);
+    box-shadow: 0 0 6px #00ffffaa, 0 0 12px #0d6efd;
+}
+
+.space-theme .slider::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 10px;
+    width: 60%;
+    height: 6px;
+    background: rgba(0, 255, 255, 0.2);
+    border-radius: 10px;
+    filter: blur(3px);
+    pointer-events: none;
+}
+
+#stars {
+  transition: opacity 0.8s ease;
+}
+
+.space-theme #stars {
+  opacity: 1;
+}
+

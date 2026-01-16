@@ -1,0 +1,694 @@
+/* changelist_modify.css - Compact Admin Form Styling (Add/Edit) */
+/* ============================================================= */
+/* BASE & RESET */
+.admin-custom-page {
+  padding: 2rem 1rem;
+  background: #f8f9fc;
+  min-height: calc(100vh - 200px);
+  color: #2c3e50;
+  box-sizing: border-box;
+}
+.admin-custom-page * { box-sizing: border-box; }
+
+/* CARD */
+.admin-custom-card {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: #fff;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+.admin-custom-card:hover { box-shadow: 0 12px 35px rgba(0,0,0,0.1); }
+
+/* HEADER */
+.admin-custom-header {
+  background: linear-gradient(135deg, #736ff6, #12101d);
+  color: #fff;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+.admin-custom-header a {
+  color: #fff !important;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: opacity 0.2s;
+}
+.admin-custom-header a:hover { opacity: 0.8; }
+.admin-custom-header a span { font-size: 0.9rem; }
+.admin-custom-header h3, .admin-custom-header h5 {
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin: 0;
+  flex-grow: 1;
+  text-align: center;
+}
+
+/* MESSAGES */
+.messages, .custom-messages { margin: 1rem 0; padding: 0; list-style: none; }
+.messages > div, .custom-messages li {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  border-left: 4px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.messages .text-success, .custom-messages li.success {
+  background: #e8fdf5; color: #2f9d62; border-left-color: #28a745;
+}
+.messages .text-danger, .custom-messages li.error {
+  background: #fde8e8; color: #c53030; border-left-color: #dc3545;
+}
+.messages .warning-text, .custom-messages li.warning {
+  background: #fff3cd; color: #856404; border-left-color: #ffc107;
+}
+.messages .text-info, .custom-messages li.info {
+  background: #e3f2fd; color: #1976d2; border-left-color: #2196f3;
+}
+
+/* FORM SECTION & LAYOUT */
+.form-section { padding: 1.5rem; }
+.row { 
+  display: flex; 
+  flex-wrap: wrap; 
+  margin: 0 -0.75rem; 
+  gap: 1rem; /* Reduced from g-4 (1.5rem) for tighter vertical spacing */
+}
+.col-md-6 {
+  padding: 0 0.75rem;
+  /* Removed margin-bottom to avoid double-spacing with row gap */
+  flex: 1 1 50%; 
+  max-width: 50%;
+}
+@media (max-width: 768px) { 
+  .col-md-6 { 
+    flex: 1 1 100%; 
+    max-width: 100%; 
+  } 
+}
+
+/* FORM GROUPS */
+.form-group {
+  background: #fafbff;
+  border: 1px solid #edf0f7;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0.5rem; /* Reduced from 1rem for compact vertical flow */
+  transition: all 0.2s ease;
+}
+.form-group:hover {
+  border-color: #cfe3ff;
+  background: #f5f9ff;
+  transform: translateY(-1px);
+}
+.form-label {
+  color: #2c3e50 !important;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem; /* Reduced from 0.5rem for tighter label spacing */
+  display: block;
+}
+
+/* FORM CONTROLS */
+.form-control, .form-select, textarea.form-control,
+.admin-custom-page input, .admin-custom-page textarea, .admin-custom-page select,
+.vTextField, .vLargeTextField, .vIntegerField {
+  height: 40px;
+  padding: 0.25rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #e3e6f0;
+  border-radius: 10px;
+  width: 100%;
+  background: #fff;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.form-control:focus, .form-select:focus, textarea.form-control:focus,
+.admin-custom-page input:focus, .admin-custom-page textarea:focus, .admin-custom-page select:focus {
+  border-color: #1d2324 !important;
+  outline: 0;
+  box-shadow: 0 0 0 0.2rem rgba(0,212,255,0.25) !important;
+}
+.form-control::placeholder, .admin-custom-page input::placeholder { color: #adb5bd; }
+.form-text {
+  font-size: 0.875rem;
+  color: #6c757d;
+  margin-top: 0.25rem;
+  display: block;
+}
+.admin-custom-page option { background: white; color: #495057; }
+
+/* SELECT2 */
+.select2-container--default .select2-selection--single {
+  height: 40px !important;
+  border-radius: 10px !important;
+  border: 1px solid #ccc !important;
+  padding: 0.25rem 1rem !important;
+}
+.select2-container--default .select2-selection__rendered { line-height: 36px; color: #495057; }
+.select2-container--default .select2-selection__arrow { height: 40px !important; }
+
+/* READONLY */
+.readonly-field .form-control-plaintext, .form-control-static, .form-control-plaintext {
+  background: #f8f9fa !important;
+  border: 1px solid #dee2e6 !important;
+  color: #495057 !important;
+  font-weight: 500;
+  padding: 0.5rem 1rem; /* Reduced padding for tighter readonly fields */
+  border-radius: 10px;
+  display: block;
+  width: 100%;
+}
+
+/* FOOTER */
+.admin-form-footer {
+  border-top: 1px solid #e5e8f0;
+  padding: 1rem 1.5rem;
+  background: #f9fafc;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* BUTTONS */
+.btn {
+  height: 42px;
+  padding: 0 24px;
+  font-weight: 600;
+  border-radius: 12px;
+  border: none !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  font-family: 'Roboto', sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+}
+.admin-form-footer .btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+}
+.admin-form-footer .btn-primary:hover {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+}
+/* .admin-form-footer .btn-cancel {
+  background: linear-gradient(135deg, #a1a5b7 0%, #f4e1c8 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+} */
+.admin-form-footer .btn-cancel  {
+  background: #fbcfb9f7 !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+  color: #1d1209 !important;
+  box-shadow: 0 10px 25px rgba(249, 41, 41, 0.1) !important;
+}
+
+.admin-form-footer .btn-cancel:hover { 
+  background: #f69f74f7 !important;
+  border-color: rgba(255,255,255,0.5) !important;
+  color: #1d1209 !important;
+  box-shadow: 0 12px 28px rgba(255,255,255,0.2) !important;
+}
+
+/* .admin-form-footer .btn-cancel:hover { box-shadow: 0 12px 28px rgba(253, 172, 106, 0.2); } */
+.admin-form-footer .btn-danger {
+  background: linear-gradient(135deg, #e63946 0%, #d62828 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 12px 30px rgba(255,61,61,0.3);
+}
+.admin-form-footer .btn-danger:hover { box-shadow: 0 12px 32px rgba(255,61,61,0.35); }
+
+/* ALERTS */
+.alert {
+  border-radius: 10px;
+  border: none;
+  font-weight: 500;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.alert-danger { background: #fee2e2; color: #dc2626; border-left: 4px solid #dc2626; }
+.text-danger { color: #dc3545 !important; font-size: 0.875rem; }
+.border-left-danger { border-left: 4px solid #dc2626; }
+
+/* DELETE MODAL */
+#deleteModal .modal-content {
+  border-radius: 12px;
+  border: none;
+  box-shadow: 0 0 30px rgba(0,0,0,0.3);
+}
+#deleteModal .modal-header { background: #dc3545; color: #fff; border-bottom: none; }
+#deleteModal .modal-body { padding: 1.25rem; color: #495057; }
+#deleteModal .modal-footer {
+  border-top: 1px solid #dee2e6;
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+/* --------------------------------------------------------------
+   SINGLE-LINE FIELD LAYOUT
+   -------------------------------------------------------------- */
+/* ============================================================= */
+/*  SINGLE-LINE FIELD – ALL INPUTS SAME FIXED WIDTH               */
+/* ============================================================= */
+
+.form-group .single-line-field {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+/* ---------- LABEL ---------- */
+.form-group .single-line-field .form-label {
+  margin: 0;
+  min-width: 140px;          /* label width – change if you need more */
+  max-width: 140px;
+  flex-shrink: 0;
+  font-weight: 600;
+  text-align: left;
+}
+
+/* ---------- INPUT WRAPPER (input / select / readonly) ---------- */
+.form-group .single-line-field .field-wrapper {
+  flex: 0 0 400px;           /* ← FIXED WIDTH FOR THE WHOLE FIELD */
+  max-width: 500px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+/* ----- FORCE EVERY CHILD TO BE THE SAME WIDTH ----- */
+.form-group .single-line-field .field-wrapper > :first-child,
+/* normal inputs & textareas */
+.form-group .single-line-field .field-wrapper input,
+.form-group .single-line-field .field-wrapper textarea,
+/* normal selects */
+.form-group .single-line-field .field-wrapper select,
+/* Select2 container */
+.form-group .single-line-field .field-wrapper .select2-container,
+/* readonly plaintext */
+.form-group .single-line-field .field-wrapper .form-control-plaintext {
+  flex: 0 0 100% !important;   /* take the full wrapper width */
+  max-width: 100% !important;
+  min-width: 0 !important;
+  width: 100% !important;
+}
+
+/* --------------------------------------------------------------
+   ALL FORM LABELS – CAPITALIZED (Title Case)
+   -------------------------------------------------------------- */
+.form-label {
+  text-transform: capitalize !important;
+}
+
+/* Ensure it works even if Django adds spans or other elements */
+.form-label span,
+.form-label * {
+  text-transform: capitalize !important;
+}
+
+/* Ensure it works even if Django adds extra spans */
+.form-group .single-line-field .form-label span {
+  text-transform: capitalize;
+}
+
+/* ---------- LEFT-ALIGN VALUES IN ALL FIELDS ---------- */
+.form-group .single-line-field .field-wrapper input,
+.form-group .single-line-field .field-wrapper select,
+.form-group .single-line-field .field-wrapper .form-control-plaintext,
+.form-group .single-line-field .field-wrapper .select2-selection {
+  text-align: left !important;
+  padding-left: 12px !important;
+}
+
+/* Optional: consistent height for Select2 */
+.form-group .single-line-field .field-wrapper .select2-container--default .select2-selection--single {
+  height: 40px !important;
+  padding-left: 12px !important;
+  text-align: left !important;
+}
+
+/* ----- SELECT2 SPECIFIC (still 100% of wrapper) ----- */
+.form-group .single-line-field .field-wrapper .select2-container--default .select2-selection--single {
+  height: 40px !important;
+  border-radius: 10px !important;
+  border: 1px solid #ccc !important;
+}
+
+/* --------------------------------------------------------------
+   CHECKBOXES – SMALL, INLINE, SAME WIDTH AS INPUTS
+   -------------------------------------------------------------- */
+.form-group .single-line-field .field-wrapper input[type="checkbox"] {
+  width: 20px !important;          /* small checkbox */
+  height: 20px !important;
+  margin: 0 !important;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+/* Optional: add a label-like "Yes/No" text after checkbox */
+.form-group .single-line-field .field-wrapper .checkbox-label {
+  margin-left: 8px;
+  font-size: 0.9rem;
+  color: #495057;
+  white-space: nowrap;
+}
+
+/* ----- HELP TEXT (inline) ----- */
+.form-group .single-line-field .field-wrapper .form-text {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: #6c757d;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 450px;
+}
+
+/* ----- ERRORS (below the row) ----- */
+.form-group .single-line-field .text-danger {
+  width: 100%;
+  font-size: 0.8rem;
+  margin-top: 0.15rem;
+}
+
+/* ---------- RESPONSIVE (stack on small screens) ---------- */
+@media (max-width: 992px) {
+  .form-group .single-line-field {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .form-group .single-line-field .form-label {
+    min-width: auto;
+    max-width: none;
+    text-align: left;
+  }
+  .form-group .single-line-field .field-wrapper {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+/* --------------------------------------------------------------
+   HEADER LINK (NORMAL THEME)
+-------------------------------------------------------------- */
+.admin-custom-header .header-links a,
+.admin-custom-header .header-links a i {
+    color: #f6f9ff !important;
+    font-size: 0.80rem !important;
+}
+
+.admin-custom-header .header-links a i {
+    font-size: 0.95rem !important;
+}
+
+.admin-custom-header .header-title {
+    color: #f6f9ff !important;
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+}
+
+/* --------------------------------------------------------------
+   HEADER LINK (SPACE THEME)
+-------------------------------------------------------------- */
+
+body.space-theme .admin-custom-header .header-links a,
+body.space-theme .admin-custom-header .header-links a i {
+    color: #1e2143 !important;
+    font-size: 0.90rem !important;
+}
+
+body.space-theme .admin-custom-header .header-links a i {
+    font-size: 0.95rem !important;
+}
+
+body.space-theme .admin-custom-header .header-title {
+    color: #1e2143 !important;
+    font-size: 1.25rem !important;
+    font-weight: 600 !important;
+}
+
+/* -------------------------------------------------------------- */
+
+body.space-theme .admin-custom-page {
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%) !important;
+  color: #e0f7ff !important;
+}
+body.space-theme .admin-custom-card {
+  background: rgba(0,0,0,0.7) !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+  box-shadow: 0 10px 30px rgba(0,212,255,0.1) !important;
+}
+body.space-theme .admin-custom-card:hover { box-shadow: 0 12px 35px rgba(0,212,255,0.15) !important; }
+
+/* HEADER (GRADIENT LIKE SAVE/APPLY) */
+body.space-theme .admin-custom-header, body.space-theme .admin-custom-header.d-flex {
+  background: linear-gradient(135deg, #00d4ff, #0099cc) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.3) !important;
+  color: #000 !important;
+}
+body.space-theme .admin-custom-header a { color: #000 !important; }
+body.space-theme .admin-custom-header a:hover { color: #333 !important; }
+body.space-theme .admin-custom-header a span { font-size: 0.9rem; }
+body.space-theme .admin-custom-header h3, body.space-theme .admin-custom-header h5 { color: #000 !important; }
+
+/* MESSAGES */
+body.space-theme .messages .text-success, body.space-theme .custom-messages li.success {
+  background: rgba(46,204,113,0.2) !important;
+  color: #b9fbc0 !important;
+  border-left-color: rgba(46,204,113,0.5) !important;
+}
+body.space-theme .messages .text-danger, body.space-theme .custom-messages li.error {
+  background: rgba(255,107,107,0.2) !important;
+  color: #ffdede !important;
+  border-left-color: rgba(255,107,107,0.5) !important;
+}
+body.space-theme .messages .warning-text, body.space-theme .custom-messages li.warning {
+  background: rgba(255,243,205,0.2) !important;
+  color: #fff3cd !important;
+  border-left-color: rgba(255,243,205,0.5) !important;
+}
+body.space-theme .messages .text-info, body.space-theme .custom-messages li.info {
+  background: rgba(59,130,246,0.2) !important;
+  color: #bfdbfe !important;
+  border-left-color: rgba(59,130,246,0.5) !important;
+}
+
+/* FORM SECTION & GROUPS */
+body.space-theme .form-section { background: transparent !important; }
+body.space-theme .form-group {
+  background: transparent !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+}
+body.space-theme .form-group:hover {
+  border-color: rgba(0,212,255,0.3) !important;
+  background: rgba(255,255,255,0.05) !important;
+  box-shadow: 0 0 10px rgba(0,212,255,0.1) !important;
+  transform: translateY(-1px);
+}
+body.space-theme .form-label { color: #e0f7ff !important; }
+
+/* FORM CONTROLS */
+body.space-theme .form-control, body.space-theme .form-select, body.space-theme textarea.form-control,
+body.space-theme .admin-custom-page input, body.space-theme .admin-custom-page textarea, body.space-theme .admin-custom-page select,
+body.space-theme .vTextField, body.space-theme .vLargeTextField, body.space-theme .vIntegerField {
+  background: transparent !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+  color: #e0f7ff !important;
+}
+body.space-theme .form-control::placeholder, body.space-theme .admin-custom-page input::placeholder { color: rgba(255,255,255,0.6) !important; }
+body.space-theme .form-control:focus, body.space-theme .form-select:focus, body.space-theme textarea.form-control:focus,
+body.space-theme .admin-custom-page input:focus, body.space-theme .admin-custom-page textarea:focus, body.space-theme .admin-custom-page select:focus {
+  border-color: #00d4ff !important;
+  box-shadow: 0 0 0 0.2rem rgba(0,212,255,0.25) !important;
+  background: transparent !important;
+}
+body.space-theme .form-text { color: rgba(255,255,255,0.7) !important; }
+body.space-theme .admin-custom-page option { background: #1e3c5a !important; color: #e0f7ff !important; }
+
+/* SELECT2 */
+body.space-theme .select2-container--default .select2-selection--single {
+  background: transparent !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+}
+body.space-theme .select2-container--default .select2-selection__rendered { color: #e0f7ff !important; }
+body.space-theme .select2-container--default .select2-selection__arrow b { border-color: #e0f7ff transparent transparent transparent !important; }
+body.space-theme .select2-container--open .select2-dropdown {
+  background: #1e3c5a !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+}
+body.space-theme .select2-container--open .select2-results__option { color: #e0f7ff !important; }
+body.space-theme .select2-container--open .select2-results__option--highlighted {
+  background: rgba(0,212,255,0.2) !important;
+  color: #ffffff !important;
+}
+
+/* READONLY */
+body.space-theme .readonly-field .form-control-plaintext, body.space-theme .form-control-static, body.space-theme .form-control-plaintext {
+  background: rgba(255,255,255,0.05) !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+  color: #e0f7ff !important;
+}
+
+/* FOOTER */
+body.space-theme .admin-form-footer {
+  border-top: 1px solid rgba(255,255,255,0.2) !important;
+  background: rgba(0,0,0,0.2) !important;    
+}
+
+/* BUTTONS */
+body.space-theme .admin-form-footer .btn-primary {
+  background: linear-gradient(135deg, #00d4ff, #0099cc) !important;
+  box-shadow: 0 12px 30px rgba(0,212,255,0.3) !important;
+  color: #000 !important;
+}
+body.space-theme .admin-form-footer .btn-primary:hover {
+  box-shadow: 0 12px 30px rgba(0,212,255,0.4) !important;
+  background: linear-gradient(135deg, #00b8e6, #007acc) !important;
+}
+body.space-theme .admin-form-footer .btn-cancel {
+  background: #1b1513f7 !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+  color: #5f5d5c !important;
+  box-shadow: 0 10px 25px rgba(255,255,255,0.1) !important;
+}
+body.space-theme .admin-form-footer .btn-cancel:hover {
+  background: rgba(255,255,255,0.2) !important;
+  border-color: rgba(255,255,255,0.5) !important;
+  color: #ffffff !important;
+  box-shadow: 0 12px 28px rgba(255,255,255,0.2) !important;
+}
+body.space-theme .admin-form-footer .btn-danger {
+  background: linear-gradient(135deg, #ff6b6b, #ff4c4c) !important;
+  box-shadow: 0 12px 30px rgba(255,107,107,0.3) !important;
+  color: #000 !important;
+}
+body.space-theme .admin-form-footer .btn-danger:hover {
+  box-shadow: 0 12px 32px rgba(255,107,107,0.35) !important;
+  background: linear-gradient(135deg, #ff5252, #ff3838) !important;
+}
+
+/* ALERTS */
+body.space-theme .alert-danger {
+  background: rgba(239,68,68,0.2) !important;
+  color: #fecaca !important;
+  border: 1px solid rgba(239,68,68,0.3) !important;
+  border-left: 4px solid rgba(239,68,68,0.5) !important;
+}
+body.space-theme .text-danger { color: #ff6b6b !important; }
+
+/* DELETE MODAL */
+body.space-theme #deleteModal .modal-content {
+  background: rgba(0,0,0,0.8) !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+  color: #e0f7ff !important;
+}
+body.space-theme #deleteModal .modal-header {
+  background: #ff6b6b !important;
+  border-bottom: 1px solid rgba(255,255,255,0.3) !important;
+  color: #000 !important;
+}
+body.space-theme #deleteModal .modal-body { color: #b5b3b3 !important; }
+body.space-theme #deleteModal .modal-body p.text-danger { color: #ffdede !important; }
+body.space-theme #deleteModal .modal-footer {
+  border-top: 1px solid rgba(255,255,255,0.3) !important;
+  background: rgba(0,0,0,0.2) !important;
+}
+body.space-theme #deleteModal .btn-outline-secondary {
+  background: rgba(255,255,255,0.1) !important;
+  border: 1px solid rgba(255,255,255,0.3) !important;
+  color: #e0f7ff !important;
+}
+body.space-theme #deleteModal .btn-outline-secondary:hover {
+  background: rgba(0,212,255,0.2) !important;
+  color: #fff !important;
+}
+body.space-theme #deleteModal .btn-danger { background: #ff6b6b !important; color: #000 !important; }
+body.space-theme #deleteModal .btn-danger:hover { background: #ff4c4c !important; }
+
+
+/* CHANGELIST MODIFY TABLE */
+#historyCollapse .hover-bg-light:hover { background-color: #f8f9fa !important; }
+#historyCollapse [data-bs-toggle].collapsed .fa-chevron-down { transform: rotate(-90deg); }
+.transition-transform { transition: transform .2s; }
+.hover-opacity-100 { transition: opacity .2s; }
+.hover-opacity-100:hover { opacity: 1 !important; }
+
+/* ============================================================= */
+/* CHANGE HISTORY – SPACE THEME (Clean & Final)                */
+/* ============================================================= */
+body.space-theme #historyCollapse .border {
+    border: 1px solid rgba(255,255,255,0.15) !important;
+    background: rgba(255,255,255,0.04) !important;
+    backdrop-filter: blur(12px);
+    border-radius: 12px;
+    text-align: left;
+}
+
+body.space-theme #historyCollapse > div > div { /* each row */
+    border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+    transition: background 0.25s ease;
+}
+
+body.space-theme #historyCollapse .hover-bg-light:hover {
+    background: rgba(0,212,255,0.12) !important;
+}
+
+/* Header */
+body.space-theme #historyCollapse h5.clickable-header { color: #a5f3fc !important; }
+body.space-theme #historyCollapse .clickable-header i { color: #67e8f9 !important; }
+
+/* Time, User, Icons – all bright and visible */
+body.space-theme #historyCollapse .text-muted,
+body.space-theme #historyCollapse .text-muted i,
+body.space-theme #historyCollapse strong,
+body.space-theme #historyCollapse .small,
+body.space-theme #historyCollapse .far {
+    color: #e0f7ff !important;
+}
+
+/* Field badge */
+body.space-theme #historyCollapse .badge {
+    background: rgba(0,212,255,0.25) !important;
+    color: #67e8f9 !important;
+    border: 1px solid rgba(0,212,255,0.4) !important;
+}
+
+/* Change values */
+body.space-theme #historyCollapse del { color: #fca5a5 !important; }
+body.space-theme #historyCollapse .text-success,
+body.space-theme #historyCollapse .text-success fw-bold { color: #94f9b0 !important; }
+
+/* Arrow */
+body.space-theme #historyCollapse .text-muted.mx-1 { color: #94a3b8 !important; }
+
+/* Empty state */
+body.space-theme #historyCollapse .text-center.text-muted { color: #94a3b8 !important; }
+body.space-theme #historyCollapse .text-center i { color: #475569 !important; opacity: 0.5; }
+
+/* Optional Revert button (kept minimal) */
+body.space-theme #historyCollapse .btn-outline-secondary {
+    border-color: rgba(255,255,255,0.25) !important;
+    color: #cbd5e1 !important;
+    font-size: 0.75rem;
+}
+body.space-theme #historyCollapse .btn-outline-secondary:hover {
+    background: rgba(0,212,255,0.25) !important;
+    color: #fff !important;
+    border-color: #00d4ff !important;
+}

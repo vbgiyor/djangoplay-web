@@ -1,0 +1,573 @@
+/* --- SELECT2 --- */
+.select2-container--default .select2-selection--single {
+    height: 42px !important;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    position: relative;
+    z-index: 901; /* Ensure input is clickable */
+}
+.select2-container--default .select2-selection__rendered {
+    line-height: 28px;
+}
+.space-theme .select2-container--default .select2-selection--single {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #e0f7ff !important;
+}
+.space-theme .select2-container--default .select2-selection__rendered {
+    color: #e0f7ff !important;
+}
+.space-theme .select2-container--default .select2-selection__arrow b {
+    border-color: #e0f7ff transparent transparent transparent !important;
+}
+.space-theme .select2-container--open .select2-dropdown {
+    background: #1e3c5a !important; /* Dark blue for dropdown */
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    z-index: 9999 !important; /* High z-index for dropdown menu */
+}
+.space-theme .select2-container--open .select2-results__option {
+    color: #e0f7ff !important;
+}
+.space-theme .select2-container--open .select2-results__option--highlighted {
+    background: rgba(0, 212, 255, 0.2) !important; /* Cyan highlight */
+    color: #ffffff !important;
+}
+
+/* Index Page Heading */
+h1.welcome-title {
+    font-family: 'Aoboshi One', sans-serif !important;
+    font-weight: 400 !important;
+    color: #1a1a1a !important;
+    letter-spacing: .3px;
+    margin: 0 0 8px 0 !important;
+    font-size: 1.5rem;
+}
+.space-theme h1.welcome-title {
+    color: #00d4ff !important; /* Brighter cyan for space theme */
+}
+
+/* Pagination */
+.admin-custom-pagination {
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    background: #f8f9fc;
+    border: 1px solid #e3e6f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    font-size: 14px;
+}
+.space-theme .admin-custom-pagination {
+    background: rgba(0, 0, 0, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #e0f7ff !important;
+}
+.admin-custom-pagination .disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+.space-theme .admin-custom-pagination .disabled {
+    opacity: 0.3 !important;
+}
+.admin-custom-pagination .btn-sm {
+    padding: 0.35rem 0.75rem;
+    font-weight: 600;
+}
+.space-theme .admin-custom-pagination .btn-sm {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #00d4ff !important;
+}
+.space-theme .admin-custom-pagination .btn-sm:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: #80eaff !important;
+}
+.admin-custom-pagination .fw-semibold {
+    min-width: 80px;
+    text-align: center;
+    color: #2c3e50;
+}
+.space-theme .admin-custom-pagination .fw-semibold {
+    color: #e0f7ff !important;
+}
+.admin-custom-table-footer {
+    font-weight: 500;
+    color: #5a6c7d;
+    font-size: 14px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 10px;
+    text-align: right;
+    width: 100%;
+    z-index: 900; /* Below Select2 dropdown */
+}
+.space-theme .admin-custom-table-footer {
+    color: #e0f7ff !important;
+}
+
+/* --- FILTERS & ACTIONS (shared style) --- */
+.admin-custom-filters,
+.admin-custom-actions {
+    background: #f8f9fc;
+    border: 1px solid #e3e6f0;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-top: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    position: relative;
+    z-index: 900; /* Below header */
+}
+.space-theme .admin-custom-filters,
+.space-theme .admin-custom-actions {
+    background: rgba(0, 0, 0, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1) !important;
+}
+/* -------------------------------------------------
+   FILTERS – RIGHT LABELS: NEVER TOUCH EDGE
+   ------------------------------------------------- */
+.admin-custom-filters {
+    position: relative;
+    padding: 1rem 1rem !important;
+    overflow: visible !important;
+    margin-top: 0.1rem !important; /* was 1rem */
+}
+
+.admin-custom-filters::before {
+    content: '';
+    position: absolute;
+    top: 0.75rem;
+    right: 1rem;
+    width: 135px;               /* Reserve space for longest label */
+    height: calc(100% - 1.5rem);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Clear Filters – TOP-RIGHT, never touches edge */
+.filters-clear {
+    position: absolute;
+    top: 0.75rem;
+    right: 1rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    z-index: 10;
+    pointer-events: auto;
+    white-space: nowrap;
+}
+.filters-clear a {
+    color: inherit !important;
+    opacity: 0.75;
+    text-decoration: none !important;   /* Keeps your class */
+}
+
+/* Total – BOTTOM-RIGHT, never touches edge */
+.filters-total {
+    position: absolute;
+    bottom: 0.75rem;
+    right: 1rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    z-index: 10;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+/* FORM – push left content away from right labels */
+.admin-custom-filters > form {
+    padding-right: 140px !important;   /* Must be >= reserved width */
+    padding-top: 1.8rem !important;
+    padding-bottom: 1.8rem !important;
+    box-sizing: border-box;
+}
+
+/* Groups inside filter/action boxes */
+.admin-custom-filters .filter-group,
+.admin-custom-actions .action-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 220px;
+}
+.admin-custom-filters .filter-group label,
+.admin-custom-actions .action-group label {
+    font-weight: 600 !important;
+    color: #2c3e50 !important;
+    font-size: 14px;
+}
+.space-theme .admin-custom-filters .filter-group label,
+.space-theme .admin-custom-actions .action-group label {
+    color: #ffffff !important;
+}
+.admin-custom-filters select,
+.admin-custom-actions select {
+    height: 42px !important;
+    border-radius: 6px;
+    min-width: 220px;
+}
+.space-theme .admin-custom-filters select,
+.space-theme .admin-custom-actions select {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #e0f7ff !important;
+}
+.space-theme .admin-custom-filters select option,
+.space-theme .admin-custom-actions select option {
+    background: #1e3c5a !important;
+    color: #e0f7ff !important;
+}
+
+/* Buttons */
+.admin-custom-filters button,
+.admin-custom-actions button {
+    height: 42px;
+    padding: 0 20px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+.space-theme .admin-custom-filters button {
+    background: #1da1f2 !important;
+    border: 1px solid #1da1f2 !important;
+    color: #ffffff !important;
+}
+.space-theme .admin-custom-filters button:hover,
+.space-theme .admin-custom-actions button:hover {
+    background: #0d8bd9 !important;
+    border-color: #0d8bd9 !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 212, 255, 0.3) !important;
+}
+
+/* ACTIONS */
+.admin-custom-actions {
+    background: #f8f9fc;
+    border: 1px solid #e3e6f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    position: relative;
+    z-index: 900; /* Below header */
+}
+.space-theme .admin-custom-actions {
+    background: rgba(0, 0, 0, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1) !important;
+}
+.admin-custom-actions .action-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+.admin-custom-actions .action-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 240px;
+}
+.admin-custom-actions .action-group label {
+    font-weight: 600 !important;
+    color: #2c3e50 !important;
+    margin-bottom: 6px;
+    font-size: 14px;
+}
+.space-theme .admin-custom-actions .action-group label {
+    color: #ffffff !important;
+}
+.admin-custom-actions select {
+    height: 42px !important;
+    border-radius: 6px;
+    min-width: 220px;
+}
+.space-theme .admin-custom-actions select {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #e0f7ff !important;
+}
+.space-theme .admin-custom-actions select option {
+    background: #1e3c5a !important;
+    color: #e0f7ff !important;
+}
+.admin-custom-actions button {
+    height: 42px;
+    margin-top: 34px;
+    padding: 0 20px;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all .2s;
+}
+.space-theme .admin-custom-actions button {
+    background: #ff6b6b !important;
+    border: 1px solid #ff6b6b !important;
+    color: #ffffff !important;
+}
+.space-theme .admin-custom-actions button:hover {
+    background: #ff4c4c !important;
+    border-color: #ff4c4c !important;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3) !important;
+}
+
+/* --- TABLE --- */
+.admin-custom-table-container {
+    margin-top: 1rem;
+    overflow-x: auto;
+    border-radius: 8px;
+    border: 1px solid #e3e6f0;
+    background: white;
+}
+.space-theme .admin-custom-table-container {
+    background: rgba(0, 0, 0, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+.admin-custom-table-container table {
+    width: 100% !important;
+    table-layout: relative !important;
+    border-collapse: collapse !important;
+}
+
+/* Checkbox Column */
+.admin-custom-table-container .action-checkbox-column {
+    width: 40px !important;
+    text-align: center !important;
+}
+.admin-custom-table-container th.action-checkbox-column,
+.admin-custom-table-container td.action-checkbox-column {
+    width: 40px !important;
+    padding: 8px 0 !important;
+    vertical-align: middle;
+}
+.space-theme .admin-custom-table-container .action-checkbox-column input {
+    border: 1px solid #e0f7ff !important;
+}
+.space-theme .admin-custom-table-container .action-checkbox-column input:checked {
+    background-color: #00d4ff !important;
+    border-color: #00d4ff !important;
+}
+
+/* Header */
+.admin-custom-table-container thead th {
+    background: #4e73df !important;
+    color: white !important;
+    font-weight: 700 !important;
+    font-size: 14px !important;
+    padding: 14px 10px !important;
+    text-align: center !important;
+    border: none !important;
+    white-space: nowrap;
+}
+.space-theme .admin-custom-table-container thead th {
+    background: rgba(15, 30, 45, 0.9) !important;
+    color: #ffffff !important;
+    box-shadow: 0 1px 3px rgba(255, 255, 255, 0.1) !important;
+}
+.admin-custom-table-container thead th a,
+.admin-custom-table-container thead .sorted .sortorder {
+    color: white !important;
+}
+.space-theme .admin-custom-table-container thead th a,
+.space-theme .admin-custom-table-container thead .sorted .sortorder {
+    color: #e0f7ff !important;
+}
+.admin-custom-table-container thead th a:hover {
+    color: #f0f8ff !important;
+    text-decoration: underline !important;
+}
+.space-theme .admin-custom-table-container thead th a:hover {
+    color: #80eaff !important;
+}
+
+/* Body */
+.admin-custom-table-container tbody td {
+    padding: 14px 10px !important;
+    border-bottom: 1px solid #e3e6f0;
+    background: white;
+    text-align: center !important;
+    vertical-align: middle;
+}
+.space-theme .admin-custom-table-container tbody td {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
+    background: transparent !important;
+    color: #b5b3b3 !important; /* Black text in space theme */
+}
+.admin-custom-table-container tbody td:first-child + td + td {
+    text-align: left !important;
+}
+
+/* --- MESSAGES --- */
+.custom-messages {
+    margin: 1rem 2rem 0;
+    padding: 0;
+}
+.custom-messages li {
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+.space-theme .custom-messages .success {
+    background: rgba(46, 204, 113, 0.2) !important;
+    color: #b9fbc0 !important;
+    border: 1px solid rgba(46, 204, 113, 0.5) !important;
+}
+.space-theme .custom-messages .error {
+    background: rgba(255, 107, 107, 0.2) !important;
+    color: #ffdede !important;
+    border: 1px solid rgba(255, 107, 107, 0.5) !important;
+}
+.space-theme .custom-messages .warning {
+    background: rgba(255, 243, 205, 0.2) !important;
+    color: #fff3cd !important;
+    border: 1px solid rgba(255, 243, 205, 0.5) !important;
+}
+
+/* Clear Filters Link */
+.space-theme .admin-custom-filters a {
+    color: #00d4ff !important;
+}
+.space-theme .admin-custom-filters a:hover {
+    color: #80eaff !important;
+}
+
+/* Toolbar Search */
+.admin-custom-toolbar {
+    margin-bottom: 0.1rem !important; /* was 1.5rem+rem */
+}
+.space-theme .admin-custom-toolbar .form-control {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: #e0f7ff !important;
+}
+.space-theme .admin-custom-toolbar .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+.space-theme .admin-custom-toolbar .btn-outline-primary {
+    border: 1px solid #1da1f2 !important;
+    color: #1da1f2 !important;
+}
+.space-theme .admin-custom-toolbar .btn-outline-primary:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #80eaff !important;
+}
+
+/* Header Add Button */
+.space-theme .admin-custom-header .btn-success {
+    background: #1da1f2 !important;
+    border: 1px solid #1da1f2 !important;
+    color: #ffffff !important;
+}
+.space-theme .admin-custom-header .btn-success:hover {
+    background: #0d8bd9 !important;
+    border-color: #0d8bd9 !important;
+}
+
+/* FULL-WIDTH CONTENT  */
+.admin-custom-changelist,
+.admin-custom-changelist .admin-custom-card {
+    max-width: 1500px !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Remove every possible container restriction */
+.admin-custom-changelist .container,
+.admin-custom-changelist .container-fluid,
+.admin-custom-changelist #content,
+.admin-custom-changelist #container,
+#content-main,
+#content,
+.container,
+.container-fluid {
+    max-width: none !important;
+    width: 100% !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+}
+
+/* Force card and all children to full width */
+.admin-custom-card,
+.admin-custom-card > * {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+/* ——— SPACE THEME – WIDE LAYOUT  ——— */
+.space-theme .admin-custom-changelist,
+.space-theme .admin-custom-changelist .admin-custom-card {
+    max-width: 1500px !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+    box-sizing: border-box !important;
+}
+
+/* Remove container limits in space theme too */
+.space-theme .admin-custom-changelist .container,
+.space-theme .admin-custom-changelist .container-fluid,
+.space-theme .admin-custom-changelist #content,
+.space-theme .admin-custom-changelist #container,
+.space-theme #content-main,
+.space-theme #content,
+.space-theme .container,
+.space-theme .container-fluid {
+    max-width: none !important;
+    width: 100% !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Ensure card children stay full-width */
+.space-theme .admin-custom-card,
+.space-theme .admin-custom-card > * {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+/* Optional: slightly wider on big screens (space theme) */
+@media (min-width: 1700px) {
+    .space-theme .admin-custom-changelist,
+    .space-theme .admin-custom-changelist .admin-custom-card {
+        max-width: 1650px !important;
+        padding-left: 3rem !important;
+        padding-right: 3rem !important;
+    }
+}
+
+/* Collapsible Filters */
+.admin-custom-filters .clickable-header {
+  font-weight: 600;
+  color: #2c3e50;
+  transition: background 0.2s;
+}
+.admin-custom-filters .clickable-header:hover { background-color: rgba(0,0,0,0.05) !important; }
+.admin-custom-filters .clickable-header .fa-chevron-down {
+  transition: transform 0.2s ease;
+}
+.admin-custom-filters .clickable-header.collapsed .fa-chevron-down {
+  transform: rotate(-90deg);
+}
+/* SPACE THEME – COLLAPSIBLE FILTERS (NO BORDERS EXCEPT TOP OF HEADER) */
+.space-theme .admin-custom-filters .clickable-header {
+    background: rgba(0, 212, 255, 0.15) !important;
+    color: #e0f7ff !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 12px 12px 0 0 !important;
+}
+.space-theme .admin-custom-filters .clickable-header:hover {
+    background: rgba(0, 212, 255, 0.25) !important;
+}
+
+.space-theme .admin-custom-filters .collapse > div,
+.space-theme .admin-custom-filters .p-4 {
+    background: rgba(0, 0, 0, 0.7) !important;
+    border: none !important;           /* Removes left, right, bottom borders */
+    border-radius: 0 0 12px 12px !important;
+    box-shadow: 0 8px 25px rgba(0, 212, 255, 0.1);
+}

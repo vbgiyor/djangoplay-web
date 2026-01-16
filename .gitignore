@@ -201,3 +201,12 @@ change-summary.txt
 
 # SSL Certicates for local
 .certs
+
+#venv
+.djpenv
+djpenv
+
+#encryption
+.env
+.env.env.bak
+.env.bak

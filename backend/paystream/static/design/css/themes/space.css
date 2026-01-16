@@ -1,0 +1,343 @@
+.space-theme {
+    background: #000 !important; /* Pure black for deep space */
+}
+
+.space-theme #stars {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+#stars {
+    display: none;
+}
+
+.space-theme header,
+.space-theme .header-container {
+    background: rgba(0, 0, 0, 0.7) !important; /* Glassy dark overlay */
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1) !important;
+    color: #e0f7ff !important; /* Soft cyan for header text */
+}
+
+.space-theme .header-container .primary-text,
+.space-theme .header-container .text-link {
+    color: #00d4ff !important; /* Brighter cyan for links */
+}
+
+.space-theme .header-container .primary-text:hover,
+.space-theme .header-container .text-link:hover {
+    color: #80eaff !important; /* Lighter cyan on hover */
+    text-decoration: underline;
+}
+
+.space-theme .footer-container {
+    background: rgba(0, 0, 0, 0.7) !important;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1) !important;
+    color: #e0f7ff !important; /* Soft cyan for footer text */
+    padding: 1rem;
+    border-radius: 10px;
+}
+
+.space-theme .footer-container a,
+.space-theme .footer-container i {
+    color: #00d4ff !important; /* Brighter cyan for footer links/icons */
+}
+
+.space-theme .footer-container a:hover {
+    color: #80eaff !important; /* Lighter cyan on hover */
+}
+
+.space-theme .login-container {
+    background: rgba(0, 0, 0, 0.7) !important;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1) !important;
+    border-radius: 10px;
+    padding: 2rem;
+    color: #e0f7ff !important; /* Soft cyan for general text in login container */
+}
+
+.space-theme .login-container .card {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important; /* Override common.css padding */
+}
+
+.space-theme .login-container .tab-content,
+.space-theme .login-container .tab-pane {
+    background: transparent !important;
+    border-radius: 0 !important;
+}
+
+.space-theme .login-container h2,
+.space-theme .login-container .form-label,
+.space-theme .login-container .form-check-label,
+.space-theme .login-container .social-login-label {
+    color: #ffffff !important; /* Pure white for headings and labels for strong contrast */
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+}
+
+.space-theme .login-container .nav-link,
+.space-theme .login-container .text-link {
+    color: #00d4ff !important; /* Brighter cyan for navigation and text links */
+}
+
+.space-theme .login-container .nav-link:hover,
+.space-theme .login-container .text-link:hover {
+    color: #80eaff !important; /* Lighter cyan on hover */
+}
+
+.space-theme .login-container .error-message {
+    color: #ff6b6b !important; /* Soft red for error messages */
+}
+
+.space-theme .login-container .form-control {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #e0f7ff !important; /* Soft cyan for input text */
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 5px !important;
+    padding: 0.75rem !important;
+    font-size: 1rem !important;
+}
+
+.space-theme .login-container .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.7) !important; /* Light grayish-white for placeholders */
+}
+
+.space-theme .login-container .form-control:focus {
+    border-color: #00d4ff !important; /* Brighter cyan on focus */
+    box-shadow: 0 0 5px rgba(0, 212, 255, 0.5) !important;
+    outline: none !important;
+}
+
+.space-theme .login-container .btn-primary {
+    background: #1da1f2 !important;
+    border-color: #1da1f2 !important;
+    border-radius: 5px !important;
+    padding: 0.75rem !important;
+    font-size: 1rem !important;
+    color: #ffffff !important; /* White text for buttons */
+}
+
+.space-theme .login-container .btn-primary:hover {
+    background: #0d8bd9 !important;
+    border-color: #0d8bd9 !important;
+}
+
+.space-theme .login-container .btn-danger,
+.space-theme .login-container .google-btn {
+    background: #ff6b6b !important; /* Soft red for danger/Google buttons */
+    border-color: #ff6b6b !important;
+    border-radius: 5px !important;
+    padding: 0.75rem !important;
+    font-size: 1rem !important;
+    color: #ffffff !important; /* White text */
+}
+
+.space-theme .login-container .btn-danger:hover,
+.space-theme .login-container .google-btn:hover {
+    background: #ff4c4c !important; /* Slightly darker red on hover */
+    border-color: #ff4c4c !important;
+}
+
+.space-theme .login-container .nav-tabs {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3) !important;
+    background: transparent !important;
+}
+
+.space-theme .login-container .nav-tabs .nav-link {
+    color: #e0f7ff !important; /* Soft cyan for nav links */
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    border-radius: 5px 5px 0 0 !important;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+}
+
+.space-theme .login-container .nav-tabs .nav-link:hover {
+    border-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.3) transparent !important;
+    color: #80eaff !important; /* Lighter cyan on hover */
+}
+
+.space-theme .login-container .nav-tabs .nav-link.active {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.3) transparent !important;
+    color: #ffffff !important; /* White for active nav link */
+}
+
+/* Keep tabs on a single line in space theme */
+.space-theme .login-container .nav-tabs {
+    flex-wrap: nowrap !important;
+}
+
+/* Prevent tab labels from breaking into multiple lines */
+.space-theme .login-container .nav-tabs .nav-item {
+    white-space: nowrap;
+}
+
+
+.space-theme .login-container .form-check-input {
+    background-color: transparent !important;
+    border: 1px solid #e0f7ff !important; /* Soft cyan border */
+}
+
+.space-theme .login-container .form-check-input:checked {
+    background-color: #00d4ff !important; /* Brighter cyan when checked */
+    border-color: #00d4ff !important;
+}
+
+.space-theme .login-container .alert-success {
+    background: rgba(46, 204, 113, 0.2) !important; /* Green-tinted background */
+    border: 1px solid rgba(46, 204, 113, 0.5) !important;
+    color: #b9fbc0 !important; /* Light green for success messages */
+    border-radius: 5px !important;
+}
+
+.space-theme .login-container .alert-danger {
+    background: rgba(255, 107, 107, 0.2) !important; /* Red-tinted background */
+    border: 1px solid rgba(255, 107, 107, 0.5) !important;
+    color: #ffdede !important; /* Light red for error messages */
+    border-radius: 5px !important;
+}
+
+.space-theme .login-container .alert-info {
+    background: rgba(0, 212, 255, 0.2) !important; /* Cyan-tinted background */
+    border: 1px solid rgba(0, 212, 255, 0.5) !important;
+    color: #b3efff !important; /* Light cyan for info messages */
+    border-radius: 5px !important;
+}
+
+.space-theme .container {
+    color: #e0f7ff !important; /* Soft cyan for general container text */
+}
+
+.space-theme .container .welcome-title {
+    color: #3691a5 !important; /* Brighter cyan for welcome title */
+    margin-bottom: 2.5rem !important;
+}
+
+.card .welcome-title {
+    margin-bottom: 40px !important;
+    display: block;
+}
+
+
+.space-theme .container .welcome-name {
+    color: #ffffff !important; /* White for welcome name */
+}
+
+.space-theme .container .card {
+    background: rgba(0, 0, 0, 0.7) !important;
+    color: #e0f7ff !important; /* Soft cyan for card text */
+}
+
+.space-theme .container .card .card-label,
+.space-theme .container .card label {
+    color: #ffffff !important; /* White for card labels */
+}
+
+.space-theme .container .e-card {
+    background: linear-gradient(135deg, rgba(30, 60, 90, 0.7), rgba(15, 30, 45, 0.7)) !important; /* Darker space gradient */
+    color: #e0f7ff !important; /* Soft cyan for e-card text */
+}
+
+.space-theme .container .e-card:hover {
+    background: linear-gradient(135deg, #00d4ff, #1e3c5a) !important; /* Space-themed cyan to dark blue gradient on hover */
+    color: #ffffff !important; /* White text on hover */
+    transform: translateY(-10px) scale(1.02); /* Retain transform from common.css */
+    box-shadow: 0 15px 35px rgba(0, 212, 255, 0.3) !important; /* Cyan-tinted shadow */
+}
+
+.space-theme .container .e-card .card-label {
+    color: #ffffff !important; /* White for e-card labels */
+}
+
+.space-theme .container .e-card .icon {
+    color: #00d4ff !important; /* Brighter cyan for icons */
+}
+
+.space-theme .container .e-card:hover .icon {
+    color: #ffffff !important; /* White on hover */
+}
+
+.space-theme .container .e-card p {
+    color: #b3efff !important; /* Light cyan for e-card paragraph text */
+}
+
+.space-theme .content-wrapper .container .e-card {
+    background: linear-gradient(135deg, rgba(30, 60, 90, 0.7), rgba(15, 30, 45, 0.7)) !important; /* Darker space gradient */
+    color: #e0f7ff !important; /* Soft cyan for e-card text */
+}
+
+.space-theme .content-wrapper .container .e-card:hover {
+    background: linear-gradient(135deg, #00d4ff, #1e3c5a) !important; /* Space-themed cyan to dark blue gradient on hover */
+    color: #ffffff !important; /* White text on hover */
+    transform: translateY(-5px) scale(1.01); /* Retain transform from common.css */
+    box-shadow: 0 8px 20px rgba(0, 212, 255, 0.3) !important; /* Cyan-tinted shadow */
+}
+
+.space-theme .content-wrapper .container .e-card .card-label {
+    color: #ffffff !important; /* White for e-card labels */
+}
+
+.space-theme .content-wrapper .container .e-card .icon {
+    color: #00d4ff !important; /* Brighter cyan for icons */
+}
+
+.space-theme .content-wrapper .container .e-card:hover .icon {
+    color: #ffffff !important; /* White on hover */
+}
+
+.space-theme .container .btn-orange-red {
+    background: linear-gradient(135deg, #1da1f2, #764ba2) !important; /* Space-themed button gradient */
+    color: #ffffff !important; /* White text */
+}
+
+.space-theme .container .btn-orange-red:hover {
+    background: linear-gradient(135deg, #0d8bd9, #5e3b8a) !important; /* Darker gradient on hover */
+}
+
+.space-theme .logout-btn {
+    color: #00d4ff !important; /* Brighter cyan for logout button */
+}
+
+.space-theme .logout-btn:hover {
+    color: #80eaff !important; /* Lighter cyan on hover */
+}
+
+.space-theme .logout-btn .logout-label {
+    color: #ffffff !important; /* White for logout label */
+}
+
+.space-theme .error-container .error-heading {
+    color: #ffffff !important; /* White for error heading */
+}
+
+.space-theme .error-container .error-icon {
+    color: #ff6b6b !important; /* Soft red for error icon */
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+}
+
+@keyframes drift {
+    0% { transform: translateX(0) translateY(0); }
+    100% { transform: translateX(-150px) translateY(50px); }
+}
+
+@keyframes streak {
+    0% { opacity: 0.8; transform: translateX(0) translateY(0) rotate(45deg); }
+    100% { opacity: 0; transform: translateX(-300px) translateY(150px) rotate(45deg); }
+}
+
+@keyframes bright-twinkle {
+    0%, 100% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+}

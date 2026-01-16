@@ -1,0 +1,302 @@
+{% extends "admin/base.html" %}
+{% load i18n admin_urls admin_list static actions compress%}
+
+{% block extrastyle %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="{% static 'design/css/app/admin/changelist_custom.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="admin-custom-changelist">
+    <div class="card admin-custom-card">
+        <!-- HEADER -->
+        <div class="admin-custom-header d-flex justify-content-between align-items-center flex-wrap">
+            <div class="header-links d-flex flex-column" style="text-align:left;">
+                {% if parent_app_url %}
+                    <a href="{% url 'console_dashboard' %}" class="text-decoration-none">
+                        <i class="fas fa-arrow-left"></i>
+                        <small>Dashboard</small>
+                    </a>
+
+                    <a href="{{ parent_app_url }}" class="text-decoration-none">
+                        <i class="fas fa-arrow-left"></i>
+                        {{ app_name }} Board
+                    </a>
+                {% else %}
+                    <a href="{% url 'admin_app_index' %}" class="text-decoration-none">
+                        <i class="fas fa-arrow-left"></i>
+                        Admin Home
+                    </a>
+                {% endif %}
+            </div>
+
+        </div>
+        <!-- Messages -->    
+        {% if messages %}
+            <div class="messages text-center my-3">
+            {% for message in messages %}
+            {% if message.tags == 'warning' %}
+            <div class="warning-text">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>{{ message }}</strong>
+            </div>
+            {% elif message.tags == 'success' %}
+            <div class="text-success fw-semibold">
+                <i class="fas fa-check-circle me-2"></i> {{ message }}
+            </div>
+            {% elif message.tags == 'error' %}
+            <div class="text-danger fw-semibold">
+                <i class="fas fa-times-circle me-2"></i> {{ message }}
+            </div>
+            {% elif message.tags == 'info' %}
+            <div class="text-info fw-semibold">
+                <i class="fas fa-info-circle me-2"></i> {{ message }}
+            </div>
+            {% endif %}
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="admin-custom-header d-flex justify-content-between align-items-center mb-4">
+            <h4 class="mb-0">
+                {{ cl.opts.verbose_name_plural|capfirst }} ({{ cl.result_count }})
+            </h4>
+            <a href="{% url opts|admin_urlname:'add' %}" class="btn btn-success">
+                Add {{ cl.opts.verbose_name }}
+            </a>
+        </div>
+
+        <!-- SEARCH -->
+        <div class="admin-custom-toolbar mb-4">
+            <form method="get" class="d-flex gap-3 align-items-center">
+                <input type="text"
+                       name="q"
+                       value="{{ request.GET.q }}"
+                       class="form-control"
+                       placeholder="Search..."
+                       style="width:280px;">
+                <button type="submit" class="btn btn-outline-primary">Search</button>
+            </form>
+        </div>
+
+        <!-- FILTERS -->
+        {% comment %} <div class="admin-custom-filters">
+
+            <!-- Clear Filters -->
+            <div class="filters-clear">
+                <a href="{% url opts|admin_urlname:'changelist' %}"
+                   class="small text-decoration-none"
+                   title="Clear Filters"
+                   style="color: inherit; opacity: 0.8;">
+                   <i class="fas fa-times-circle"></i>
+                    Clear Filters
+                </a>
+            </div>
+
+            <!-- Filter Form -->
+            <form method="get" class="d-flex align-items-end gap-4 flex-wrap pe-5">
+                {% for key, value in request.GET.items %}
+                    {% if key != 'p' %}
+                        <input type="hidden" name="{{ key }}" value="{{ value }}">
+                    {% endif %}
+                {% endfor %}
+
+                {% for spec in cl.filter_specs %}
+                    {% if spec.lookup_choices %}
+                        <div class="filter-group">
+                            <label>{{ spec.title }}:</label>
+                            <select name="{{ spec.parameter_name }}" class="select2 form-control">
+                                <option value="">
+                                    {% if spec.parameter_name %}                                        
+                                        Select {{ spec.title|lower }}
+                                    {% endif %}
+                                </option>
+                                {% for choice in spec.lookup_choices %}
+                                    {% with val=choice.0 name=choice.1 %}
+                                        <option value="{{ val }}"
+                                            {% if request.GET|dict_get:spec.parameter_name == val|stringformat:"s" %}
+                                                selected
+                                            {% endif %}>
+                                            {{ name }}
+                                        </option>
+                                    {% endwith %}
+                                {% endfor %}
+                            </select>
+                        </div> 
+                    {% endif %}
+                {% endfor %}
+
+                <div class="filter-group">
+                    <button type="submit" class="btn btn-primary px-4 shadow-sm">Apply Filters</button>
+                </div>
+            </form>
+
+            <div class="filters-total">
+                Total: {{ cl.result_count }} results
+            </div>
+
+        </div> {% endcomment %}
+
+\       <div class="admin-custom-filters">
+        <!-- Collapsible Header -->
+        <h6 class="mb-0 clickable-header d-flex align-items-center justify-content-between py-3 px-4 bg-body-tertiary rounded-top"
+            data-bs-toggle="collapse" data-bs-target="#filtersCollapse" style="cursor:pointer; user-select:none;">
+            <span class="d-flex align-items-center gap-2">
+            <i class="fas fa-filter"></i> Filters
+            <span class="badge bg-primary ms-2">{{ cl.filter_specs|length }}</span>
+            </span>
+            <i class="fas fa-chevron-down transition-transform"></i>
+        </h6>
+
+        <!-- Collapsible Content -->
+        <div class="collapse show" id="filtersCollapse">
+            <div class="p-4 border border-top-0 rounded-bottom" style="background:var(--bs-body-bg);">
+            <!-- Clear Filters -->
+            <div class="filters-clear">
+                <a href="{% url opts|admin_urlname:'changelist' %}" class="small text-decoration-none" style="padding-right: 20px;">
+                <i class="fas fa-times-circle"></i> Clear Filters
+                </a>
+            </div>
+
+            <!-- Filter Form -->
+            <form method="get" class="d-flex align-items-end gap-4 flex-wrap pe-5">
+                {% for key, value in request.GET.items %}
+                {% if key != 'p' %}
+                    <input type="hidden" name="{{ key }}" value="{{ value }}">
+                {% endif %}
+                {% endfor %}
+
+                {% for spec in cl.filter_specs %}
+                {% if spec.lookup_choices %}
+                    <div class="filter-group">
+                    <label>{{ spec.title }}:</label>
+                    <select name="{{ spec.parameter_name }}" class="select2 form-control">
+                        <option value="">Select {{ spec.title|lower }}</option>
+                        {% for choice in spec.lookup_choices %}
+                        <option value="{{ choice.0 }}" {% if request.GET|dict_get:spec.parameter_name == choice.0|stringformat:"s" %}selected{% endif %}>
+                            {{ choice.1 }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    </div>
+                {% endif %}
+                {% endfor %}
+
+                <div class="filter-group">
+                <button type="submit" class="btn btn-primary px-4 shadow-sm">Apply Filters</button>
+                </div>
+            </form>
+
+            <div class="filters-total mt-3 mb-3" style="padding-right: 20px;">
+                Total: {{ cl.result_count }} results
+            </div>
+            </div>
+        </div>
+        </div>
+
+        <!-- ACTIONS + TABLE -->
+        <div class="admin-custom-actions">
+            <form action="" method="post" id="changelist-form" novalidate>
+                {% csrf_token %}
+                {% for key, value in request.GET.items %}
+                    {% if key != 'action' and key != 'select_across' %}
+                        <input type="hidden" name="{{ key }}" value="{{ value }}">
+                    {% endif %}
+                {% endfor %}
+
+                <div class="action-row d-flex align-items-center gap-4 my-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <label for="id_action" class="mb-0" style="white-space:nowrap;">Action:</label>
+                        {{ action_form.action }} <!-- this is a <select> -->
+                        <button type="submit" class="btn btn-danger shadow-sm align-self-stretch" 
+                                style="min-width:140px; height:42px; margin:0;">
+                        Apply Action
+                        </button>
+                    </div>
+                </div> 
+
+                <div class="admin-custom-table-container">
+                    {% block result_list %}
+                        {% result_list cl %}
+                    {% endblock %}
+                </div>
+            </form>
+        </div>
+
+        <!-- PAGINATION -->
+        {% block pagination %}
+        {% if cl.paginator.num_pages > 1 %}
+            <div class="admin-custom-pagination mt-4">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-3">
+
+                        {# Previous button #}
+                        {% if cl.page_num > 1 %}
+                            <a href="{{ cl.get_query_string }}" 
+                               data-page="{{ cl.page_num|add:'-1' }}"
+                               class="btn btn-sm btn-outline-secondary pagination-link"
+                               title="Previous Page">
+                                Previous
+                            </a>
+                        {% else %}
+                            <span class="btn btn-sm btn-secondary disabled">Previous</span>
+                        {% endif %}
+
+                        <span class="text-muted fw-semibold">
+                            {{ cl.page_num }} / {{ cl.paginator.num_pages }}
+                        </span>
+
+                        {# Next button #}
+                        {% if cl.page_num < cl.paginator.num_pages %}
+                            <a href="{{ cl.get_query_string }}" 
+                               data-page="{{ cl.page_num|add:'1' }}"
+                               class="btn btn-sm btn-outline-secondary pagination-link"
+                               title="Next Page">
+                                Next
+                            </a>
+                        {% else %}
+                            <span class="btn btn-sm btn-secondary disabled">Next</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% endblock %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block footer_scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+{% compress js %}
+<script src="{% static 'design/js/admin/changelist_custom.js' %}"></script>
+<script src="{% static 'design/js/space.js' %}"></script>
+<script src="{% static 'design/js/file_upload.js' %}"></script>
+{% endcompress %}  
+<script>
+$(function() {
+    // Initialize Select2
+    $('.select2').select2({
+        width: '200px'
+    });
+
+    // Handle pagination clicks
+    $('.pagination-link').on('click', function(e) {
+        e.preventDefault();
+        const page = $(this).data('page');
+        const url = new URL(window.location.href);
+        url.searchParams.set('p', page);
+        window.location.href = url.toString();
+    });
+});
+</script>  
+<audio id="m-sound" src="{% static 'sounds/strings.mp3' %}" preload="auto" loop></audio>
+<button id="bug-report-btn-dashboard" class="bug-report-btn-dashboard" style="position: fixed !important;"
+        data-bs-toggle="modal" data-bs-target="#bug-modal"
+        title="{% trans 'Report Bug' %}">
+    <i class="fas fa-bug"></i>
+</button>
+{% endblock %}

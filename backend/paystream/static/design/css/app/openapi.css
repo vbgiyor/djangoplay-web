@@ -1,0 +1,345 @@
+
+
+/* === FONTS === */
+@font-face {
+    font-family: 'Aoboshi One';
+    src: url('/static/fonts/AoboshiOne-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+.custom-header h2,
+.custom-header p,
+.links-container a,
+body {
+    font-family: Roboto, sans-serif;
+}
+
+/* === SWAGGER UI CUSTOMIZATION === */
+.swagger-ui .info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    text-align: center;
+    padding: 10px 20px;
+    margin-top: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.links-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 30px;
+    font-size: .95em;
+    justify-content: center;
+}
+
+/* === HEADINGS - REGULAR WEIGHT (NOT BOLD) === */
+.redoc-wrap h1,
+.redoc-wrap h2,
+.redoc-wrap h3,
+.redoc-wrap h4,
+.redoc-wrap h5,
+.redoc-wrap h6,
+:where(.swagger-ui .info h4),
+.api-content h1,
+.api-info .api-info__title,
+.api-info h1,
+.api-stats-title h3,
+.recent-activity-title h3,
+.swagger-ui .dashboard-title,
+.swagger-ui .info h3,
+.swagger-ui .info h4.djangoplay-heading,
+.swagger-ui .section-title,
+.swagger-ui h3,
+.top-endpoints-title h3 {
+    font-family: 'Aoboshi One', sans-serif !important;
+    font-weight: 400 !important;
+    color: #1a1a1a !important;
+    letter-spacing: .3px;
+}
+
+/* Specific title sizes */
+.api-stats-title h3,
+.recent-activity-title h3,
+.top-endpoints-title h3 {
+    font-size: 1.75rem !important;
+    margin-bottom: .5rem;
+}
+
+.swagger-ui .info h4.djangoplay-heading {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.swagger-ui .info .welcome-name {
+    margin: 8px 0;
+    font-size: 1rem;
+    color: #333;
+    justify-content: left;
+}
+
+.swagger-ui .info .links-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    width: 100%;
+}
+
+.swagger-ui .info .links-container a.primary-text {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.swagger-ui .info .links-container a.primary-text:hover {
+    text-decoration: underline;
+}
+
+/* === BUTTONS === */
+.custom-white-btn {
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-weight: 500;
+    font-size: .9em;
+    text-decoration: none;
+}
+
+.custom-white-btn:hover {
+    box-shadow: 0 3px 10px rgba(0,0,0,.1);
+    transform: translateY(-1px);
+}
+
+/* === TOPBAR === */
+.swagger-ui .topbar .topbar-wrapper svg { display: none; }
+.swagger-ui .topbar {
+    background-color: #fff !important;
+    color: #000;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+.swagger-ui .topbar .topbar-wrapper .link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.custom-swagger-logo {
+    height: 60px;
+    margin-right: 10px;
+    object-fit: contain;
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+}
+
+.logo-icon,
+.logo-text {
+    height: 60px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* === SCHEME & AUTH === */
+.scheme-container {
+    background-color: #fff;
+    color: #333;
+    padding: 10px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.scheme-container .schemes .servers select {
+    background-color: #f8f9fa;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.scheme-container .auth-wrapper .btn.authorize {
+    background-color: #fff;
+    color: #3b4151;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 6px 12px;
+}
+
+.scheme-container .auth-wrapper .btn.authorize svg { fill: #3b4151; }
+.scheme-container .auth-wrapper .btn.authorize:hover { background-color: #e0e0e0; }
+
+/* === GENERAL === */
+body {
+    margin: 0;
+    background-color: #f8fcff !important;
+}
+
+/* === REDOC DESIGN === */
+header .bug-report-btn-redoc {
+      position: absolute;
+      top: 30px;  /* Adjust this value to move it down/up */
+      left: 40px;  /* Adjust this value to move it left/right */
+      background: none;
+      border: #cbcacaff;
+      color: #e3e2e2ff; /* Icon color */
+      z-index: 15; /* Ensure it's above other elements */
+  }
+
+  header .bug-report-btn-redoc i {
+    /* You can further style the icon here */
+    font-size: 20px;
+}
+/* === RESPONSIVE DESIGN === */
+
+/* Tablet */
+@media (max-width: 768px) {
+    .swagger-ui .info {
+        padding: 10px 15px;
+        margin-top: 8px;
+    }
+
+    .links-container {
+        gap: 12px;
+        font-size: .9em;
+        margin-top: 25px;
+    }
+
+    .custom-swagger-logo,
+    .logo-icon,
+    .logo-text {
+        height: 50px;
+    }
+
+    .header-container { gap: 6px; }
+
+    .api-stats-title h3,
+    .recent-activity-title h3,
+    .top-endpoints-title h3 {
+        font-size: 1.5rem !important;
+    }
+
+    .swagger-ui .info h4.djangoplay-heading {
+        font-size: 1.35rem;
+    }
+
+    .custom-white-btn {
+        padding: 5px 10px;
+        font-size: .85em;
+    }
+}
+
+
+
+.redoc-wrap h1,
+.redoc-wrap h2,
+.pre .redoc-wrap h3,
+.redoc-wrap h4,
+.redoc-wrap h5,
+.redoc-wrap h6 {
+    font-family: 'Aoboshi One', sans-serif !important;
+    font-weight: 400 !important;
+    color: #464B92!important;
+    letter-spacing: .3px;
+}
+
+.redoc-wrap h3 {
+    font-family: 'Aoboshi One', sans-serif !important;
+    font-weight: 400 !important;
+    color: #6f77e7!important;
+    letter-spacing: .3px;
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    .swagger-ui .info {
+        padding: 8px 12px;
+        min-height: 35px;
+    }
+
+    .links-container {
+        gap: 10px;
+        font-size: .85em;
+        margin-top: 20px;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .custom-swagger-logo,
+    .logo-icon,
+    .logo-text {
+        height: 45px;
+    }
+
+    .header-container {
+        flex-direction: column;
+        text-align: center;
+        gap: 4px;
+    }
+
+    .api-stats-title h3,
+    .recent-activity-title h3,
+    .top-endpoints-title h3 {
+        font-size: 1.35rem !important;
+    }
+
+    .swagger-ui .info h4.djangoplay-heading {
+        font-size: 1.25rem;
+    }
+
+    .swagger-ui .info .welcome-name {
+        font-size: 0.9rem;
+    }
+
+    .custom-white-btn {
+        padding: 4px 8px;
+        font-size: .8em;
+    }
+
+    .scheme-container .auth-wrapper .btn.authorize {
+        padding: 5px 10px;
+        font-size: .85em;
+    }
+}
+
+/* Small Phones */
+@media (max-width: 360px) {
+    .swagger-ui .info {
+        padding: 6px 10px;
+    }
+
+    .links-container {
+        gap: 8px;
+        font-size: .8em;
+    }
+
+    .custom-swagger-logo,
+    .logo-icon,
+    .logo-text {
+        height: 40px;
+    }
+
+    .api-stats-title h3,
+    .recent-activity-title h3,
+    .top-endpoints-title h3 {
+        font-size: 1.25rem !important;
+    }
+
+    .swagger-ui .info h4.djangoplay-heading {
+        font-size: 1.15rem;
+    }
+
+    .custom-white-btn {
+        padding: 4px 6px;
+        font-size: .75em;
+    }
+}

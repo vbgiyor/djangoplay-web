@@ -1,0 +1,95 @@
+/* Ensure the form container has top margin to avoid sticking to the header */
+.unsubscribe-container {
+    margin-top: var(--header-height); /* Space below header */
+    padding-top: 30px; /* Add some extra padding on top */
+}
+
+/* Card container for the form */
+.card {
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: #fff;
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 20px; /* Ensure space from footer */
+}
+
+/* Unsubscribe title */
+.welcome-title {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #0d6efd;
+}
+
+/* Alert messages for error/success */
+.alert {
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+
+/* Form styling */
+.form-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto; /* Center the form */
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* For form inputs (email field) */
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    font-size: 1em;
+}
+
+/* Styling for checkboxes */
+.form-check {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.form-check-input {
+    margin-right: 10px;
+    margin-top: 0.3em;
+}
+
+.form-check-label {
+    font-size: 1em;
+    color: #343a40;
+}
+
+/* Unsubscribe button */
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 1.2em;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(64, 93, 253, 0.3);
+}
+
+/* Footer link */
+.footer-links {
+    margin-top: 20px;
+    font-size: 0.9em;
+}
+
+.footer-links .text-link {
+    color: #0d6efd;
+    text-decoration: none;
+}
+
+.footer-links .text-link:hover {
+    text-decoration: underline;
+}

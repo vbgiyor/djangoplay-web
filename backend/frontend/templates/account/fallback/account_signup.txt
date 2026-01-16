@@ -1,0 +1,13 @@
+Hello {{ member.get_full_name }},
+
+Your signup with DjangoPlay was successful!
+
+You can now log in to your account.
+
+Log In: {{ protocol }}://{{ domain }}/accounts/login/
+
+
+Thank you,
+{{ site_name }} Team
+
+2025 {{ site_name }} Inc Documentation Support MIT License

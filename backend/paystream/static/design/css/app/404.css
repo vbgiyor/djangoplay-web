@@ -1,0 +1,120 @@
+/* Base styles */
+body {
+    font-family: 'Roboto', sans-serif;
+    background: url('/static/elements/images/error-pages/playback/work-in-progress.gif') no-repeat center center fixed;
+    background-size: 60%; /* Adjust the size of the image */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start !important;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    color: #fff;
+}
+
+/* Error container window for main content */
+.error-container-window {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 1.5rem;
+    margin: 5rem auto 0;
+    max-width: 600px;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.044);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+/* Error title styles */
+.error-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ffffff 0%, #f60101 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
+    margin-bottom: 1rem;
+    letter-spacing: 0.05rem;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Error message styles */
+.error-message {
+    font-size: 0.9rem;
+    color: #000000;
+    margin-bottom: 1.5rem;
+}
+
+/* Links styling */
+.text-link {
+    color: #001479;
+    font-weight: 600;
+}
+.text-link:hover {
+    color: #000000;
+    text-decoration: underline;
+}
+
+.error-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    padding: 0.3rem 2.0rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .error-title {
+        font-size: 2rem;
+    }
+
+    .error-message {
+        font-size: 1rem;
+    }
+
+    .text-link {
+        font-size: 1rem;
+    }
+
+    .error-container-window {
+        margin-top: 3rem;
+        padding: 1rem;
+        width: 90%;
+    }
+
+    body {
+        background-size: 70%; /* Adjust for smaller screens */
+    }
+}
+
+@media (max-width: 576px) {
+    .error-title {
+        font-size: 1.8rem;
+    }
+
+    .error-message {
+        font-size: 0.9rem;
+    }
+
+    .text-link {
+        font-size: 0.9rem;
+    }
+
+    .error-container-window {
+        margin-top: 2rem;
+        padding: 0.8rem;
+        width: 95%;
+    }
+
+    body {
+        background-size: 50%; /* Adjust even further for small devices */
+    }
+}

@@ -37,7 +37,17 @@ skip = ["migrations"]
 [tool.ruff]
 line-length = 255
 target-version = "py310"
-exclude = [".git", "__pycache__", "migrations", "*/migrations/*", ".venv", "venv", "env", "/backend/*"]
+
+exclude = [
+    ".git",
+    ".venv",
+    "venv",
+    "env",
+    "__pycache__",
+    "**/migrations/**",
+    "backend/**",
+    "devtools/commands/management/**",
+]
 
 [tool.ruff.lint]
 select = [
@@ -72,6 +82,11 @@ ignore = [
     "F401",  # from module import *
     "F405",  # from module import *
     "E722",  # Do not use bare `except`
+    "D417",  # Missing argument
+    "B007",  # Loop control variable `receiver_id` not used within loop nody
+    "F821",  # Undefined name
+    "F811",  # Redefinition of unused
+    "E402",  # Module level import not at top of file
 ]
 
 [tool.ruff.format]

@@ -1,0 +1,190 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'css/select2.min.css' %}">
+    <style>
+        .errors { color: red; margin-bottom: 10px; }
+        .invalid-feedback { color: #dc3545; font-size: 0.875em; display: none; }
+        .form-control.is-invalid ~ .invalid-feedback { display: block; }
+        .select2-container { width: 100% !important; }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{% if form.instance.pk %}Edit Payment{% else %}Create Payment{% endif %}</h2>
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        <div class="card mb-4">
+            <div class="card-header">Payment Details</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="{{ form.invoice.id_for_label }}" class="form-label">Invoice</label>
+                    {{ form.invoice }}
+                    <div class="invalid-feedback">Please select an invoice.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.amount.id_for_label }}" class="form-label">Amount</label>
+                    {{ form.amount }}
+                    <span class="remaining-balance">0.00</span>
+                    <div class="invalid-feedback"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.payment_date.id_for_label }}" class="form-label">Payment Date</label>
+                    {{ form.payment_date }}
+                    <div class="invalid-feedback">Please enter a valid payment date.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.payment_method.id_for_label }}" class="form-label">Payment Method</label>
+                    {{ form.payment_method }}
+                    <div class="invalid-feedback">Please select a payment method.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.payment_reference.id_for_label }}" class="form-label">Payment Reference</label>
+                    {{ form.payment_reference }}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+                    {{ form.status }}
+                    <div class="invalid-feedback">Please select a status.</div>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{% url 'admin:invoices_payment_changelist' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'js/select2.min.js' %}"></script>
+<script>
+    (function () {
+        'use strict';
+        $(document).ready(function() {
+            // Initialize select2 for invoice and payment_method fields
+            $('#id_invoice, #id_payment_method').select2({
+                ajax: {
+                    url: function() {
+                        return '/invoices/autocomplete/' + $(this).attr('id').replace('id_', '') + 's/';
+                    },
+                    dataType: 'json',
+                    delay: 250,
+                    data: function(params) {
+                        return { q: params.term };
+                    },
+                    processResults: function(data) {
+                        return { results: data.results };
+                    },
+                    cache: true
+                },
+                placeholder: function() {
+                    return 'Search for a ' + $(this).attr('id').replace('id_', '');
+                },
+                minimumInputLength: 2,
+                allowClear: $(this).attr('id') !== 'id_invoice' // Disable allowClear for invoice field
+            });
+
+            const amountInput = $('#id_amount');
+            const invoiceInput = $('#id_invoice');
+            const remainingBalanceSpan = $('.remaining-balance');
+
+            invoiceInput.on('change', function() {
+                const invoiceId = this.value;
+                if (invoiceId) {
+                    $.ajax({
+                        url: `/invoices/get-remaining-amount/${invoiceId}/`,
+                        headers: {
+                            'X-CSRFToken': $('[name=csrfmiddlewaretoken]').val()
+                        },
+                        success: function(data) {
+                            if (data.remaining_amount !== undefined) {
+                                amountInput.attr('max', data.remaining_amount);
+                                remainingBalanceSpan.text(parseFloat(data.remaining_amount).toFixed(2));
+                                amountInput.trigger('input');
+                            } else {
+                                console.error('Error:', data.error);
+                                remainingBalanceSpan.text('Error');
+                            }
+                        },
+                        error: function(error) {
+                            console.error('Fetch error:', error);
+                            remainingBalanceSpan.text('Error');
+                        }
+                    });
+                } else {
+                    amountInput.attr('max', '');
+                    remainingBalanceSpan.text('0.00');
+                }
+            });
+
+            amountInput.on('input', function() {
+                const maxAmount = parseFloat($(this).attr('max')) || Infinity;
+                const enteredAmount = parseFloat($(this).val());
+                let invalidFeedback = $(this).parent().find('.invalid-feedback');
+                if (!invalidFeedback.length) {
+                    invalidFeedback = $('<div class="invalid-feedback"></div>');
+                    $(this).parent().append(invalidFeedback);
+                }
+                if (isNaN(enteredAmount) || enteredAmount <= 0) {
+                    $(this).addClass('is-invalid');
+                    invalidFeedback.text('Please enter a valid amount greater than 0.');
+                } else if (enteredAmount > maxAmount) {
+                    $(this).addClass('is-invalid');
+                    invalidFeedback.text(`Amount cannot exceed remaining balance: ${maxAmount.toFixed(2)}`);
+                } else {
+                    $(this).removeClass('is-invalid');
+                    invalidFeedback.text('');
+                }
+            });
+
+            const form = $('form');
+            form.on('submit', function(event) {
+                let isValid = true;
+                const maxAmount = parseFloat(amountInput.attr('max')) || Infinity;
+                const enteredAmount = parseFloat(amountInput.val());
+                const invoiceId = invoiceInput.val();
+                let invalidFeedback = amountInput.parent().find('.invalid-feedback');
+                if (!invalidFeedback.length) {
+                    invalidFeedback = $('<div class="invalid-feedback"></div>');
+                    amountInput.parent().append(invalidFeedback);
+                }
+                // Validate invoice selection
+                let invoiceFeedback = invoiceInput.parent().find('.invalid-feedback');
+                if (!invoiceFeedback.length) {
+                    invoiceFeedback = $('<div class="invalid-feedback"></div>');
+                    invoiceInput.parent().append(invoiceFeedback);
+                }
+                if (!invoiceId) {
+                    isValid = false;
+                    invoiceInput.addClass('is-invalid');
+                    invoiceFeedback.text('Please select an invoice.');
+                } else {
+                    invoiceInput.removeClass('is-invalid');
+                    invoiceFeedback.text('');
+                }
+                // Validate amount
+                if (isNaN(enteredAmount) || enteredAmount <= 0) {
+                    isValid = false;
+                    amountInput.addClass('is-invalid');
+                    invalidFeedback.text('Please enter a valid amount greater than 0.');
+                } else if (enteredAmount > maxAmount) {
+                    isValid = false;
+                    amountInput.addClass('is-invalid');
+                    invalidFeedback.text(`Amount cannot exceed remaining balance: ${maxAmount.toFixed(2)}`);
+                } else {
+                    amountInput.removeClass('is-invalid');
+                    invalidFeedback.text('');
+                }
+                if (!form[0].checkValidity() || !isValid) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.addClass('was-validated');
+            });
+        });
+    })();
+</script>
+{% endblock %}

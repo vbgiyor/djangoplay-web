@@ -1,0 +1,910 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "invoices Database Import Schema",
+  "type": "object",
+  "properties": {
+    "status": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 50
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "is_default": {
+            "type": "boolean"
+          },
+          "is_locked": {
+            "type": "boolean"
+          },
+          "created_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "updated_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "deleted_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "is_active",
+          "name",
+          "code",
+          "is_default",
+          "is_locked"
+        ]
+      }
+    },
+    "invoice": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "invoice_number": {
+            "type": "string",
+            "maxLength": 30
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 255
+          },
+          "issuer_id": {
+            "type": "integer"
+          },
+          "recipient_id": {
+            "type": "integer"
+          },
+          "billing_address_id": {
+            "type": "integer"
+          },
+          "billing_country_id": {
+            "type": "integer"
+          },
+          "billing_region_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "issue_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "due_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "status_id": {
+            "type": "integer"
+          },
+          "payment_terms": {
+            "type": "string",
+            "maxLength": 20,
+            "enum": [
+              "NET_30",
+              "NET_60",
+              "NET_90",
+              "DUE_ON_RECEIPT"
+            ]
+          },
+          "currency": {
+            "type": "string",
+            "maxLength": 3,
+            "enum": [
+              "THB",
+              "CDF",
+              "HKD",
+              "IDR",
+              "TRY",
+              "ETB",
+              "ILS",
+              "MOP",
+              "SYP",
+              "AOA",
+              "SCR",
+              "MRU",
+              "GTQ",
+              "HUF",
+              "MXN",
+              "CVE",
+              "RUB",
+              "JMD",
+              "AWG",
+              "ZAR",
+              "SAR",
+              "BWP",
+              "TOP",
+              "MNT",
+              "IRR",
+              "UYU",
+              "TTD",
+              "MYR",
+              "BND",
+              "ANG",
+              "BTN",
+              "QAR",
+              "SHP",
+              "CUP",
+              "BMD",
+              "SDG",
+              "LAK",
+              "AED",
+              "CLP",
+              "RSD",
+              "KGS",
+              "KES",
+              "XPF",
+              "AZN",
+              "XCD",
+              "AFN",
+              "KPW",
+              "ERN",
+              "AUD",
+              "NGN",
+              "BGN",
+              "TWD",
+              "LYD",
+              "NPR",
+              "PLN",
+              "COP",
+              "CRC",
+              "BHD",
+              "PKR",
+              "XOF",
+              "GBP",
+              "ZWG",
+              "TND",
+              "OMR",
+              "MZN",
+              "GYD",
+              "CZK",
+              "MGA",
+              "DKK",
+              "KYD",
+              "GIP",
+              "MVR",
+              "SSP",
+              "RON",
+              "STN",
+              "RWF",
+              "NAD",
+              "JOD",
+              "VUV",
+              "BBD",
+              "UAH",
+              "CHF",
+              "SOS",
+              "CAD",
+              "GEL",
+              "BOB",
+              "LKR",
+              "MDL",
+              "NZD",
+              "MMK",
+              "LRD",
+              "VND",
+              "PGK",
+              "VES",
+              "PYG",
+              "BZD",
+              "SRD",
+              "SEK",
+              "DZD",
+              "ARS",
+              "KHR",
+              "FJD",
+              "PEN",
+              "UZS",
+              "BRL",
+              "DJF",
+              "HNL",
+              "LBP",
+              "EGP",
+              "TJS",
+              "USD",
+              "FKP",
+              "TMT",
+              "PHP",
+              "LSL",
+              "ISK",
+              "YER",
+              "SBD",
+              "SLE",
+              "MUR",
+              "CNY",
+              "PAB",
+              "BAM",
+              "NOK",
+              "BDT",
+              "KMF",
+              "INR",
+              "ALL",
+              "HTG",
+              "MWK",
+              "MAD",
+              "GMD",
+              "AMD",
+              "UGX",
+              "KRW",
+              "DOP",
+              "MKD",
+              "KWD",
+              "EUR",
+              "TZS",
+              "BYN",
+              "ZMW",
+              "XAF",
+              "NIO",
+              "KZT",
+              "SGD",
+              "JPY",
+              "IQD",
+              "WST",
+              "BIF",
+              "GHS",
+              "SZL",
+              "BSD",
+              "GNF"
+            ]
+          },
+          "base_amount": {
+            "type": "number",
+            "multipleOf": 0.01
+          },
+          "cgst_rate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "multipleOf": 0.01
+          },
+          "sgst_rate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "multipleOf": 0.01
+          },
+          "igst_rate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "multipleOf": 0.01
+          },
+          "total_amount": {
+            "type": "number",
+            "multipleOf": 0.01
+          },
+          "tax_exemption_status": {
+            "type": "string",
+            "maxLength": 20,
+            "enum": [
+              "NONE",
+              "EXEMPT",
+              "ZERO_RATED"
+            ]
+          },
+          "payment_method": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 20,
+            "enum": [
+              "UPI",
+              "CC",
+              "DC",
+              "NEFT",
+              "RTGS",
+              "CASH",
+              "CHEQUE",
+              "BANK_TRANSFER",
+              "WIRE_TRANSFER",
+              "DIRECT_DEBIT",
+              "PAYPAL",
+              "STRIPE",
+              "DIGITAL_WALLET",
+              "ACH",
+              "SEPA",
+              "MOBILE_PAYMENT",
+              "PREPAID_CARD",
+              "INSTANT_PAYMENT",
+              "CRYPTOCURRENCY",
+              null
+            ]
+          },
+          "payment_reference": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 100
+          },
+          "issuer_gstin": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 15
+          },
+          "recipient_gstin": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 15
+          },
+          "created_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "updated_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "deleted_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "is_active",
+          "invoice_number",
+          "issuer_id",
+          "recipient_id",
+          "billing_address_id",
+          "billing_country_id",
+          "issue_date",
+          "due_date",
+          "status_id",
+          "payment_terms",
+          "currency",
+          "base_amount",
+          "total_amount",
+          "tax_exemption_status"
+        ]
+      }
+    },
+    "line_item": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "invoice_id": {
+            "type": "integer"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "hsn_sac_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 8
+          },
+          "quantity": {
+            "type": "number",
+            "multipleOf": 0.01
+          },
+          "unit_price": {
+            "type": "number",
+            "multipleOf": 0.01
+          },
+          "discount": {
+            "type": "number",
+            "multipleOf": 0.01
+          },
+          "cgst_rate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "multipleOf": 0.01
+          },
+          "sgst_rate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "multipleOf": 0.01
+          },
+          "igst_rate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "multipleOf": 0.01
+          },
+          "total_amount": {
+            "type": "number",
+            "multipleOf": 0.01
+          },
+          "created_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "updated_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "deleted_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "is_active",
+          "invoice_id",
+          "description",
+          "quantity",
+          "unit_price",
+          "discount",
+          "total_amount"
+        ]
+      }
+    },
+    "billing_schedule": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "entity_id": {
+            "type": "integer"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "frequency": {
+            "type": "string",
+            "maxLength": 20,
+            "enum": [
+              "WEEKLY",
+              "MONTHLY",
+              "QUARTERLY",
+              "YEARLY"
+            ]
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "end_date": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "next_billing_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "amount": {
+            "type": "number",
+            "multipleOf": 0.01
+          },
+          "status": {
+            "type": "string",
+            "maxLength": 20,
+            "enum": [
+              "ACTIVE",
+              "PAUSED",
+              "COMPLETED",
+              "CANCELLED"
+            ]
+          },
+          "created_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "updated_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "deleted_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "is_active",
+          "entity_id",
+          "description",
+          "frequency",
+          "start_date",
+          "next_billing_date",
+          "amount",
+          "status"
+        ]
+      }
+    },
+    "payment": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "invoice_id": {
+            "type": "integer"
+          },
+          "amount": {
+            "type": "number",
+            "multipleOf": 0.01
+          },
+          "payment_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "payment_method_id": {
+            "type": "integer"
+          },
+          "payment_reference": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 100
+          },
+          "status": {
+            "type": "string",
+            "maxLength": 20,
+            "enum": [
+              "PENDING",
+              "COMPLETED",
+              "FAILED",
+              "REFUNDED"
+            ]
+          },
+          "created_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "updated_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "deleted_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "is_active",
+          "invoice_id",
+          "amount",
+          "payment_date",
+          "payment_method_id",
+          "status"
+        ]
+      }
+    },
+    "payment_method": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "code": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "description": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 255
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "created_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "updated_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "deleted_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "is_active"
+        ]
+      }
+    },
+    "gst_configuration": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date"
+          },
+          "deleted_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "is_active": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "integer"
+          },
+          "hsn_sac_code": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 8
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "cgst_rate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "multipleOf": 0.01
+          },
+          "sgst_rate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "multipleOf": 0.01
+          },
+          "igst_rate": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "multipleOf": 0.01
+          },
+          "rate_type": {
+            "type": "string",
+            "maxLength": 20,
+            "enum": [
+              "STANDARD",
+              "EXEMPT",
+              "ZERO_RATED"
+            ]
+          },
+          "applicable_region_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "effective_from": {
+            "type": "string",
+            "format": "date"
+          },
+          "effective_to": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date"
+          },
+          "created_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "updated_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "deleted_by_id": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "is_active",
+          "description",
+          "rate_type",
+          "effective_from"
+        ]
+      }
+    }
+  }
+}

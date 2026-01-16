@@ -1,0 +1,30 @@
+.error-container-window {
+    max-width: 500px;
+    margin: 80px auto;
+    text-align: center;
+    padding: 30px;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
+}
+
+.error-icon {
+    font-size: 4rem;
+    color: #ff6b6b;
+    margin-bottom: 20px;
+}
+
+.error-title {
+    font-size: 2.5rem;
+    color: #ff6b6b;
+    margin-bottom: 15px;
+}
+
+.error-message {
+    color: #ddd;
+    line-height: 1.6;
+}
+
+.toast-container {
+    z-index: 9999;
+}

@@ -1,0 +1,110 @@
+/* ============================================================
+    Redoc hard overrides — isolate scroll & clicks to window
+    This file intentionally overrides shared CSS
+    ============================================================ */
+
+  /* 1️⃣ Ensure window is the ONLY scroll container */
+  html, body {
+    height: auto !important;
+    min-height: 100% !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+
+  /* 2️⃣ Kill scroll capture on layout wrappers */
+  main,
+  .container,
+  .container-fluid,
+  .container-sm,
+  .container-md,
+  .container-lg,
+  .container-xl,
+  .container-xxl {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+    position: static !important;
+  }
+
+  /* 3️⃣ Force Redoc to participate in window scroll */
+  #redoc-container,
+  .redoc-wrap {
+    position: relative !important;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: 100vh !important;
+  }
+
+  /* 4️⃣ Fix anchor scroll hiding under fixed header */
+  .redoc-wrap [id] {
+    scroll-margin-top: 80px !important;
+  }
+
+  /* 5️⃣ Ensure sidebar & endpoints receive pointer events */
+  .redoc-wrap,
+  .redoc-wrap * {
+    pointer-events: auto !important;
+  }
+
+  /* 6️⃣ Prevent header overlay from intercepting Redoc clicks */
+  header {
+    pointer-events: none !important;
+  }
+  header a,
+  header button,
+  header input {
+    pointer-events: auto !important;
+  }
+
+  /* 7️⃣ Defensive: neutralize any accidental viewport locks */
+  body[class*="modal-open"] {
+    overflow: auto !important;
+  }
+  /* ============================================================
+   ReDoc sticky left sidebar
+   ============================================================ */
+
+  /* Make the whole Redoc layout flex */
+  .redoc-wrap {
+    display: flex !important;
+  }
+
+  /* Left sidebar */
+  .redoc-wrap .menu-content {
+    position: sticky !important;
+    top: 80px !important; /* header height */
+    max-height: calc(100vh - 80px) !important;
+    overflow-y: auto !important;
+    align-self: flex-start;
+  }
+
+  /* Ensure main content scrolls normally */
+  .redoc-wrap .api-content {
+    overflow: visible !important;
+  }
+  #redoc-go-top {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    display: none;
+    z-index: 2000;
+    box-shadow: 0 6px 16px rgba(0,0,0,.2);
+  }
+
+  #redoc-go-top:hover {
+    background: #000;
+  }
+  /* Anchor offset for fixed header */
+  #redoc-top-anchor {
+    position: relative;
+    top: -80px;           /* header height */
+    height: 1px;
+  }

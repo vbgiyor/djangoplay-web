@@ -1,0 +1,333 @@
+
+/*  reportbug.css */
+
+/* ============================================================= */
+/*                     MODAL – PREVENT OVERFLOW                  */
+/* ============================================================= */
+#bug-modal .modal-dialog { max-width: 500px; }
+#bug-modal .modal-content { padding: 0; }
+#bug-modal .modal-body { padding: 1.5rem; }
+#bug-modal .mb-3 { margin-bottom: 1rem !important; }
+.bug-file-input-wrapper { margin-bottom: 0; }
+
+/* ============================================================= */
+/*                     FILE INPUT – SHARED LAYOUT                */
+/* ============================================================= */
+.bug-file-input-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+/* Hidden file input – covers ONLY the custom button */
+.bug-file-input-wrapper input[type="file"] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 48px; /* matches custom button height */
+    opacity: 0;
+    cursor: pointer;
+    z-index: 5;
+}
+
+/* Custom "Choose File" button */
+.bug-file-input-wrapper .custom-file-btn {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 16px;
+    background: #f8f9fa !important;
+    border: 1.5px dashed #adb5bd !important;
+    border-radius: 8px;
+    color: #495057 !important;
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-align: left;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,.1);
+    cursor: pointer;
+    height: 48px;
+    box-sizing: border-box;
+}
+.bug-file-input-wrapper .custom-file-btn:hover {
+    background: #e9ecef !important;
+    border-color: #6c757d !important;
+    box-shadow: 0 3px 8px rgba(0,0,0,.15);
+    color: #212529 !important;
+}
+.bug-file-input-wrapper .custom-file-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: #6c757d;
+    transition: fill 0.3s ease;
+}
+.bug-file-input-wrapper .custom-file-btn:hover svg { fill: #495057; }
+
+/* ============================================================= */
+/*  FILE NAME + CLEAR BUTTON – ROW BELOW BUTTON                  */
+/* ============================================================= */
+.file-name-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 0.85rem;
+    color: #6c757d;
+    word-break: break-all;
+}
+.bug-file-input-wrapper .file-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Clear button (X) – inline, right after filename */
+.clear-file-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: #dc3545;
+    width: 1.6rem;
+    height: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    z-index: 10;
+}
+.clear-file-btn:hover {
+    background: #f8d7da;
+    color: #c82333;
+}
+
+/* ============================================================= */
+/*                     SPACE THEME – FILE INPUT                  */
+/* ============================================================= */
+body.space-theme .bug-file-input-wrapper .custom-file-btn {
+    background: rgba(0, 212, 255, 0.15) !important;
+    border: 1.5px dashed rgba(0, 212, 255, 0.5) !important;
+    color: #00d4ff !important;
+    backdrop-filter: blur(4px);
+    box-shadow: 0 0 8px rgba(0, 212, 255, 0.2);
+}
+body.space-theme .bug-file-input-wrapper .custom-file-btn:hover {
+    background: rgba(0, 212, 255, 0.25) !important;
+    border-color: #00ffff !important;
+    box-shadow: 0 0 16px rgba(0, 212, 255, 0.4), 0 0 24px rgba(0, 255, 255, 0.2);
+    transform: translateY(-1px);
+    color: #80eaff !important;
+}
+body.space-theme .bug-file-input-wrapper .custom-file-btn svg {
+    fill: #00d4ff;
+}
+body.space-theme .bug-file-input-wrapper .custom-file-btn:hover svg {
+    fill: #80eaff;
+}
+body.space-theme .file-name-wrapper { color: #a0d8ff; }
+body.space-theme .clear-file-btn {
+    background: rgba(0, 212, 255, 0.15);
+    border: 1px solid rgba(0, 212, 255, 0.4);
+    color: #00d4ff;
+}
+body.space-theme .clear-file-btn:hover {
+    background: rgba(0, 212, 255, 0.3);
+    color: #80eaff;
+    box-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+}
+
+/* ============================================================= */
+/*                     SPACE THEME – MODAL OVERRIDES             */
+/* ============================================================= */
+body.space-theme .modal-content {
+  background: rgba(20, 20, 40, 0.95) !important;
+  border: 1px solid rgba(0, 212, 255, 0.3) !important;
+  border-radius: 12px !important;
+  backdrop-filter: blur(8px);
+  color: #bde0ff !important;
+}
+body.space-theme .modal-header,
+body.space-theme .modal-footer {
+  border-color: rgba(0, 212, 255, 0.2) !important;
+}
+body.space-theme .modal-title { color: #00d4ff !important; font-weight: 600; }
+body.space-theme .form-label { color: #a0d8ff !important; }
+body.space-theme .form-control,
+body.space-theme .form-control:focus {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(0, 212, 255, 0.4) !important;
+  color: #e0f7ff !important;
+  box-shadow: none !important;
+}
+body.space-theme .form-control::placeholder { color: rgba(224, 247, 255, 0.6) !important; }
+body.space-theme .btn-secondary {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(0, 212, 255, 0.3) !important;
+  color: #bde0ff !important;
+}
+body.space-theme .btn-secondary:hover {
+  background: rgba(0, 212, 255, 0.2) !important;
+  color: #fff !important;
+}
+body.space-theme .btn-primary {
+  background: #00d4ff !important;
+  border: none !important;
+  color: #000 !important;
+  font-weight: 600;
+}
+body.space-theme .btn-primary:hover { background: #00b8e6 !important; }
+body.space-theme .text-success { color: #00ff9d !important; }
+body.space-theme .text-danger { color: #ff6b6b !important; }
+body.space-theme .btn-success { background: #00ff9d !important; color: #000 !important; }
+body.space-theme .btn-danger { background: #ff6b6b !important; color: #000 !important; }
+
+/* ============================================================= */
+/*  SPACE THEME – CLOSE BUTTON (X) – GLOW                        */
+/* ============================================================= */
+body.space-theme .btn-close {
+  background: transparent !important;
+  opacity: 1 !important;
+  filter: none !important;
+  position: relative;
+  width: 1.5rem; height: 1.5rem;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+  padding: 0 !important; margin: 0 !important;
+}
+body.space-theme .btn-close::before,
+body.space-theme .btn-close::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 2px; height: 16px;
+  background: #00ffff;
+  border-radius: 2px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  box-shadow: 0 0 8px #00ffff, 0 0 16px rgba(0, 255, 255, 0.6);
+  transition: all 0.3s ease;
+}
+body.space-theme .btn-close::after { transform: translate(-50%, -50%) rotate(-45deg); }
+body.space-theme .btn-close:hover::before,
+body.space-theme .btn-close:hover::after {
+  background: #80eaff;
+  box-shadow: 0 0 12px #80eaff, 0 0 24px rgba(128, 234, 255, 0.8);
+  transform: translate(-50%, -50%) rotate(45deg) scale(1.1);
+}
+body.space-theme .btn-close:hover::after {
+  transform: translate(-50%, -50%) rotate(-45deg) scale(1.1);
+}
+
+/* ============================================================= */
+/*                        RESPONSIVE                             */
+/* ============================================================= */
+@media (max-width: 576px) {
+  #bug-report-btn { --size: 32px; }
+  #bug-report-btn i { font-size: 1.1rem !important; }
+  body:not(.has-relative-footer) #bug-report-btn,
+  .swagger-ui #bug-report-btn { top: 130px !important; right: 15px !important; }
+}
+
+
+/* ReDoc Header Button */
+#bug-report-btn-redoc {
+  position: absolute;
+  top: 2rem;
+  right: 1rem;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #eff1f3;
+  border: none;
+  color: #cdcccc;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(176, 175, 175, 0.2);
+  transition: all .3s ease;
+  z-index: 1000;
+  animation: pulse 2s infinite; /* Adding the pulse animation */
+}
+
+body #bug-report-btn-redoc:hover {
+  background: #d0d8e0;
+  color: #8b8888;
+  box-shadow: 0 6px 16px rgba(57, 57, 57, 0.15), 0 0 0 6px rgba(57, 57, 57, 0.05);
+}
+
+
+/* Pulse animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1); /* Slightly scale up for the pulse */
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+body.space-theme #bug-report-btn-redoc {
+  background: #000 !important;
+  border: 2px solid rgba(0, 212, 255, 0.4) !important;
+  color: #00ffff !important;
+  box-shadow: 0 0 12px rgba(0,255,255,.3);
+  animation: pulse 2s infinite; /* Pulse effect for space theme as well */
+}
+
+body.space-theme #bug-report-btn-redoc:hover {
+  background: #111 !important;
+  box-shadow: 0 0 20px rgba(0,255,255,.5);
+  animation: none; /* Disable pulse animation when hovered */
+}
+
+/* Dashboard Bug Button */
+#bug-report-btn-dashboard {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 2rem;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  background: #eff1f3;
+  border: none;
+  color: #cdcccc;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(176, 175, 175, 0.2);
+  transition: all .3s ease;
+  z-index: 1000;
+  animation: pulse 2s infinite; /* Adding the pulse animation */
+}
+
+body #bug-report-btn-dashboard:hover {
+  background: #d0d8e0;
+  color: #8b8888;
+  box-shadow: 0 6px 16px rgba(57, 57, 57, 0.15), 0 0 0 6px rgba(57, 57, 57, 0.05);
+}
+
+body.space-theme #bug-report-btn-dashboard {
+  background: #000 !important;
+  border: 2px solid rgba(0, 212, 255, 0.4) !important;
+  color: #00ffff !important;
+  box-shadow: 0 0 12px rgba(0,255,255,.3);
+  animation: pulse 2s infinite; /* Pulse effect for space theme as well */
+}
+
+body.space-theme #bug-report-btn-dashboard:hover {
+  background: #111 !important;
+  box-shadow: 0 0 20px rgba(0,255,255,.5);
+  animation: none; /* Disable pulse animation when hovered */
+}

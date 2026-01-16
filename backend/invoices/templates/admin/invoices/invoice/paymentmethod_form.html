@@ -1,0 +1,62 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <style>
+        .invalid-feedback { color: #dc3545; font-size: 0.875em; display: none; }
+        .form-control.is-invalid ~ .invalid-feedback { display: block; }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{% if form.instance.pk %}Edit Payment Method{% else %}Create Payment Method{% endif %}</h2>
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        <div class="card mb-4">
+            <div class="card-header">Payment Method Details</div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label for="{{ form.code.id_for_label }}" class="form-label">Code</label>
+                    {{ form.code }}
+                    <div class="invalid-feedback">Please enter a valid payment method code.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">Name</label>
+                    {{ form.name }}
+                    <div class="invalid-feedback">Please enter a payment method name.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">Description</label>
+                    {{ form.description }}
+                </div>
+                <div class="mb-3 form-check">
+                    {{ form.is_active }}
+                    <label for="{{ form.is_active.id_for_label }}" class="form-check-label">Is Active</label>
+                </div>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="{% url 'admin:invoices_paymentmethod_changelist' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+<script>
+    (function () {
+        'use strict';
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+    })();
+</script>
+{% endblock %}

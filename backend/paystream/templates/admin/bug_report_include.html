@@ -1,0 +1,70 @@
+{% load i18n static compress %}
+{% if show_bug_report %}
+{% compress css %}
+<link rel="stylesheet" href="{% static 'design/css/app/reportbug.css' %}">
+{% endcompress %}
+
+<!-- BUG MODAL -->
+<div class="modal fade" id="bug-modal" tabindex="-1" aria-labelledby="bugModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="post" action="{% url 'frontend:report_bug' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bugModalLabel">{% trans "Report Bug" %}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="bug-email" class="form-label">{% trans "Your Email" %}</label>
+                        <input type="email" class="form-control" id="bug-email" name="email" required
+                               {% if request.user.is_authenticated %}value="{{ request.user.email }}" readonly autocomplete="email" {% endif %}>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bug-subject" class="form-label">{% trans "Subject" %}</label>
+                        <input type="text" class="form-control" id="bug-subject" name="subject" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bug-description" class="form-label">{% trans "Description" %}</label>
+                        <textarea class="form-control" id="bug-message" name="message" rows="4" required></textarea>                        
+                    </div>
+                    <div class="mb-3">
+                        <label for="bug-github" class="form-label">{% trans "GitHub Issue Link (optional)" %}</label>
+                        <input type="url" class="form-control" id="bug-github" name="github_issue"
+                            placeholder="https://github.com/owner/repo/issues/123">
+                        <div class="invalid-feedback">
+                            {% trans "Please enter a valid GitHub issue URL." %}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bug-files" class="form-label">{% trans "Attachments (max 5, ≤10MB)" %}</label>
+                        <div class="bug-file-input-wrapper">
+                            <div class="custom-file-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-paperclip me-1" viewBox="0 0 16 16">
+                                    <path d="M5.5 6.5v6a2.5 2.5 0 0 0 5 0V4a1.5 1.5 0 0 0-3 0v7.5a.5 5 0 0 0 1 0V4h1v7.5a1.5 1.5 0 0 1-3 0v-6h-1z"/>
+                                </svg>
+                                <span>{% trans "Choose File (optional)" %}</span>
+                            </div>
+                            <div data-role="file-list" class="text-muted mt-2">{% trans "No file chosen" %}</div>
+                            <button type="button" class="clear-all-btn" style="display:none;">{% trans "Clear All" %}</button>
+                            <input type="file" name="files" id="bug-files" multiple accept=".jpg,.jpeg,.png,.pdf,.txt,.log,.zip,.mp4,.gif" class="form-control" style="display:none;">
+                            <div id="file-size-error" class="text-danger" style="display: none;">
+                                {% trans "File too large. Maximum file size is 10MB." %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans "Submit Bug" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% compress js %}
+<script src="{% static 'design/js/file_upload.js' %}"></script>
+<script src="{% static 'design/js/bugs/bug_modal.js' %}"></script>
+{% endcompress %}
+{% endif %}

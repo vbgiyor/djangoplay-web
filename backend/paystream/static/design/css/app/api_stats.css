@@ -1,0 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=Aoboshi+One&display=swap');
+
+body.api-stats-page {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  padding-top: 90px;
+  color: #212529;
+}
+
+h1, h3, h4, h5 {
+  font-family: 'Aoboshi One', serif !important;
+  letter-spacing: 0.5px;
+  font-weight: 400;
+}
+
+h1 { font-size: 2rem; color: #0d6efd; margin-bottom: 16px; }
+h4 { font-size: 1.5rem; color: #0d6efd; margin-bottom: 12px; }
+h5 { font-size: 1.1rem; margin-bottom: 6px; }
+
+.page-description {
+  text-align: center;
+  margin: 50px 0 40px;
+}
+
+.page-description-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.page-description p {
+  font-size: 1rem;
+  color: #444;
+  margin-top: 0.5rem;
+}
+
+.card {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease;
+}
+
+.card:hover { transform: translateY(-3px); }
+
+.card-body h3 { font-size: 2rem; font-weight: 600; margin: 0; }
+.card-body h5 { font-size: 1rem; opacity: 0.9; }
+
+.container > .card,
+.container > .row { margin-bottom: 2rem; }
+
+.container.mt-5 { padding-bottom: 6rem; }
+
+.card.bg-white {
+  background: #fff !important;
+  border: 1px solid rgba(0,0,0,0.05) !important;
+}
+
+/* === SECTION CARDS – SIDE BY SIDE + SCROLLABLE + TALLER === */
+.section-card {
+  height: 480px; /* Increased from 350px */
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  background: #fff !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.section-card .card-header {
+  padding: 1.25rem 1.5rem 0.75rem;
+  background: transparent !important;
+  border-bottom: none;
+}
+
+.section-card .card-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Subtle scrollbar */
+.section-card .card-body::-webkit-scrollbar {
+  width: 6px;
+}
+.section-card .card-body::-webkit-scrollbar-track { background: transparent; }
+.section-card .card-body::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.2);
+  border-radius: 3px;
+}
+
+/* === EXPORT FORM – AUTO HEIGHT === */
+.export-container {
+  padding: 1.5rem 2rem;
+  border: 1px solid rgba(0,0,0,0.05) !important;
+  border-radius: 12px;
+  background: #fff !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.export-container .card-body { padding: 0; }
+
+.btn-export {
+  background: #fff;
+  color: #0d6efd;
+  border: 1.5px solid #0d6efd;
+  border-radius: 6px;
+  font-weight: 600;
+  padding: 0.65rem 1.5rem;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+
+.btn-export:hover {
+  background: #0d6efd;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+canvas { width: 100% !important; height: 300px !important; }
+
+/* === SPACE THEME === */
+.space-theme { color: #e0f7ff !important; }
+
+.space-theme .card,
+.space-theme .export-container,
+.space-theme .section-card {
+  background: rgba(0,0,0,0.7) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+.space-theme .page-description h1 { color: #00d4ff !important; }
+.space-theme .page-description p,
+.space-theme .text-muted { color: #bde0ff !important; }
+
+.space-theme .form-label { color: #cde9ff !important;}
+.space-theme input {
+  background: rgba(0,0,0,0.3) !important;
+  border-color: rgba(255,255,255,0.15) !important;
+  color: #e0f7ff !important;
+}
+.space-theme input::placeholder { color: rgba(224,247,255,0.7); }
+
+.space-theme .btn-export {
+  background: #e0f7ff !important;
+  color: #003366 !important;
+}
+.space-theme .btn-export:hover {
+  background: #00bcd4 !important;
+  color: #fff !important;
+}
+
+.space-theme .section-card .card-header h4 { color: #00d4ff !important; }
+
+/* === RESPONSIVE === */
+@media (max-width: 992px) {
+  .page-description-inner { max-width: 800px; }
+  canvas { height: 280px !important; }
+}
+
+@media (max-width: 768px) {
+  h1 { font-size: 1.75rem; }
+  .page-description { margin: 30px 0 20px; }
+  .section-card { height: 380px; }
+  canvas { height: 240px !important; }
+  .col-md-6 { margin-bottom: 1.5rem; }
+}
+
+@media (max-width: 576px) {
+  h1 { font-size: 1.5rem; }
+  h4 { font-size: 1.3rem; }
+  .page-description p { font-size: 0.95rem; }
+  .section-card { height: 320px; }
+  canvas { height: 200px !important; }
+  .btn-export { width: 100%; }
+  .container.mt-5 { padding-bottom: 4rem; }
+}
+/* === EXPORT COLLAPSIBLE SECTION === */
+#export-section .card-header {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  user-select: none;
+}
+
+#export-section .card-header:hover {
+  background: rgba(0,0,0,0.03) !important;
+}
+
+.transition-chevron {
+  transition: transform 0.3s ease;
+  font-size: 1.1rem;
+}
+
+#export-form-body.collapsing .transition-chevron,
+#export-form-body:not(.show) .transition-chevron {
+  transform: rotate(-90deg);
+}
+
+/* === SPACE THEME – NO WHITE BG ON SECTION CARDS === */
+.space-theme .section-card,
+.space-theme .export-container {
+  background: transparent !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  box-shadow: 0 4px 12px rgba(0,212,255,0.1);
+}
+
+.space-theme .section-card .card-header,
+.space-theme #export-section .card-header {
+  background: rgba(0,0,0,0.3) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.1) !important;
+}
+
+.space-theme .section-card .card-body,
+.space-theme #export-form-body {
+  background: transparent !important;
+}
+
+.space-theme .list-group-item {
+  background: transparent !important;
+  border-color: rgba(255,255,255,0.1) !important;
+  color: #e0f7ff !important;
+}
+
+.space-theme .badge {
+  opacity: 0.9;
+}
+
+/* Hover feedback */
+.space-theme #export-section .card-header:hover {
+  background: rgba(0,212,255,0.1) !important;
+}
