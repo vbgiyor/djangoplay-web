@@ -143,6 +143,10 @@ def single_app_view(request, app_label):
         'invoices': {
             'invoice': 'Invoices & Billing',
         },
+        # Invoices app models
+        'audit': {
+            'auditevent': 'Logging Journal',
+        },
     }
 
 

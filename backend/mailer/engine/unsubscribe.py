@@ -1,16 +1,14 @@
 # mailer/engine/unsubscribe.py
 import logging
-from typing import Optional, Tuple, Any
+from typing import Any, Optional, Tuple
 
+from allauth.account.models import EmailAddress
+from django.contrib.auth.tokens import default_token_generator
+from django.core.cache import cache
 from django.db import transaction
 from django.urls import reverse
 from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.contrib.auth.tokens import default_token_generator
-from django.core.cache import cache
-
-from allauth.account.models import EmailAddress
-
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from utilities.admin.url_utils import get_site_base_url
 from utilities.constants.unsubscribe import CATEGORY_BY_PREFIX, SYSTEM_EMAIL_PREFIXES
 
@@ -20,6 +18,7 @@ UNSUBSCRIBE_TOKEN_CACHE_TTL = 60 * 60 * 24  # 24 hours
 
 
 class UnsubscribeService:
+
     """
     Unified unsubscribe infrastructure service.
 

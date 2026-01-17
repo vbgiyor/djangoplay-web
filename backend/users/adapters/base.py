@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseAdapter:
+
     """
     Shared utilities for all adapters (account + social).
     This class does NOT override allauth hooks.

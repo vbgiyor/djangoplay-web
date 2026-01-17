@@ -95,7 +95,7 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.SUCCESS(f"Permanently deleted {region_count} regions. ({time.time() - start_time:.2f}s)"))
 
                 # Step 6: Clear relevant Redis cache keys
-                redis_client = redis_client.get_client()
+                redis = redis_client.get_client()
                 cache_keys = [
                     "location:*:*",
                     "city:*:*",
@@ -104,9 +104,9 @@ class Command(BaseCommand):
                 ]
                 for pattern in cache_keys:
                     try:
-                        keys = redis_client.keys(pattern)
+                        keys = redis.keys(pattern)
                         if keys:
-                            redis_client.delete(*keys)
+                            redis.delete(*keys)
                             logger.info(f"Cleared {len(keys)} cache keys matching pattern: {pattern} ({time.time() - start_time:.2f}s)")
                     except Exception as e:
                         logger.warning(f"Failed to clear cache keys for pattern {pattern}: {str(e)} ({time.time() - start_time:.2f}s)")

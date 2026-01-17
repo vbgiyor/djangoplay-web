@@ -1,25 +1,25 @@
 import logging
-import socket
 import smtplib
+import socket
+
 from django.conf import settings
 from django.contrib import messages
 from django.core.mail import EmailMultiAlternatives
-
-from mailer.engine.templates import TemplateResolver
-from mailer.engine.inline_images import InlineImageService
-from mailer.engine.unsubscribe import UnsubscribeService
-from users.adapters.context.support import SupportContextProvider
 from users.adapters.context.email import EmailContextProvider
 from users.adapters.context.password_reset import PasswordResetContextProvider
+from users.adapters.context.support import SupportContextProvider
+from users.models import Employee
 from utilities.constants.template_registry import TemplateRegistry as T
 
-
-from users.models import Employee
+from mailer.engine.inline_images import InlineImageService
+from mailer.engine.templates import TemplateResolver
+from mailer.engine.unsubscribe import UnsubscribeService
 
 logger = logging.getLogger(__name__)
 
 
 class EmailEngine:
+
     """
     ============================================================================
     CENTRAL EMAIL ENGINE FOR ADAPTERS
@@ -168,10 +168,10 @@ class EmailEngine:
 
         # Inject defaults
         context = EmailEngine.inject_defaults(context)
-        
+
         # Inject canonical email context
         context.update(EmailContextProvider.get())
-        
+
         # ------------------------------------------------------------------
         # Invariant enforcement: password reset emails must have reset_url
         # ------------------------------------------------------------------
@@ -187,7 +187,7 @@ class EmailEngine:
                     "reset_url must be present in context for PASSWORD_RESET_EMAIL"
                 )
 
-        
+
         if normalized_prefix == T.PASSWORD_RESET_EMAIL and user:
             PasswordResetContextProvider.inject_password_reset_context(user=user, context=context)
 
@@ -202,10 +202,10 @@ class EmailEngine:
         EmailEngine.attach_unsubscribe_url(context, user)
 
         # Support context (phone, github, linkedin, etc.)
-        context.update(SupportContextProvider.get())        
-        
+        context.update(SupportContextProvider.get())
+
         # Template rendering
-        try:            
+        try:
             resolver = TemplateResolver(normalized_prefix)
             # subject = resolver.render("_subject.txt", context).strip()
             subject = resolver.render("_subject.txt", context).strip()

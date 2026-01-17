@@ -104,6 +104,13 @@ class PaystreamAdminSite(AdminSite):
             'has_module_perms': request.user.has_module_perms('invoices'),
             'models': [],
         }
+        audit_app = {
+            'name': 'Audit Logging',
+            'app_label': 'audit',
+            'app_url': '#',
+            'has_module_perms': request.user.has_module_perms('audit'),
+            'models': [],
+        }
 
 
         # Process app list
@@ -122,6 +129,8 @@ class PaystreamAdminSite(AdminSite):
                 entities_app['models'].extend(app['models'])
             elif app['app_label'] == 'invoices':
                 invoices_app['models'].extend(app['models'])
+            elif app['app_label'] == 'audit':
+                audit_app['models'].extend(app['models'])
 
             else:
                 # Keep other apps as they are

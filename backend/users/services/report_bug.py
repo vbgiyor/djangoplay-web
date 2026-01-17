@@ -2,6 +2,9 @@ import logging
 from dataclasses import dataclass
 from typing import Optional
 
+from audit.contracts.actor import AuditActor
+from audit.contracts.target import AuditTarget
+from audit.services import AuditRecorder
 from django.db.models import Q
 from django.utils import timezone
 from mailer.throttling.flow_throttle import allow_flow
@@ -102,6 +105,23 @@ class BugService:
             )
             ticket.save(user=employee if employee else None)
 
+            AuditRecorder.record(
+                action="bug_report.created",
+                actor=AuditActor(
+                    id=employee.pk if employee else None,
+                    type="user" if employee else "anonymous",
+                    label=email,
+                ),
+                target=AuditTarget(
+                    type="support_ticket",
+                    id=ticket.id,
+                    label=ticket.ticket_number,
+                ),
+                metadata={
+                    "is_bug_report": True,
+                    "has_attachments": bool(request.FILES),
+                },
+            )
             for f in request.FILES.getlist("files"):
                 FileUpload.objects.create(
                     content_object=ticket,
@@ -148,14 +168,48 @@ class BugService:
                     "request_id": request_id,
                 },
             )
+            AuditRecorder.record(
+                action="bug_report.throttled",
+                actor=AuditActor(
+                    id=employee.pk if employee else None,
+                    type="user" if employee else "anonymous",
+                    label=email,
+                ),
+                target=AuditTarget(
+                    type="support_ticket",
+                    id=ticket.id,
+                    label=ticket.ticket_number,
+                ),
+                metadata={
+                    "reason": reason,
+                    "debug": dbg,
+                },
+            )
             return BugReportResult(status="limit", ticket=ticket)
 
         # -----------------------------------------------------
         # 3) Queue email notification (best effort)
         # -----------------------------------------------------
-        from mailer.flows.member_notifications import send_support_or_bug_email_task
+        from mailer.flows.member.support import send_support_or_bug_email_task
         try:
             send_support_or_bug_email_task.delay(ticket.id)
+            AuditRecorder.record(
+                action="bug_report.email_queued",
+                actor=AuditActor(
+                    id=employee.pk if employee else None,
+                    type="user" if employee else "anonymous",
+                    label=email,
+                ),
+                target=AuditTarget(
+                    type="support_ticket",
+                    id=ticket.id,
+                    label=ticket.ticket_number,
+                ),
+                metadata={
+                    "task": "send_support_or_bug_email_task",
+                },
+                is_system_event=True,
+            )
             logger.info(
                 "BugService: queued email task",
                 extra={
@@ -172,5 +226,22 @@ class BugService:
                     "ticket_number": ticket.ticket_number,
                     "request_id": request_id,
                 },
+            )
+            AuditRecorder.record(
+                action="bug_report.email_failed",
+                actor=AuditActor(
+                    id=employee.pk if employee else None,
+                    type="user" if employee else "anonymous",
+                    label=email,
+                ),
+                target=AuditTarget(
+                    type="support_ticket",
+                    id=ticket.id,
+                    label=ticket.ticket_number,
+                ),
+                metadata={
+                    "error": str(exc),
+                },
+                is_system_event=True,
             )
             return BugReportResult(status="error", ticket=ticket, error=str(exc))

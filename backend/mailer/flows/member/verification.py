@@ -2,7 +2,6 @@ import logging
 from typing import Any
 
 from celery import shared_task
-
 from users.models import Member
 from utilities.commons import helpers
 from utilities.constants.template_registry import TemplateRegistry as T

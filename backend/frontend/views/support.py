@@ -4,11 +4,11 @@ from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
+from mailer.engine.verification_guard import handle_unverified_email
+from mailer.flows.support import SupportService
 from users.models import Employee, Member
 from utilities.commons.helpers import employee_state_by_email
 from utilities.constants.template_registry import TemplateRegistry
-from mailer.flows.support import SupportService
-from mailer.engine.verification_guard import handle_unverified_email
 
 from frontend.forms.support import SupportForm
 

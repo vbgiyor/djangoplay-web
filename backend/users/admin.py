@@ -10,10 +10,10 @@ from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from locations.utils.location_filters import *
-from utilities.admin.admin_filters import *
-from mailer.flows.member_notifications import send_manual_verification_email_task
-from mailer.throttling.throttle import check_and_increment_email_limit
 from mailer.engine.unsubscribe import UnsubscribeService
+from mailer.flows.member.verification import send_manual_verification_email_task
+from mailer.throttling.throttle import check_and_increment_email_limit
+from utilities.admin.admin_filters import *
 
 from users.forms.common import AddressForm, UserActivityLogForm
 from users.forms.employee import *

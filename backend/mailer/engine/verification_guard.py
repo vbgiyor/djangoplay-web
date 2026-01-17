@@ -1,12 +1,12 @@
+from django.contrib import messages
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
-from django.contrib import messages
-from django.shortcuts import redirect
-
-from utilities.commons.helpers import employee_state_by_email
-from mailer.links.resend import build_resend_verification_url
 from users.exceptions import MemberValidationError
+from utilities.commons.helpers import employee_state_by_email
+
+from mailer.links.resend import build_resend_verification_url
 
 
 def enforce_email_signup_rules(email: str) -> None:
@@ -15,7 +15,6 @@ def enforce_email_signup_rules(email: str) -> None:
 
     Raises MemberValidationError if signup must be blocked.
     """
-
     if not email:
         return
 
@@ -73,7 +72,6 @@ def handle_unverified_email(
 
     Does NOT affect signup validation logic.
     """
-
     if not email:
         return None
 

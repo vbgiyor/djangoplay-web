@@ -10,6 +10,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views import View
 from drf_spectacular.utils import extend_schema
+from mailer.flows.member.verification import send_verification_email_task
 from policyengine.components.ssopolicies import setup_role_based_group
 from users.exceptions import EmployeeValidationError
 from users.models import (
@@ -24,8 +25,6 @@ from users.services.employee import EmployeeService
 from users.services.member import MemberService
 from users.services.signup_flow import SignupFlowService
 from users.services.signup_token_manager import SignupTokenManagerService
-from mailer.flows.member_notifications import send_verification_email_task
-
 
 logger = logging.getLogger(__name__)
 

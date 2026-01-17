@@ -3,9 +3,8 @@ from typing import Any
 
 from celery import shared_task
 from django.conf import settings
-
 from users.models import SupportTicket
-from utilities.admin.url_utils import get_site_base_url, get_admin_url
+from utilities.admin.url_utils import get_admin_url, get_site_base_url
 from utilities.constants.template_registry import TemplateRegistry as T
 
 from mailer.engine.base import send_email_via_adapter

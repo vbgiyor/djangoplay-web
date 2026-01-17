@@ -7,8 +7,8 @@ from core.middleware import thread_local
 from django.conf import settings
 from django.db import transaction
 from django.utils import timezone
-from utilities.commons.generate_tokens import generate_secure_token
 from mailer.throttling.flow_throttle import allow_flow
+from utilities.commons.generate_tokens import generate_secure_token
 
 from users.models import (
     Employee,
@@ -117,8 +117,8 @@ class SignupTokenManagerService:
         signup_request, status = cls.create_for_user(user, request)
         if status != "ok":
             return status
-        
-        from mailer.flows.member_notifications import send_verification_email_task
+
+        from mailer.flows.member.verification import send_verification_email_task
 
         member = Member.objects.filter(employee=user).first()
         if member:

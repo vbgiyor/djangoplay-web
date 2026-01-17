@@ -4,10 +4,9 @@ from typing import Any
 from celery import shared_task
 from django.conf import settings
 from django.urls import reverse
-
 from users.models import Member
-from utilities.commons import helpers
 from utilities.admin.url_utils import get_site_base_url
+from utilities.commons import helpers
 from utilities.constants.template_registry import TemplateRegistry as T
 
 from mailer.engine.base import send_email_via_adapter

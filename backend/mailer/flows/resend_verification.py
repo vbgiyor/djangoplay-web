@@ -1,12 +1,14 @@
 import logging
-from django.contrib.auth import get_user_model
+
 from allauth.account.models import EmailAddress
+from core.middleware import thread_local
+from django.contrib.auth import get_user_model
 from users.models import Member
 from users.services.member import MemberService
 from users.services.signup_token_manager import SignupTokenManagerService
-from mailer.flows.member_notifications import send_verification_email_task
+
+from mailer.flows.member.verification import send_verification_email_task
 from mailer.throttling.flow_throttle import allow_flow
-from core.middleware import thread_local
 
 logger = logging.getLogger(__name__)
 User = get_user_model()
@@ -47,7 +49,6 @@ def resend_verification_for_email_task(
 
     Token lifecycle is owned by SignupTokenManagerService.
     """
-
     if not email:
         return ResendVerificationResult(
             status="no_user",

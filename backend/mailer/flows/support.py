@@ -1,34 +1,38 @@
 import logging
 from dataclasses import dataclass
-from typing import Optional, Any, Iterable
+from typing import Any, Iterable, Optional
 
-from users.models import (
-    SupportTicket,
-    SupportStatus,
-    FileUpload,
-    Employee,
-    Member,
-)
 from core.middleware import thread_local
-from mailer.throttling.flow_throttle import allow_flow
-from mailer.flows.member_notifications import (
+from users.models import (
+    Employee,
+    FileUpload,
+    Member,
+    SupportStatus,
+    SupportTicket,
+)
+
+from mailer.flows.member.support import (
     send_support_or_bug_email_task,
 )
+from mailer.throttling.flow_throttle import allow_flow
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
 class SupportRequestResult:
+
     """
     Result object returned to the view for support ticket submissions.
     """
+
     status: str  # "success", "limit", "not_registered", "error"
     ticket: Optional[SupportTicket] = None
     error: Optional[str] = None
 
 
 class SupportService:
+
     """
     Service to handle Support Ticket creation + unified throttling + email.
 

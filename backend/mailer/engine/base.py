@@ -1,9 +1,10 @@
 import logging
-import socket
 import smtplib
+import socket
 from typing import Any, Dict, Optional
 
 from allauth.account.adapter import get_adapter
+
 logger = logging.getLogger(__name__)
 
 
@@ -13,7 +14,7 @@ def send_email_via_adapter(
     to_email: str,
     context: Optional[Dict[str, Any]] = None,
     user: Optional[Any] = None,
-    request: Optional[Any] = None, 
+    request: Optional[Any] = None,
 ):
     """
     Generic helper used by all email Celery tasks.

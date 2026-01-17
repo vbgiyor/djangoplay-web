@@ -7,10 +7,10 @@ from django.conf import settings
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from mailer.engine.engine import EmailEngine
 from mailer.engine.verification_guard import handle_unverified_email
 
 from users.adapters.base import BaseAdapter
-from mailer.engine.engine import EmailEngine
 from users.services.signup_flow import SignupFlowService
 from users.services.unified_login import UnifiedLoginService
 
@@ -46,7 +46,7 @@ class CustomAccountAdapter(BaseAdapter, DefaultAccountAdapter):
         Safe for Celery + request-less contexts.
         """
         return EmailEngine()
-    
+
     # ------------------------------------------------------------------ #
     # send_mail → thin delegation to EmailEngine
     # ------------------------------------------------------------------ #
