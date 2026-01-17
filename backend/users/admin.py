@@ -13,7 +13,7 @@ from locations.utils.location_filters import *
 from utilities.admin.admin_filters import *
 from mailer.flows.member_notifications import send_manual_verification_email_task
 from mailer.throttling.throttle import check_and_increment_email_limit
-from mailer.engine.unsubscribe import EmailUnsubscribeService
+from mailer.engine.unsubscribe import UnsubscribeService
 
 from users.forms.common import AddressForm, UserActivityLogForm
 from users.forms.employee import *
@@ -192,7 +192,7 @@ class EmployeeAdmin(BaseAdmin):
 
         # If ALL known preferences are True → resubscribe
         if prefs and all(prefs.get(k) is True for k in prefs.keys()):
-            EmailUnsubscribeService.resubscribe_user(obj)
+            UnsubscribeService.resubscribe_user(obj)
 
 
 @AdminIconDecorator.register_with_icon(Team)

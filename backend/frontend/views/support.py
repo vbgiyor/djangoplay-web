@@ -8,7 +8,7 @@ from users.models import Employee, Member
 from utilities.commons.helpers import employee_state_by_email
 from utilities.constants.template_registry import TemplateRegistry
 from mailer.flows.support import SupportService
-from mailer.engine.unverified_guard import handle_unverified_email
+from mailer.engine.verification_guard import handle_unverified_email
 
 from frontend.forms.support import SupportForm
 

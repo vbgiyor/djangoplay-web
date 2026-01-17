@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
 from policyengine.components.ssopolicies import setup_role_based_group
-from mailer.engine.unverified_guard import enforce_email_signup_rules
+from mailer.engine.verification_guard import enforce_email_signup_rules
 
 from users.models import *
 from users.services import EmployeeService, MemberService
