@@ -202,6 +202,12 @@ MODEL_ROLE_PERMISSIONS = {
         "destroy": ["ADMIN"],
     },
 
+    # ---------------- AUDIT ----------------
+    "auditevent": {
+        "list": ["CEO", "CFO", "SSO"],
+        "retrieve": ["CEO", "CFO", "SSO"],
+    },
+
     # ---------------- MISC ----------------
     "industry": {
         "list": ["ADMIN", "EMPLOYEE"],

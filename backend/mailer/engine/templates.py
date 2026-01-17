@@ -1,12 +1,13 @@
 import logging
-from django.template.loader import render_to_string
 
+from django.template.loader import render_to_string
 from utilities.constants.template_registry import TemplateRegistry as T
 
 logger = logging.getLogger(__name__)
 
 
 class TemplateResolver:
+
     """
     ============================================================================
     EMAIL TEMPLATE RESOLVER
@@ -69,7 +70,7 @@ class TemplateResolver:
             primary = f"account/email/{self.prefix}{suffix}"
             try:
                 return render_to_string(primary, context)
-            except Exception as e:
+            except Exception:
                 logger.exception(
                     "EMAIL TEMPLATE RENDER FAILED",
                     extra={
@@ -97,7 +98,7 @@ class TemplateResolver:
         fallback = f"account/fallback/{self.prefix}{suffix}"
         try:
             return render_to_string(fallback, context)
-        except Exception as e:
+        except Exception:
             logger.exception(
                 "EMAIL TEMPLATE RENDER FAILED",
                 extra={

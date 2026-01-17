@@ -1,17 +1,17 @@
 import logging
-from pathlib import Path
-from email.mime.image import MIMEImage
-from email.mime.base import MIMEBase
 from email import encoders
+from email.mime.base import MIMEBase
+from email.mime.image import MIMEImage
+from pathlib import Path
+
 from django.conf import settings
-
 from utilities.ui.image_resize import resize_image_to_file
-
 
 logger = logging.getLogger(__name__)
 
 
 class InlineImageService:
+
     """
     ============================================================================
     INLINE IMAGE & ATTACHMENT SERVICE
@@ -29,12 +29,13 @@ class InlineImageService:
     A newcomer to this codebase should immediately know that all email-related
     media lives here, not inside the Allauth adapter.
 
-    Notes:
-    ------
+    Notes
+    -----
     • Each method is intentionally low-level and pure. It does NOT know
       anything about templates or email logic.
     • This keeps our system DRY: modify images here, and all emails update.
     ============================================================================
+
     """
 
     # ------------------------------------------------------------------
@@ -56,13 +57,14 @@ class InlineImageService:
         but now reusable by all email types in the system.
 
         Arguments:
-        ----------
+        ---------
         msg         : EmailMultiAlternatives instance
         cid         : str — Content-ID for inline embedding
         src_path    : Path — original file path
         size        : (w,h) optional resize target
         resized_dir : Path where resized images are cached
         dest_name   : final filename for resized variant
+
         """
         src_path = Path(src_path)
         if not src_path.is_file():

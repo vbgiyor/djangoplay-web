@@ -7,9 +7,9 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from mailer.engine.verification_guard import handle_unverified_email
 from users.services.unified_login import UnifiedLoginService
 from utilities.constants.template_registry import TemplateRegistry
-from mailer.engine.verification_guard import handle_unverified_email
 
 logger = logging.getLogger(__name__)
 

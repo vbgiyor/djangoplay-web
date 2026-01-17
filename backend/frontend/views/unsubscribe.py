@@ -4,8 +4,8 @@ from allauth.account.models import EmailAddress
 from django.shortcuts import render
 from django.utils import timezone
 from django.views.generic import View
+from mailer.engine.unsubscribe import UnsubscribeService
 from utilities.constants.template_registry import TemplateRegistry
-from mailer.engine.unsubscribe_validation import validate_unsubscribe_token
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ class UnsubscribeView(View):
         }
 
         user, error = (
-            validate_unsubscribe_token(uidb64, token)
+            UnsubscribeService.validate_unsubscribe_token(uidb64, token)
             if (uidb64 and token)
             else (None, None)
         )

@@ -4,6 +4,7 @@ MIDDLEWARE = [
     # --- Request context (must be FIRST) ---
     "core.middleware.request_id.RequestIDMiddleware",
     "core.middleware.client_ip.ClientIPMiddleware",
+    "audit.middleware.api_audit.APIAuditMiddleware",
 
     # --- Security & HTTP ---
     "django.middleware.security.SecurityMiddleware",

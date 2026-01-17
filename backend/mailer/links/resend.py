@@ -1,6 +1,6 @@
+from django.conf import settings
 from django.urls import reverse
 from django.utils.http import urlencode
-from django.conf import settings
 
 
 def build_resend_verification_url(email: str) -> str:

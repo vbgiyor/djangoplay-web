@@ -1,10 +1,18 @@
+from audit.signals.events import post_restore, post_soft_delete
 from django.db import models
 from django.utils import timezone
 
 
 class TimeStampedModel(models.Model):
 
-    """Abstract base model with timestamp, soft delete, and active status fields."""
+    """
+    Abstract base model with timestamp, soft delete, and active status fields.
+
+    Design guarantees:
+    - Context-tolerant lifecycle methods
+    - No audit or domain dependencies
+    - Safe for admin, services, signals, and async pipelines
+    """
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -14,17 +22,46 @@ class TimeStampedModel(models.Model):
     class Meta:
         abstract = True
 
-    def soft_delete(self):
-        """Mark instance as deleted with timestamp."""
+    def soft_delete(self, *, user=None, reason=None, **kwargs):
+        """
+        Soft delete the instance.
+
+        Context parameters are accepted for compatibility with:
+        - Admin actions
+        - Domain orchestration
+        - Audit hooks
+        - Future middleware / signals
+
+        This method intentionally does NOT:
+        - Record audit events
+        - Enforce business rules
+        """
         self.deleted_at = timezone.now()
-        self.is_active = False  # Also mark as inactive on soft delete
+        self.is_active = False
         self.save()
 
-    def restore(self):
-        """Restore soft-deleted instance."""
+        post_soft_delete.send(
+            sender=self.__class__,
+            instance=self,
+            user=user,
+            reason=reason,
+        )
+
+    def restore(self, *, user=None, **kwargs):
+        """
+        Restore a soft-deleted instance.
+
+        Context parameters are accepted for compatibility.
+        """
         self.deleted_at = None
-        self.is_active = True  # Restore active status
+        self.is_active = True
         self.save()
+
+        post_restore.send(
+            sender=self.__class__,
+            instance=self,
+            user=user,
+        )
 
 
 class ActiveManager(models.Manager):

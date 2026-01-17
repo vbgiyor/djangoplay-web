@@ -4,13 +4,13 @@ from typing import Any, Optional, Type
 
 from core.middleware import thread_local
 from django.contrib.auth import get_user_model
+from mailer.throttling.flow_throttle import allow_flow
 from utilities.constants.login import (
     RESET_STATUS_LIMIT,
     RESET_STATUS_NOT_FOUND,
     RESET_STATUS_SUCCESS,
     RESET_STATUS_UNSUBSCRIBED,
 )
-from mailer.throttling.flow_throttle import allow_flow
 
 logger = logging.getLogger(__name__)
 UserModel = get_user_model()

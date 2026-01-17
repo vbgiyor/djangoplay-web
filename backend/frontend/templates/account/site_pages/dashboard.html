@@ -134,6 +134,14 @@
                     </span>
                 </a>
                 {% endwith %}
+                {% with 'audit'|get_app_display_name as name %}
+                <a href="{% url 'admin_single_app' 'audit' %}" class="e-card">
+                    <i class="icon fas fa-users"></i>
+                    <span class="card-label">{{ name }}<br>
+                        <small>(Audit Events Journal)</small>
+                    </span>
+                </a>
+                {% endwith %}
             </div>
         {% endif %}
     </main>

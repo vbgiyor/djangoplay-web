@@ -45,7 +45,6 @@ exclude = [
     "env",
     "__pycache__",
     "**/migrations/**",
-    "backend/**",
     "devtools/commands/management/**",
 ]
 
@@ -87,6 +86,7 @@ ignore = [
     "F821",  # Undefined name
     "F811",  # Redefinition of unused
     "E402",  # Module level import not at top of file
+    "E501",  # Line too long (256 > 255)
 ]
 
 [tool.ruff.format]

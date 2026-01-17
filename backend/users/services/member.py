@@ -1,5 +1,6 @@
 import logging
 from typing import Optional
+
 from django.conf import settings
 from django.core.validators import validate_email
 from django.db import transaction
@@ -285,7 +286,7 @@ class MemberService:
             )
             signup_request.save(user=created_by)
 
-            from mailer.flows.member_notifications import send_manual_verification_email_task        
+            from mailer.flows.member.verification import send_manual_verification_email_task
             # Async verification email via Celery
             send_manual_verification_email_task.delay(
                 member.id,

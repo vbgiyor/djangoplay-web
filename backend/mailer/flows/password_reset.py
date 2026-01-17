@@ -1,5 +1,6 @@
 from celery import shared_task
 
+
 @shared_task(bind=True)
 def send_password_reset_email_task(
     self,
@@ -8,8 +9,9 @@ def send_password_reset_email_task(
 ):
     from django.contrib.auth import get_user_model
     from utilities.admin.url_utils import get_site_base_url
-    from mailer.engine.engine import EmailEngine
     from utilities.constants.template_registry import TemplateRegistry as T
+
+    from mailer.engine.engine import EmailEngine
 
     User = get_user_model()
 

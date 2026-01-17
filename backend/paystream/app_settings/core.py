@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
 
     # Internal apps
+    "audit",
     "policyengine.apps.PolicyengineConfig",
     "frontend",
     "apidocs",
@@ -92,6 +93,7 @@ APP_DISPLAY_NAMES = {
     "fincore": "Finance",
     "entities": "Businesses",
     "invoices": "Invoices & Billing",
+    "audit": "Logging Journal",
 }
 
 APPS_READY = {
@@ -101,4 +103,5 @@ APPS_READY = {
     "locations": True,
     "industries": True,
     "entities": True,
+    "audit": True,
 }

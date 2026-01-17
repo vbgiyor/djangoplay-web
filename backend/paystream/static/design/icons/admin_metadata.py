@@ -45,4 +45,6 @@ MODEL_ICON_MAP = {
     "users.SupportTicket": "fas fa-life-ring",
     "users.Team": "fas fa-users-cog",
     "users.UserActivityLog": "fas fa-clipboard-list",
+    # Audit
+    "audit.AuditEvent": "fas fa-history"
 }

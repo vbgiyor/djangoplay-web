@@ -1,5 +1,6 @@
 import logging
-from typing import Optional, Tuple, Dict, Any
+from typing import Any, Dict, Optional, Tuple
+
 from django.conf import settings
 
 from .throttle import check_and_increment_email_limit
@@ -33,7 +34,6 @@ def _get_config(flow: str) -> Dict[str, Dict[str, int]]:
         2) settings.EMAIL_FLOW_LIMITS["default"]
         3) HARD DEFAULTS
     """
-
     # 1) JSON or ENV loaded config
     limits_dict = getattr(settings, "EMAIL_FLOW_LIMITS", {})
 
@@ -55,7 +55,7 @@ def allow_flow(
     flow: str,
     user_id: Optional[int] = None,
     email: Optional[str] = None,
-    client_ip: Optional[str] = None,       
+    client_ip: Optional[str] = None,
     prefer_user_identity: bool = True,
 ) -> Tuple[bool, Optional[str], Dict[str, Any]]:
     """
@@ -73,8 +73,8 @@ def allow_flow(
         or hard-coded fallback defaults.
       - Merges defaults automatically so missing max/window values never break.
       - Uses check_and_increment_email_limit() for atomic Redis counters.
-    """
 
+    """
     debug = {
         "flow": flow,
         "user_id": user_id,

@@ -196,7 +196,7 @@ class Location(TimeStampedModel, AuditFieldsModel):
             raise InvalidLocationData(f"Admin4 code must be numeric, got {admin4_code}")
 
         with transaction.atomic():
-            redis_client = redis_client.get_client()
+            redis = redis_client.get_client()
             cache_timeout = getattr(settings, 'LOCATION_CACHE_TIMEOUT', 3600)
             country_cache_key = f"country:{country_name.lower()}"
             region_cache_key = f"region:{region_name.lower()}:{country_name.lower()}" if region_name else None
@@ -206,7 +206,7 @@ class Location(TimeStampedModel, AuditFieldsModel):
 
             # Get or create country
             try:
-                cached_country = redis_client.hget('countries', country_cache_key)
+                cached_country = redis.hget('countries', country_cache_key)
                 country = CustomCountry(**json.loads(zlib.decompress(cached_country).decode())) if cached_country else None
             except Exception as e:
                 logger.warning(f"Cache get failed for {country_cache_key}: {str(e)}")
@@ -223,8 +223,8 @@ class Location(TimeStampedModel, AuditFieldsModel):
                         'country_code': country.country_code,
                         'location_source': country.location_source
                     }
-                    redis_client.hset('countries', country_cache_key, zlib.compress(json.dumps(country_data).encode()))
-                    redis_client.expire('countries', cache_timeout)
+                    redis.hset('countries', country_cache_key, zlib.compress(json.dumps(country_data).encode()))
+                    redis.expire('countries', cache_timeout)
                 except Exception as e:
                     logger.warning(f"Cache set failed for {country_cache_key}: {str(e)}")
 
@@ -240,7 +240,7 @@ class Location(TimeStampedModel, AuditFieldsModel):
             region = None
             if region_name:
                 try:
-                    cached_region = redis_client.hget('regions', region_cache_key)
+                    cached_region = redis.hget('regions', region_cache_key)
                     region = CustomRegion(**json.loads(zlib.decompress(cached_region).decode())) if cached_region else None
                 except Exception as e:
                     logger.warning(f"Cache get failed for {region_cache_key}: {str(e)}")
@@ -259,8 +259,8 @@ class Location(TimeStampedModel, AuditFieldsModel):
                             'country_name': country.name,
                             'location_source': region.location_source
                         }
-                        redis_client.hset('regions', region_cache_key, zlib.compress(json.dumps(region_data).encode()))
-                        redis_client.expire('regions', cache_timeout)
+                        redis.hset('regions', region_cache_key, zlib.compress(json.dumps(region_data).encode()))
+                        redis.expire('regions', cache_timeout)
                     except Exception as e:
                         logger.warning(f"Cache set failed for {region_cache_key}: {str(e)}")
 
@@ -271,7 +271,7 @@ class Location(TimeStampedModel, AuditFieldsModel):
                     logger.error(f"Cannot create subregion without a region for {subregion_name}")
                     raise InvalidLocationData("Cannot create subregion without a region.")
                 try:
-                    cached_subregion = redis_client.hget('subregions', subregion_cache_key)
+                    cached_subregion = redis.hget('subregions', subregion_cache_key)
                     subregion = CustomSubRegion(**json.loads(zlib.decompress(cached_subregion).decode())) if cached_subregion else None
                 except Exception as e:
                     logger.warning(f"Cache get failed for {subregion_cache_key}: {str(e)}")
@@ -290,8 +290,8 @@ class Location(TimeStampedModel, AuditFieldsModel):
                             'region_name': region.name,
                             'location_source': subregion.location_source
                         }
-                        redis_client.hset('subregions', subregion_cache_key, zlib.compress(json.dumps(subregion_data).encode()))
-                        redis_client.expire('subregions', cache_timeout)
+                        redis.hset('subregions', subregion_cache_key, zlib.compress(json.dumps(subregion_data).encode()))
+                        redis.expire('subregions', cache_timeout)
                     except Exception as e:
                         logger.warning(f"Cache set failed for {subregion_cache_key}: {str(e)}")
 
@@ -306,7 +306,7 @@ class Location(TimeStampedModel, AuditFieldsModel):
 
             # Get or create city
             try:
-                cached_city = redis_client.hget('cities', city_cache_key)
+                cached_city = redis.hget('cities', city_cache_key)
                 city = CustomCity(**json.loads(zlib.decompress(cached_city).decode())) if cached_city else None
             except Exception as e:
                 logger.warning(f"Cache get failed for {city_cache_key}: {str(e)}")
@@ -335,14 +335,14 @@ class Location(TimeStampedModel, AuditFieldsModel):
                         'subregion_name': subregion.name if subregion else None,
                         'location_source': city.location_source
                     }
-                    redis_client.hset('cities', city_cache_key, zlib.compress(json.dumps(city_data).encode()))
-                    redis_client.expire('cities', cache_timeout)
+                    redis.hset('cities', city_cache_key, zlib.compress(json.dumps(city_data).encode()))
+                    redis.expire('cities', cache_timeout)
                 except Exception as e:
                     logger.warning(f"Cache set failed for {city_cache_key}: {str(e)}")
 
             # Get or create location
             try:
-                cached_location = redis_client.hget('locations', location_cache_key)
+                cached_location = redis.hget('locations', location_cache_key)
                 location = Location(**json.loads(zlib.decompress(cached_location).decode())) if cached_location else None
             except Exception as e:
                 logger.warning(f"Cache get failed for {location_cache_key}: {str(e)}")
@@ -369,8 +369,8 @@ class Location(TimeStampedModel, AuditFieldsModel):
                         'postal_code': location.postal_code,
                         'location_source': location.location_source
                     }
-                    redis_client.hset('locations', location_cache_key, zlib.compress(json.dumps(location_data).encode()))
-                    redis_client.expire('locations', cache_timeout)
+                    redis.hset('locations', location_cache_key, zlib.compress(json.dumps(location_data).encode()))
+                    redis.expire('locations', cache_timeout)
                 except Exception as e:
                     logger.warning(f"Cache set failed for {location_cache_key}: {str(e)}")
 
