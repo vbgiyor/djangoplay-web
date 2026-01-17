@@ -1,20 +1,12 @@
 """
 Audit infrastructure app.
 
-Public API:
-- AuditRecorder
-- AuditActor
-- AuditTarget
+This package defines the audit subsystem.
+Public API is intentionally NOT imported here to avoid
+Django app registry initialization issues.
 
-Internal modules should not be imported directly by domain code.
+Consumers should import from explicit submodules, e.g.:
+
+    from audit.services import AuditRecorder
+    from audit.contracts import AuditActor, AuditTarget
 """
-
-from audit.contracts.actor import AuditActor
-from audit.contracts.target import AuditTarget
-from audit.services import AuditRecorder
-
-__all__ = [
-    "AuditRecorder",
-    "AuditActor",
-    "AuditTarget",
-]
