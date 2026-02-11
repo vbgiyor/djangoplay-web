@@ -12,6 +12,7 @@ class AuditTarget:
 
     Examples:
         - support_ticket
+        - bug_report
         - invoice
         - client
         - location

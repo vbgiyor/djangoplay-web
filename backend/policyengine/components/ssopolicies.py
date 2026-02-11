@@ -10,11 +10,12 @@ from policyengine.components.actions import MODEL_ROLE_PERMISSIONS
 
 logger = logging.getLogger(__name__)
 
-EXCLUDED_APPS = {'apidocs', "core", "devtools", "frontend", "policyengine", "utilities", }
-EXCLUDED_MODELS = {"featureflag", "employee", "member", "signup_request"}
+EXCLUDED_APPS = {'apidocs', 'audit', "core", "devtools", "frontend", "policyengine", "utilities", }
+EXCLUDED_MODELS = {"featureflag", "employee", "memberprofile", "signup_request"}
 
 # Define default apps you want permissions for
-DEFAULT_APP_LABELS = ['entities', 'locations', 'industries', 'fincore', 'invoices']
+DEFAULT_APP_LABELS = ['entities', 'locations', 'industries', 'fincore', 'invoices',
+                      'teamcentral', 'helpdesk']
 CACHE_TIMEOUT = 86400  # 1 day
 
 

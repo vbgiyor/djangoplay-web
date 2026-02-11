@@ -3,7 +3,7 @@ from typing import Optional, Tuple
 
 from django.conf import settings
 from django.contrib.sites.models import Site
-from users.models import Employee, Member
+from users.services.identity_query_service import IdentityQueryService
 
 logger = logging.getLogger(__name__)
 
@@ -23,60 +23,48 @@ def get_site_name() -> str:
 
     return site_name
 
-def employee_state_by_email(email: str) -> Tuple[str, Optional[Employee]]:
+def employee_state_by_email(email: str):
     """
-    Generic helper: resolve employee (direct or via Member) and return a state.
+    Identity-only resolution by email.
 
-    Returns: (state, employee_or_none)
-      state in {"ok", "not_found", "inactive", "unverified", "error"}.
+    Returns: (state, identity_or_employee_or_none)
 
-    - "ok": employee exists and is active & verified (or no employee exists at all; caller
-            may treat "not_found" differently if they want).
-    - "not_found": no Employee (nor Member->Employee) for this email.
-    - "inactive": employee exists but is soft-deleted / inactive.
-    - "unverified": employee exists but is not verified.
-    - "error": an exception occurred while resolving (defensive).
+    state ∈ {"ok", "not_found", "inactive", "unverified", "error"}
     """
     if not email:
         return "not_found", None
 
     email = email.strip().lower()
+
     try:
-        # Prefer a non-filtering manager if present so soft-deleted records can be inspected.
-        emp_manager = getattr(Employee, "all_objects", None) or getattr(Employee, "objects", None)
-        emp = emp_manager.filter(email__iexact=email).first()
+        identity = IdentityQueryService.get_by_email(email)
 
-        # Members in your architecture are backed by Employees; try Member -> employee fallback.
-        if not emp:
-            mem_manager = getattr(Member, "all_objects", None) or getattr(Member, "objects", None)
-            mem = mem_manager.filter(email__iexact=email).first()
-            emp = getattr(mem, "employee", None) if mem else None
-
-        if not emp:
+        if not identity:
             return "not_found", None
 
-        # Detect soft-delete / inactive. Prefer model property if present.
-        is_soft_deleted = getattr(emp, "is_soft_deleted", None)
-        if is_soft_deleted is None:
-            is_soft_deleted = bool(getattr(emp, "deleted_at", None)) or (getattr(emp, "is_active", True) is False)
+        # --------------------------------------------------
+        # Support BOTH identity snapshot dicts AND models
+        # --------------------------------------------------
+        if isinstance(identity, dict):
+            is_active = identity.get("is_active", True)
+            is_verified = identity.get("is_verified", False)
+        else:
+            # Employee model fallback (current implementation)
+            is_active = getattr(identity, "is_active", True)
+            is_verified = getattr(identity, "is_verified", False)
 
-        if is_soft_deleted:
-            return "inactive", emp
-
-        # Detect verified. Prefer model property if present.
-        is_verified = getattr(emp, "is_verified_account", None)
-        if is_verified is None:
-            is_verified = bool(getattr(emp, "is_verified", False))
+        if not is_active:
+            return "inactive", identity
 
         if not is_verified:
-            return "unverified", emp
+            return "unverified", identity
 
-        return "ok", emp
+        return "ok", identity
 
     except Exception:
         logger.exception("employee_state_by_email failed for %s", email)
-        # Defensive: return 'error' so callers can decide to allow/deny
         return "error", None
+
 
 def is_same_authenticated_user(request, result):
     return (

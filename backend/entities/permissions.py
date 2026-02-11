@@ -3,7 +3,7 @@ import logging
 from core.permissions import BaseAppPermission
 from policyengine import PERMISSION_DEPARTMENTS, PERMISSION_ROLES
 from rest_framework import permissions
-from users.models.member import Member
+from teamcentral.models import MemberProfile
 
 from entities.models.entity import Entity
 
@@ -55,7 +55,7 @@ class EntityPermission(BaseAppPermission):
             user_role, user_department = validation_result
             if user_role in self.READ_ROLES and user_department in self.ALLOWED_READ_DEPARTMENTS:
                 # Check entity ownership via Member model
-                has_entity_access = Member.objects.filter(
+                has_entity_access = MemberProfile.objects.filter(
                     employee=request.user,
                     entity=obj,
                     status__code='ACTV',
@@ -82,7 +82,7 @@ class EntityPermission(BaseAppPermission):
                 user_role in self.WRITE_ROLES and
                 user_department in self.ALLOWED_WRITE_DEPARTMENTS):
             # Check entity ownership via Member model
-            has_entity_access = Member.objects.filter(
+            has_entity_access = MemberProfile.objects.filter(
                 employee=request.user,
                 entity=obj,
                 status__code='ACTV',

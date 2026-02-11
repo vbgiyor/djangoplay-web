@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views import View
-from users.services.signup_flow import SignupFlowService
+from users.services.identity_signup_flow_service import SignupFlowService
 
 logger = logging.getLogger(__name__)
 

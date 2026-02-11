@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-        {% if ticket.is_bug_report %}
+        {% if ticket_kind == "bug" %}
             {% trans "New Bug Report" %}
         {% else %}
             {% trans "New Support Ticket" %}
@@ -40,7 +40,7 @@
                 <tr><td class="content">
 
                     <p>
-                        {% if ticket.is_bug_report %}
+                        {% if ticket_kind == "bug" %}
                             {% trans "A new bug report has been submitted via the website." %}
                         {% else %}
                             {% trans "A new support ticket has been submitted via the website." %}
@@ -50,39 +50,77 @@
                     <!-- USER DETAILS -->
                     <p>
                         <strong>{% trans "Submitted by:" %}</strong><br>
-                        {{ ticket.get_full_name }}
-                        <span style="pointer-events:none; color:inherit;">
+                        {% if ticket_kind == "bug" %}
+                            {{ bug.reporter.first_name }}
+                            <span style="pointer-events:none; color:inherit;">
+                            (<span style="unicode-bidi:bidi-override; direction:rtl;">
+                                {{ bug.reporter.email|slice:"::-1" }}
+                            </span>)
+                        </span>
+                        {% else %}
+                            {{ ticket.user.first_name }}
+                            <span style="pointer-events:none; color:inherit;">
                             (<span style="unicode-bidi:bidi-override; direction:rtl;">
                                 {{ ticket.email|slice:"::-1" }}
                             </span>)
                         </span>
-
-                        {% if employee_id %}
-                            <br><span style="font-size:12px; color:#6c757d;">
-                                {% trans "Employee ID:" %} {{ employee_id }}
-                            </span>
                         {% endif %}
+                        
+                        {% comment %} <span style="pointer-events:none; color:inherit;">
+                            (<span style="unicode-bidi:bidi-override; direction:rtl;">
+                                {{ ticket.email|slice:"::-1" }}
+                            </span>)
+                        </span> {% endcomment %}
+
+                        {% if ticket_kind == "bug" %}
+                            {% if bug.reporter.id %}
+                                <br><span style="font-size:12px; color:#6c757d;">
+                                    {% trans "Employee ID:" %} {{ bug.reporter.id }}
+                                </span>
+                            {% endif %}
+                        {% else %}
+                            {% if ticket.user.id %}
+                                <br><span style="font-size:12px; color:#6c757d;">
+                                    {% trans "Employee ID:" %} {{ ticket.user.id }}
+                                </span>
+                            {% endif %}
+                        {% endif %}
+
+                        
                     </p>
 
                     <!-- TICKET META BLOCKS -->
                     <div class="highlight">
                         <p>
-                            <span class="primary">{% trans "Ticket Number:" %}</span>
+                            <span class="primary">Ticket ID:</span>
+                            {% if ticket_kind == "bug" %}
+                                <span class="ticket-number">#{{ bug.bug_number }}</span>
+                            {% else %}
                             <span class="ticket-number">#{{ ticket.ticket_number }}</span>
+                            {% endif %}
                         </p>
                     </div>
 
                     <div class="subject">
                         <p>
-                            <span class="primary">{% trans "Subject:" %}</span>
-                            <span class="ticket-subject">{{ ticket.subject }}</span>
+                            <span class="primary">Issue:</span>
+                            {% if ticket_kind == "bug" %}
+                                <span class="ticket-subject">{{ bug.summary }}</span>
+                            {% else %}
+                                <span class="ticket-subject">{{ ticket.subject }}</span>
+                            {% endif %}                    
                         </p>
                     </div>
 
                     <!-- MESSAGE BLOCK -->
                     <div class="ticket-message-box">
                         <p class="ticket-message-label"><span class="primary">{% trans "Message:" %}</span></p>
-                        <span class="url-text">{{ ticket.message|truncatechars:350 }}</span>
+                        {% if ticket_kind == "bug" %}
+                            <span class="url-text">{{ bug.steps_to_reproduce|truncatechars:350 }}</span>
+                        {% else %}
+                            <span class="url-text">{{ ticket.message|truncatechars:350 }}</span>
+                        {% endif %}
+                        
                     </div>
 
                     <!-- ATTACHMENTS -->
@@ -138,7 +176,6 @@
     </table>
 </td></tr>
 </table>
-
 {% endinlinecss %}
 </body>
 </html>

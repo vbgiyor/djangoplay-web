@@ -4,9 +4,9 @@ from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext as _
-from mailer.engine.verification_guard import handle_unverified_email
-from mailer.flows.support import SupportService
-from users.models import Employee, Member
+from helpdesk.services.support_ticket_service import SupportService
+from users.contracts.identity import get_identity_snapshot
+from users.services.identity_query_service import IdentityQueryService
 from utilities.commons.helpers import employee_state_by_email
 from utilities.constants.template_registry import TemplateRegistry
 
@@ -17,24 +17,24 @@ logger = logging.getLogger(__name__)
 
 def support_view(request):
     if request.method == "POST":
+        origin = request.POST.get("from") or request.GET.get("from", "login")
         form = SupportForm(request.POST, request.FILES)
         form.enforce_logged_in_email(request)
 
         if form.is_valid():
             subject = form.cleaned_data["subject"]
             full_name = form.cleaned_data["name"]
-            # keep original behaviour for email variable (no forced lowercasing here)
             email = form.cleaned_data["email"]
             message = form.cleaned_data["message"]
             files = request.FILES.getlist("files")
 
-            # -------------------------
-            # Minimal generic pre-check
-            # -------------------------
+            # -------------------------------------------------
+            # Identity state check (shared utility)
+            # -------------------------------------------------
+            state, identity = employee_state_by_email(email)
 
-            state, emp = employee_state_by_email(email)
             if state == "inactive":
-                if request.user.is_authenticated and getattr(request.user, "pk", None) == getattr(emp, "pk", None):
+                if request.user.is_authenticated and request.user.email == email:
                     messages.error(
                         request,
                         _(
@@ -48,32 +48,46 @@ def support_view(request):
                     messages.error(
                         request,
                         _(
-                            "We cannot accept support requests for this email because the associated account is inactive or has been removed."
+                            "We cannot accept support requests for this email because "
+                            "the associated account is inactive or has been removed."
                         ),
                         extra_tags="support_request error",
                     )
-                logger.warning("Blocked support submit — inactive employee: %s", email)
-                return redirect(reverse("console_dashboard") if request.user.is_authenticated else reverse("account_login"))
 
-            # ------------------------------------------------------------------
-            # state == "unverified" via shared utility
-            # ------------------------------------------------------------------
-            response = handle_unverified_email(
-                request=request,
-                email=email,
-                context="support",
-            )
-            if response:
-                logger.info("Blocked support submit — unverified employee: %s", email)
-                return response
+                logger.warning("Blocked support submit — inactive identity: %s", email)
+                return redirect(
+                    reverse("console_dashboard")
+                    if request.user.is_authenticated
+                    else reverse("account_login")
+                )
 
-            # state == "ok" or "not_found" or "error" -> proceed to submit (we allow not_found)
+            # -------------------------------------------------
+            # Optional unverified handling (kept commented intentionally)
+            # -------------------------------------------------
+            # from mailer.engine.verification_guard import handle_unverified_email
+
+            # if not request.user.is_authenticated:
+            #     response = handle_unverified_email(
+            #         request=request,
+            #         email=email,
+            #         context="support",
+            #     )
+            #     if response:
+            #         logger.info(
+            #             "Blocked support submit — unverified identity: %s",
+            #             email,
+            #         )
+            #         return response
+
             if state == "error":
-                logger.warning("employee_state_by_email returned error for %s; proceeding with submission", email)
+                logger.warning(
+                    "employee_state_by_email returned error for %s; proceeding",
+                    email,
+                )
 
-            # -------------------------
-            # Proceed with original flow (SupportService does throttling/limit)
-            # -------------------------
+            # -------------------------------------------------
+            # Submit support request (service owns throttling)
+            # -------------------------------------------------
             result = SupportService.submit_support_request(
                 request=request,
                 subject=subject,
@@ -83,60 +97,35 @@ def support_view(request):
                 files=files,
             )
 
-            # NOTE: treat not_registered as allowed — show success message (use ticket if service created one)
+            # -------------------------------------------------
+            # Result handling
+            # -------------------------------------------------
             if result.status == "not_registered":
-                ticket_num = None
-                try:
-                    ticket_num = getattr(result, "ticket", None) and result.ticket.ticket_number
-                except Exception:
-                    ticket_num = None
+                ticket_num = getattr(getattr(result, "ticket", None), "ticket_number", None)
 
-                # If the service returns a ticket, show the ticket-based success message.
-                # Otherwise show a generic allowed-success message. We still rely on result.status == "limit"
-                # to indicate throttling if the service sets it.
-                if ticket_num:
-                    messages.success(
-                        request,
-                        _(
-                            "Your support ticket #{} has been submitted. "
-                            "We'll get back to you soon!"
-                        ).format(ticket_num),
-                        extra_tags="support_request success",
-                    )
-                else:
-                    messages.success(
-                        request,
-                        _(
-                            "Your support request has been submitted. We'll get back to you soon!"
-                        ),
-                        extra_tags="support_request success",
-                    )
+                messages.success(
+                    request,
+                    _(
+                        "Your support request has been submitted."
+                        if not ticket_num
+                        else "Your support ticket #{} has been submitted. We'll get back to you soon!"
+                    ).format(ticket_num) if ticket_num else _(
+                        "Your support request has been submitted. We'll get back to you soon!"
+                    ),
+                    extra_tags="support_request success",
+                )
 
             elif result.status == "success":
-                # ------------------------------------------------------------------
-                # Determine unsubscribed state for both logged-in and anonymous users
-                # ------------------------------------------------------------------
                 is_unsubscribed = False
 
                 if request.user.is_authenticated:
                     is_unsubscribed = getattr(request.user, "is_unsubscribed", False)
                 else:
-                    try:
-                        emp = Employee.objects.filter(email__iexact=email).first()
-                        if emp:
-                            is_unsubscribed = getattr(emp, "is_unsubscribed", False)
-                        else:
-                            mem = Member.objects.filter(email__iexact=email).first()
-                            if mem and mem.employee:
-                                is_unsubscribed = getattr(mem.employee, "is_unsubscribed", False)
-                            elif mem:
-                                is_unsubscribed = getattr(mem, "is_unsubscribed", False)
-                    except Exception:
-                        pass
+                    identity = IdentityQueryService.get_by_email(email)
+                    if identity:
+                        snapshot = get_identity_snapshot(identity.id)
+                        is_unsubscribed = snapshot.get("is_unsubscribed", False)
 
-                # ------------------------------------------------------------------
-                # Show appropriate success message (only if NOT throttled)
-                # ------------------------------------------------------------------
                 if is_unsubscribed:
                     messages.warning(
                         request,
@@ -157,18 +146,16 @@ def support_view(request):
                     )
 
             elif result.status == "limit":
-                # ------------------------------------------------------------------
-                # IMPORTANT: respect throttling — no success message when limit reached
-                # ------------------------------------------------------------------
                 messages.warning(
                     request,
                     _(
-                        "You’ve reached the maximum number of support requests.<br>Our team will contact you soon."
+                        "You’ve reached the maximum number of support requests.<br>"
+                        "Our team will contact you soon."
                     ),
                     extra_tags="support_request warning",
                 )
 
-            else:  # "error"
+            else:
                 messages.error(
                     request,
                     _(
@@ -178,22 +165,65 @@ def support_view(request):
                     extra_tags="support_request error",
                 )
 
-            if request.user.is_authenticated:
-                return redirect(reverse("console_dashboard"))
-            else:
-                return redirect(reverse("account_login"))
-
-        else:
-            messages.error(
-                request,
-                _("Please correct the errors below."),
-                extra_tags="support_request error",
+            # return redirect(
+            #     reverse("console_dashboard")
+            #     if request.user.is_authenticated
+            #     else reverse("account_login")
+            # )
+            return redirect(
+                resolve_support_redirect(origin, request.user.is_authenticated)
             )
-            if request.user.is_authenticated:
-                return redirect(reverse("console_dashboard"))
-            else:
-                return redirect(reverse("account_login"))
+
+
+        messages.error(
+            request,
+            _("Please correct the errors below."),
+            extra_tags="support_request error",
+        )
+
+        # return redirect(
+        #     reverse("console_dashboard")
+        #     if request.user.is_authenticated
+        #     else reverse("account_login")
+        # )
+
+        return redirect(
+            resolve_support_redirect(origin, request.user.is_authenticated)
+        )
 
     form = SupportForm()
     form.enforce_logged_in_email(request)
-    return render(request, TemplateRegistry.SUPPORT_REQUEST_FORM, {"form": form})
+    return render(
+        request,
+        TemplateRegistry.SUPPORT_REQUEST_FORM,
+        {"form": form},
+    )
+
+def resolve_support_redirect(origin, is_authenticated):
+    """
+    Determines where to redirect after support submission
+    """
+    # Standard site login
+    if origin == "login":
+        return reverse("account_login")
+
+    # API login page (generic api_login.html)
+    if origin == "api":
+        return reverse("frontend:api_login")
+
+    if origin == "dashboard":
+        return reverse("console_dashboard")
+
+    if origin == "redoc":
+        if is_authenticated:
+            return reverse("apidocs:redoc")
+        return reverse("frontend:api_login") + "?from=redoc"
+
+    if origin == "swagger":
+        if is_authenticated:
+            return reverse("apidocs:swagger-ui")
+        return reverse("frontend:api_login") + "?from=swagger"
+
+    # Safe fallback
+    return reverse("account_login")
+

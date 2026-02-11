@@ -1,13 +1,17 @@
 import logging
 
 from django.contrib import messages
+from django.db import transaction
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views import View
+from mailer.flows.member.verification import send_manual_verification_email_task
 from mailer.links.resend import build_resend_verification_url
+from teamcentral.services.member_lifecycle_service import MemberLifecycleService
+from teamcentral.services.onboarding_policy import OnboardingPolicy
 from users.exceptions import EmployeeValidationError, MemberValidationError
-from users.services.signup_flow import SignupFlowService
+from users.services.identity_signup_flow_service import SignupFlowService
 from utilities.commons.helpers import employee_state_by_email
 
 logger = logging.getLogger(__name__)
@@ -16,7 +20,13 @@ logger = logging.getLogger(__name__)
 class ManualSignupView(View):
 
     """
-    Handles manual (email/password) signup.
+    Manual email/password signup.
+
+    Orchestration responsibilities:
+    - Identity creation (users)
+    - HR defaults resolution (teamcentral policy)
+    - HR enrichment of identity employee
+    - Member creation
     """
 
     def post(self, request):
@@ -33,60 +43,72 @@ class ManualSignupView(View):
             return redirect(reverse("account_login"))
 
         try:
-            _, _, status = SignupFlowService.handle_manual_signup(
+            # -------------------------------------------------
+            # 1. HR defaults (policy owns meaning)
+            # -------------------------------------------------
+            employee_defaults = OnboardingPolicy.default_employee_defaults()
+            member_status = OnboardingPolicy.default_member_status()
+
+            # -------------------------------------------------
+            # 2. Identity creation (creates Employee row)
+            # -------------------------------------------------
+            signup_result = SignupFlowService.handle_manual_signup(
                 data=data,
                 request=request,
+                hr_defaults=employee_defaults,
+            )
+            employee = signup_result.user
+
+            # -------------------------------------------------
+            # 3. Member creation (HR lifecycle)
+            # -------------------------------------------------
+            member = MemberLifecycleService.create_member(
+                data={
+                    "email": employee.email,
+                    "first_name": employee.first_name,
+                    "last_name": employee.last_name,
+                    "employee": employee,
+                    "status": member_status,
+                },
+                created_by=employee,
             )
 
+            from mailer.flows.member import send_successful_signup_email_task
+
+            transaction.on_commit(lambda: send_successful_signup_email_task.delay(member.id))
+
+
         # -------------------------------------------------
-        # Business rule violations (preferred path)
+        # Business rule violations
         # -------------------------------------------------
         except MemberValidationError as exc:
-            logger.info("Manual signup blocked (member rule): %s", exc)
-
             for _, msg in exc.message_dict.items():
+                messages.error(request, mark_safe(msg))
+            return redirect(reverse("account_login"))
+
+        except EmployeeValidationError:
+            email = data["email"]
+            state, _ = employee_state_by_email(email)
+
+            if state == "unverified":
+                resend_url = build_resend_verification_url(email)
+                msg = (
+                    "An account already exists but is not verified. "
+                    f'<a href="{resend_url}">Resend verification email</a>.'
+                )
+                messages.error(request, mark_safe(msg))
+            else:
+                login_url = reverse("account_login")
+                msg = (
+                    "An account already exists. "
+                    f'<a href="{login_url}">Sign in</a>.'
+                )
                 messages.error(request, mark_safe(msg))
 
             return redirect(reverse("account_login"))
 
         # -------------------------------------------------
-        # Identity / DB conflicts (fallback path)
-        # -------------------------------------------------
-        except EmployeeValidationError as exc:
-            email = data.get("email")
-            state, _ = employee_state_by_email(email)
-
-            logger.info(
-                "Manual signup blocked (employee rule): %s | state=%s",
-                exc,
-                state,
-            )
-
-            if state == "unverified":
-                resend_url = build_resend_verification_url(email)
-
-                msg = (
-                    "An account already exists with this email address but is not yet verified. "
-                    "Please activate your account using the link sent to your email, or request a new verification email "
-                )
-                msg = mark_safe(f'{msg}<a href="{resend_url}">here</a>.')
-
-                messages.error(request, msg)
-
-            else:
-                login_url = reverse("account_login")
-                msg = (
-                    "An account already exists with this email address. "
-                    "Please sign in using your existing account."
-                )
-                msg = mark_safe(f'{msg} <a href="{login_url}">Sign in</a>.')
-
-                messages.error(request, msg)
-
-            return redirect(reverse("account_login"))
-
-        # -------------------------------------------------
-        # True system failure
+        # System failure
         # -------------------------------------------------
         except Exception:
             logger.exception("Manual signup failed unexpectedly")
@@ -99,15 +121,8 @@ class ManualSignupView(View):
         # -------------------------------------------------
         # Success
         # -------------------------------------------------
-        if status == "ok":
-            messages.success(
-                request,
-                "Signup successful. Please check your email to verify your account.",
-            )
-        else:
-            messages.error(
-                request,
-                "Too many verification attempts. Please try again later.",
-            )
-
+        messages.success(
+            request,
+            "Signup successful. Please check your email to verify your account.",
+        )
         return redirect(reverse("account_login"))

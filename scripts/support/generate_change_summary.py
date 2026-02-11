@@ -1,12 +1,17 @@
+
 #!/usr/bin/env python3
 """
-Git-native change summary generator.
+Git-native change summary generator with minimal human-readable hints.
 
 Uses:
 - git diff --numstat
 - git diff --name-status
 
-Accurate for large releases.
+Adds:
+- Path-based intent hints
+- Change nature inference (feature / refactor / cleanup)
+
+Safe for large releases.
 """
 
 import subprocess
@@ -15,6 +20,7 @@ from collections import defaultdict
 
 def run_git(cmd):
     return subprocess.check_output(cmd, text=True).strip().splitlines()
+
 
 def get_numstat():
     """
@@ -30,6 +36,7 @@ def get_numstat():
             int(deleted) if deleted.isdigit() else 0,
         )
     return stats
+
 
 def get_name_status():
     """
@@ -54,6 +61,61 @@ def get_name_status():
 
     return status_map
 
+
+# ─────────────────────────────────────────────
+# Heuristics
+# ─────────────────────────────────────────────
+
+def infer_area(path):
+    rules = [
+        ("models/", "Model"),
+        ("views/", "View / API"),
+        ("serializers/", "Serialization"),
+        ("services/", "Service layer"),
+        ("templates/", "Template / UI"),
+        ("admin.py", "Admin config"),
+        ("tests/", "Tests"),
+        ("migrations/", "DB migration"),
+        (".json", "Configuration"),
+        (".yaml", "Schema"),
+        (".css", "Styling"),
+        (".html", "Template"),
+        (".py", "Code"),
+    ]
+
+    for key, label in rules:
+        if key in path:
+            return label
+
+    return "Code"
+
+
+def infer_change_nature(added, deleted, change_type):
+    if change_type == "Deleted":
+        return "Cleanup / removal"
+
+    if added > 0 and deleted == 0:
+        return "Feature addition"
+
+    if deleted > added * 2:
+        return "Cleanup / simplification"
+
+    if abs(added - deleted) <= 10:
+        return "Refactor"
+
+    return "Logic update"
+
+
+def infer_description(path, added, deleted, change_type):
+    area = infer_area(path)
+    nature = infer_change_nature(added, deleted, change_type)
+    return f"{area} · {nature}"
+
+
+# ─────────────────────────────────────────────
+# Summary generation
+# ─────────────────────────────────────────────
+
 def generate_summary():
     numstat = get_numstat()
     status_map = get_name_status()
@@ -69,6 +131,7 @@ def generate_summary():
             "type": change_type,
             "added": added,
             "deleted": deleted,
+            "hint": infer_description(path, added, deleted, change_type),
         })
 
         totals["files"] += 1
@@ -78,6 +141,7 @@ def generate_summary():
 
     return summary, totals
 
+
 def print_markdown(summary, totals):
     print("\n📦 **File-level summary**\n")
 
@@ -85,6 +149,7 @@ def print_markdown(summary, totals):
         line = f"• `{item['file']}` — {item['type']}"
         if item["added"] or item["deleted"]:
             line += f" (+{item['added']} / -{item['deleted']})"
+        line += f"\n  · {item['hint']}"
         print(line)
 
     print("\n📊 **Change breakdown**\n")
@@ -96,10 +161,116 @@ def print_markdown(summary, totals):
         if totals[key]:
             print(f"- {key}: {totals[key]}")
 
+
 if __name__ == "__main__":
     summary, totals = generate_summary()
     print_markdown(summary, totals)
 
+########################################################################################
+
+# #!/usr/bin/env python3
+# """
+# Git-native change summary generator.
+
+# Uses:
+# - git diff --numstat
+# - git diff --name-status
+
+# Accurate for large releases.
+# """
+
+# import subprocess
+# from collections import defaultdict
+
+
+# def run_git(cmd):
+#     return subprocess.check_output(cmd, text=True).strip().splitlines()
+
+# def get_numstat():
+#     """
+#     Returns:
+#       { file_path: (added, deleted) }
+
+#     """
+#     stats = {}
+#     for line in run_git(["git", "diff", "--numstat"]):
+#         added, deleted, path = line.split("\t", 2)
+#         stats[path] = (
+#             int(added) if added.isdigit() else 0,
+#             int(deleted) if deleted.isdigit() else 0,
+#         )
+#     return stats
+
+# def get_name_status():
+#     """
+#     Returns:
+#       { file_path: status }
+
+#     """
+#     status_map = {}
+#     for line in run_git(["git", "diff", "--name-status"]):
+#         parts = line.split("\t")
+#         status = parts[0]
+
+#         if status.startswith("R"):  # rename
+#             _old, new = parts[1], parts[2]
+#             status_map[new] = "Renamed"
+#         else:
+#             status_map[parts[1]] = {
+#                 "A": "Added",
+#                 "M": "Modified",
+#                 "D": "Deleted",
+#             }.get(status, "Changed")
+
+#     return status_map
+
+# def generate_summary():
+#     numstat = get_numstat()
+#     status_map = get_name_status()
+
+#     summary = []
+#     totals = defaultdict(int)
+
+#     for path, change_type in sorted(status_map.items()):
+#         added, deleted = numstat.get(path, (0, 0))
+
+#         summary.append({
+#             "file": path,
+#             "type": change_type,
+#             "added": added,
+#             "deleted": deleted,
+#         })
+
+#         totals["files"] += 1
+#         totals["added"] += added
+#         totals["deleted"] += deleted
+#         totals[change_type] += 1
+
+#     return summary, totals
+
+# def print_markdown(summary, totals):
+#     print("\n📦 **File-level summary**\n")
+
+#     for item in summary:
+#         line = f"• `{item['file']}` — {item['type']}"
+#         if item["added"] or item["deleted"]:
+#             line += f" (+{item['added']} / -{item['deleted']})"
+#         print(line)
+
+#     print("\n📊 **Change breakdown**\n")
+#     print(f"- Files changed: {totals['files']}")
+#     print(f"- Insertions: +{totals['added']}")
+#     print(f"- Deletions: -{totals['deleted']}\n")
+
+#     for key in ["Added", "Modified", "Deleted", "Renamed"]:
+#         if totals[key]:
+#             print(f"- {key}: {totals[key]}")
+
+# if __name__ == "__main__":
+#     summary, totals = generate_summary()
+#     print_markdown(summary, totals)
+
+########################################################################################
 
 # import re
 

@@ -5,7 +5,7 @@
   },
 
   "resend_verification": {
-    "per_email": {"max": 3, "window_seconds": 86400},
+    "per_email": {"max": 2, "window_seconds": 86400},
     "per_ip": {"max": 20, "window_seconds": 86400}
   },
 
@@ -19,11 +19,11 @@
     "per_ip": {"max": 20, "window_seconds": 120}
   },
   "support_request": {
-    "per_email": {"max": 2, "window_seconds": 120},
+    "per_email": {"max": 4, "window_seconds": 120},
     "per_ip": {"max": 10, "window_seconds": 120}
   },
   "bug_report": {
-    "per_email": {"max": 2, "window_seconds": 120},
+    "per_email": {"max": 5, "window_seconds": 120},
     "per_ip": {"max": 10, "window_seconds": 120}
   } 
 }

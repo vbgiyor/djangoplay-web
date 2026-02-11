@@ -213,4 +213,11 @@ djpenv
 dev.pem
 dev-key.pem
 celerybeat-schedule.db
+creds.txt
+.certs
 
+filemerger-output.txt
+celerybeat-schedule.db
+
+# App logs
+backend/logs/

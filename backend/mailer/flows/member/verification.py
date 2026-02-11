@@ -2,7 +2,10 @@ import logging
 from typing import Any
 
 from celery import shared_task
-from users.models import Member
+from teamcentral.models import MemberProfile
+from users.services.identity_verification_token_service import (
+    SignupTokenManagerService,
+)
 from utilities.commons import helpers
 from utilities.constants.template_registry import TemplateRegistry as T
 
@@ -15,11 +18,15 @@ logger = logging.getLogger(__name__)
 @shared_task(bind=True)
 def send_verification_email_task(self: Any, member_id: int) -> None:
     """
-    Standalone verification email task.
+    Send verification email for an existing member.
+
+    RULES:
+    - No users.models imports
+    - SignupRequest access ONLY via SignupTokenManagerService
     """
     try:
-        member = Member.objects.select_related("employee").get(pk=member_id)
-    except Member.DoesNotExist:
+        member = MemberProfile.objects.select_related("employee").get(pk=member_id)
+    except MemberProfile.DoesNotExist:
         logger.warning(
             "send_verification_email_task: member_id=%s not found",
             member_id,
@@ -27,7 +34,24 @@ def send_verification_email_task(self: Any, member_id: int) -> None:
         return
 
     try:
-        verification_url = build_verification_url(member)
+        signup_request = SignupTokenManagerService.get_latest_active_request(
+            user=member.employee
+        )
+
+        if not signup_request:
+            logger.error(
+                "send_verification_email_task: no active signup_request "
+                "user_id=%s member_id=%s",
+                member.employee_id,
+                member.pk,
+            )
+            return
+
+        verification_url = build_verification_url(
+            member=member,
+            signup_request=signup_request,
+        )
+
     except Exception as exc:
         logger.exception(
             "send_verification_email_task: failed to build verification URL "
@@ -59,11 +83,15 @@ def send_manual_verification_email_task(
     last_name: str,
 ) -> None:
     """
-    Manual / SSO verification flow.
+    Manual / SSO verification email flow.
+
+    RULES:
+    - No users.models imports
+    - Token resolution via identity service only
     """
     try:
-        member = Member.objects.select_related("employee").get(pk=member_id)
-    except Member.DoesNotExist:
+        member = MemberProfile.objects.select_related("employee").get(pk=member_id)
+    except MemberProfile.DoesNotExist:
         logger.warning(
             "send_manual_verification_email_task: member_id=%s not found",
             member_id,
@@ -71,7 +99,24 @@ def send_manual_verification_email_task(
         return
 
     try:
-        verification_url = build_verification_url(member)
+        signup_request = SignupTokenManagerService.get_latest_active_request(
+            user=member.employee
+        )
+
+        if not signup_request:
+            logger.error(
+                "send_manual_verification_email_task: no active signup_request "
+                "user_id=%s member_id=%s",
+                member.employee_id,
+                member.pk,
+            )
+            return
+
+        verification_url = build_verification_url(
+            member=member,
+            signup_request=signup_request,
+        )
+
     except Exception as exc:
         logger.exception(
             "send_manual_verification_email_task: failed to build verification URL "
@@ -82,7 +127,7 @@ def send_manual_verification_email_task(
         return
 
     send_email_via_adapter(
-        template_prefix=T.EMAIL_MANUAL_VERIFICATION,
+        template_prefix=T.EMAIL_VERIFICATION_MANUAL,
         to_email=member.email,
         context={
             "member": member,

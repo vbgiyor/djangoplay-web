@@ -39,6 +39,15 @@ def ensure_google_socialapp():
         logger.warning("[SocialApp] Duplicate Google apps removed.")
         qs = SocialApp.objects.filter(provider="google")
 
+    GOOGLE_APP_SETTINGS = {
+        "scope": [
+            "profile",
+            "email",
+        ],
+        "auth_params": {
+            "access_type": "online",
+        },
+    }
     if qs.exists():
         app = qs.first()
     else:
@@ -47,9 +56,18 @@ def ensure_google_socialapp():
             name="Google",
             client_id=client_id,
             secret=secret,
+            settings=GOOGLE_APP_SETTINGS,
         )
         logger.info("[SocialApp] Created Google SocialApp.")
 
+    # ------------------------------------------------------------------
+    # FAIL FAST: ensure email scope is always present
+    # ------------------------------------------------------------------
+    scope = (app.settings or {}).get("scope", [])
+    if "email" not in scope:
+        raise RuntimeError(
+            "Google SocialApp misconfigured: 'email' scope is required for SSO"
+        )
     # ------------------------------------------------------------------
     # UPDATE CREDENTIALS IF NECESSARY
     # ------------------------------------------------------------------
@@ -63,6 +81,10 @@ def ensure_google_socialapp():
         app.secret = secret
         updated_fields.append("secret")
 
+    if app.settings != GOOGLE_APP_SETTINGS:
+        app.settings = GOOGLE_APP_SETTINGS
+        updated_fields.append("settings")
+
     if updated_fields:
         app.save(update_fields=updated_fields)
         logger.info(f"[SocialApp] Updated fields: {updated_fields}")
@@ -71,4 +93,9 @@ def ensure_google_socialapp():
     # ENSURE SITE ASSOCIATION IS EXACTLY THE CURRENT SITE
     # ------------------------------------------------------------------
     app.sites.set([site])
-    logger.info(f"[SocialApp] Bound to site '{site.domain}' (id={site.id})")
+    logger.info(
+        f"[SocialApp] Bound to site '{site.domain}' (id={site.id})"
+        "[SocialApp] Google settings verified: scope=%s auth_params=%s",
+        app.settings.get("scope"),
+        app.settings.get("auth_params"),
+    )

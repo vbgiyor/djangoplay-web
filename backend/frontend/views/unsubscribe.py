@@ -64,7 +64,7 @@ class UnsubscribeView(View):
             context["error"] = "Invalid unsubscribe link."
             return render(request, self.template_name, context, status=404)
 
-        user, error = validate_unsubscribe_token(uidb64, token)
+        user, error = UnsubscribeService.validate_unsubscribe_token(uidb64, token)
         if not user:
             context["error"] = error or "Invalid unsubscribe link."
             return render(request, self.template_name, context, status=404)

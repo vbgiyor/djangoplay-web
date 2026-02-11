@@ -2,9 +2,9 @@ import logging
 
 from django import forms
 from django.core.exceptions import ValidationError
+from teamcentral.models import Address
+
 from users.models import Employee
-from users.models.address import Address
-from users.models.user_activity_log import UserActivityLog
 
 logger = logging.getLogger(__name__)
 
@@ -75,29 +75,3 @@ class AddressForm(forms.ModelForm):
             raise ValidationError("Address is required.")
 
         return cleaned
-
-
-class UserActivityLogForm(forms.ModelForm):
-
-    """Form for UserActivityLog model (read-only)."""
-
-    user = forms.ModelChoiceField(
-        queryset=Employee.objects.filter(is_active=True, deleted_at__isnull=True),
-        required=True,
-        help_text="Employee who performed the action"
-    )
-
-    class Meta:
-        model = UserActivityLog
-        fields = ['user', 'action', 'client_ip']
-        widgets = {
-            'user': forms.Select(),
-            'action': forms.Select(choices=UserActivityLog.ACTION_CHOICES),
-            'client_ip': forms.TextInput(),
-            'created_at': forms.DateTimeInput(attrs={'type': 'datetime-local'}),
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].disabled = True  # Read-only form

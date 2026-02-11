@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from mailer.engine.verification_guard import handle_unverified_email
-from users.services.unified_login import UnifiedLoginService
+from users.services.identity_login_policy_service import UnifiedLoginService
 from utilities.constants.template_registry import TemplateRegistry
 
 logger = logging.getLogger(__name__)

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from users.models.employee import Employee
+from users.models import Employee
 
 
 class BaseEmployeeSerializer(serializers.ModelSerializer):

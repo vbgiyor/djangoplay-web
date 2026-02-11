@@ -14,7 +14,9 @@ Filters are reusable across models via dynamic queryset methods.
 from django.contrib import admin
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-from users.models import Address
+
+# from teamcentral.models import Address
+from teamcentral.models import Address
 
 from locations.models import CustomCity, CustomCountry, CustomRegion, CustomSubRegion, GlobalRegion, Timezone
 
@@ -536,7 +538,8 @@ class DepartmentCodeFilter(admin.SimpleListFilter):
     parameter_name = 'dept_code'
 
     def lookups(self, request, model_admin):
-        from users.models import Department
+        # from teamcentral.models import Department
+        from teamcentral.models import Department
         qs = Department.objects.exclude(code__exact='')
 
         # Auto-scope by country + state

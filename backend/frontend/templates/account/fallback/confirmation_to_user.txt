@@ -1,28 +1,33 @@
-{% if ticket.is_bug_report %}
-Bug Report Received
+{% if ticket_kind == "bug" %}
+Bug #{{ bug.bug_number }} Received
 
-Hi {{ ticket.full_name }},
+
+Hi {{ bug.reporter.first_name }},
 
 Thanks for letting us know about this issue. Your report has been received and logged in our system.
 
-Ticket ID: #{{ ticket_number }}
-Issue: {{ subject|default:"(No subject)" }}{% if github_issue %}
+Ticket ID: #{{ bug.bug_number }}
 
-GitHub Issue: {{ github_issue }}{% endif %}
+Issue: {{ subject|default:"(No subject)" }}
+
+{% if github_issue %}
+GitHub Issue: {{ github_issue }}
+{% endif %}
 
 Our team will review it soon. While we may not reply individually,
-every report helps us improve DjangoPlay for everyone.
+every report helps us improve {{ site_name}} for everyone.
 
 You can also view the public bug tracker here:
 https://bugs.djangoplay.com
 
-Thanks for helping us build a better DjangoPlay.
-— The DjangoPlay Team
+Thanks for helping us build a better {{ site_name}}.
+— The {{ site_name}} Team
 
 {% else %}
-Support Ticket Confirmation
+Support Ticket #{{ ticket.ticket_number }} Received
 
-Dear {{ ticket.full_name }},
+
+Hi {{ ticket.user.first_name }},
 
 Thank you for contacting {{ site_name }} support. Your request has been received and
 assigned ticket number {{ ticket.ticket_number }}.

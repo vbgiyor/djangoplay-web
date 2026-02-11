@@ -11,12 +11,7 @@ from django.core.validators import RegexValidator
 from django.db import models, transaction
 from django.utils import timezone
 from simple_history.models import HistoricalRecords
-
-from .address import Address
-from .department import Department
-from .employee_type import EmployeeType
-from .employment_status import EmploymentStatus
-from .role import Role
+from teamcentral.models import Address, Department, EmployeeType, EmploymentStatus, Role
 
 logger = logging.getLogger(__name__)
 
@@ -102,12 +97,12 @@ class Employee(TimeStampedModel, AuditFieldsModel, AbstractUser):
         editable=False
     )
 
-    department = models.ForeignKey(Department, on_delete=models.PROTECT, related_name='employees')
-    role = models.ForeignKey(Role, on_delete=models.PROTECT, related_name='employees')
-    team = models.ForeignKey('Team', on_delete=models.SET_NULL, null=True, blank=True, related_name='members')
-    address = models.ForeignKey(Address, on_delete=models.PROTECT, null=True, blank=True, related_name='employees')
-    employment_status = models.ForeignKey(EmploymentStatus, on_delete=models.PROTECT, related_name='employees')
-    employee_type = models.ForeignKey(EmployeeType, on_delete=models.PROTECT, related_name='employees')
+    department = models.ForeignKey('teamcentral.Department', on_delete=models.PROTECT, related_name='employees')
+    role = models.ForeignKey('teamcentral.Role', on_delete=models.PROTECT, related_name='employees')
+    team = models.ForeignKey('teamcentral.Team', on_delete=models.SET_NULL, null=True, blank=True, related_name='members')
+    address = models.ForeignKey('teamcentral.Address', on_delete=models.PROTECT, null=True, blank=True, related_name='employees')
+    employment_status = models.ForeignKey('teamcentral.EmploymentStatus', on_delete=models.PROTECT, related_name='employees')
+    employee_type = models.ForeignKey('teamcentral.EmployeeType', on_delete=models.PROTECT, related_name='employees')
 
     manager = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='subordinates')
     phone_number = models.CharField(max_length=15, blank=True, null=True)

@@ -1,14 +1,29 @@
-{% if ticket.is_bug_report %}
+{% if ticket_kind == "bug" %}
 New Bug Report Submitted
 {% else %}
 New Support Ticket Submitted
 {% endif %}
 
+{% if ticket_kind == "bug" %}
+Ticket Number: #{{ bug.bug_number }}
+{% else %}
 Ticket Number: #{{ ticket.ticket_number }}
+{% endif %}
+
+
+{% if ticket_kind == "bug" %}
+Subject: {{ bug.summary|default:"(No subject)" }}
+{% else %}
 Subject: {{ ticket.subject|default:"(No subject)" }}
+{% endif %}
 
 Submitted by:
+{% if ticket_kind == "bug" %}
+{{ bug.get_full_name }} ({{ bug.reporter.email }})
+{% else %}
 {{ ticket.get_full_name }} ({{ ticket.email }})
+{% endif %}
+
 
 {% if employee_id %}
 Employee ID: {{ employee_id }}

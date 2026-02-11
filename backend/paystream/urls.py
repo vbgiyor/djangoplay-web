@@ -71,6 +71,8 @@ urlpatterns = [
     # ------------------------------------------------------------------
     # Main API Routes
     # ------------------------------------------------------------------
+    path("api/v1/helpdesk/", include("helpdesk.urls")),
+    path("api/v1/teamcentral/", include("teamcentral.urls")),
     path("api/v1/locations/", include("locations.urls")),
     path("api/v1/industries/", include("industries.urls")),
     path("api/v1/fincore/",include("fincore.urls")),

@@ -1,21 +1,16 @@
 from urllib.parse import urlencode
 
 from django.urls import reverse
-from users.services.signup_token_manager import SignupTokenManagerService
 from utilities.admin.url_utils import get_site_base_url
 
 
-def build_verification_url(member) -> str:
+def build_verification_url(*, member, signup_request) -> str:
     """
-    Create a signed verification URL using SignupTokenManagerService.
+    Create a signed verification URL.
+    Token ownership is enforced here.
     """
-    signup_request, status = SignupTokenManagerService.create_for_user(
-        user=member.employee,
-        request=None,
-    )
-
-    if status != "ok":
-        raise RuntimeError(f"Unable to create verification token: {status}")
+    if not signup_request or not signup_request.token:
+        raise RuntimeError("Signup request token missing")
 
     base_url = get_site_base_url()
     path = reverse("frontend:account_verify")

@@ -184,7 +184,7 @@
     </div>
     <footer class="footer-container">       
         <div class="links-container">
-            <i class="fas fa-copyright"></i> 2025 DjangoPlay
+            &copy; {% now "Y" %} {{site_name}}<br>  
             <i class="fas fa-book"></i>
             {% if request.user.is_authenticated %}
                 <a href="{% url 'apidocs:redoc' %}" class="primary-text" target="_blank" rel="noopener noreferrer">Documentation</a>

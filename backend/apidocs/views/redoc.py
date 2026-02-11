@@ -5,7 +5,7 @@ from django.shortcuts import redirect, render
 from django.urls import reverse
 from drf_spectacular.views import SpectacularRedocView
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from utilities.constants.template_registry import TemplateRegistry
 
@@ -14,7 +14,8 @@ logger = logging.getLogger(__name__)
 class CustomSpectacularRedocView(SpectacularRedocView):
     template_name = TemplateRegistry.APIDOCS_REDOC
     authentication_classes = [BasicAuthentication, JWTAuthentication, SessionAuthentication]
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request, *args, **kwargs):
         logger.info("Processing GET in CustomSpectacularRedocView")
@@ -39,6 +40,11 @@ class CustomSpectacularRedocView(SpectacularRedocView):
             'from': 'redoc',
             'u': u_param
         }
+        logger.info(
+            "REDOC DEBUG user=%s auth=%s",
+            request.user,
+            request.user.is_authenticated
+        )
         return render(request, TemplateRegistry.ACCOUNT_403, context, status=403)
 
     def check_permissions(self, request):

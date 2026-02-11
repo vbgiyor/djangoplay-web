@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-        {% if ticket.is_bug_report %}
+        {% if ticket_kind == "bug" %}
             {% trans "Bug Report Received" %}
         {% else %}
             {% trans "Support Ticket Confirmation" %}
@@ -52,28 +52,41 @@
                                 <tr>
                                     <td class="content" style="padding:32px; font-size:16px; line-height:1.6;">
 
-                                        {% if ticket.is_bug_report %}
-                                            {# ---------------- BUG CONFIRMATION (from bug_confirmation_to_user.html) ---------------- #}
-                                            <p><strong>{% trans "Hi" %} {{ ticket.full_name }},</strong></p>
+                                        {% if ticket_kind == "bug" %}
+                                            {# ---------------- BUG CONFIRMATION  ---------------- #}
+                                            <p><strong>{% trans "Hi" %} {{ bug.reporter.first_name }},</strong></p>
 
                                             <p>
                                                 {% trans "Thanks for letting us know about this issue. Your report has been received and logged in our system." %}
-                                            </p>
+                                            </p>                                        
 
                                             <div class="highlight">
                                                 <p>
                                                     <span class="primary">Ticket ID:</span>
-                                                    <span class="ticket-number">#{{ ticket_number }}</span>
+                                                    <span class="ticket-number">#{{ bug.bug_number }}</span>                                                    
                                                 </p>
                                             </div>
 
                                             <div class="subject">
                                                 <p>
                                                     <span class="primary">Issue:</span>
-                                                    <span class="ticket-subject">{{ ticket.subject }}</span>
+                                                    <span class="ticket-subject">{{ bug.summary }}</span>                                                    
                                                 </p>
                                             </div>
 
+                                            <div class="highlight">
+                                                <span class="primary">Description:</span>
+                                                <span class="ticket-number">{{ bug.steps_to_reproduce }}</span>                                                
+                                            </div>
+                                            
+                                            {% if bug.external_issue_url %}                               
+                                                <div class="subject">
+                                                    
+                                                        <span class="primary">GitHub Issue Link:</span>
+                                                        <span class="ticket-number">{{ bug.external_issue_url }}</span>                                                                                   
+                                                </div>
+                                            {% endif %} 
+                                    
                                             {% if has_attachments %}
                                                 <p><strong>{% trans "Attachments:" %}</strong></p>
                                                 <ul>
@@ -82,14 +95,7 @@
                                                     {% endfor %}
                                                 </ul>
                                             {% endif %}
-
-                                            {% if github_issue %}
-                                                <p>
-                                                    <strong>{% trans "GitHub Issue:" %}</strong>
-                                                    <a href="{{ github_issue }}" target="_blank">{{ github_issue }}</a>
-                                                </p>
-                                            {% endif %}
-
+                                            
                                             <p>
                                                 {% trans "Our team will review it soon. While we may not reply individually, every report helps us improve DjangoPlay for everyone." %}
                                             </p>
@@ -106,10 +112,10 @@
                                             </p>
 
                                         {% else %}
-                                            {# ---------------- SUPPORT CONFIRMATION (from support_confirmation_to_user.html) ---------------- #}
+                                            {# ---------------- SUPPORT CONFIRMATION  ---------------- #}
                                             <p>
                                                 <strong>
-                                                    {% trans "Dear" %} {{ ticket.full_name }},
+                                                    {% trans "Dear" %} {{ ticket.user.first_name }},                                                    
                                                 </strong>
                                             </p>
 

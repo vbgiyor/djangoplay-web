@@ -5,7 +5,8 @@ from email.mime.image import MIMEImage
 from pathlib import Path
 
 from django.conf import settings
-from utilities.ui.image_resize import resize_image_to_file
+
+from mailer.engine.image_resize import resize_image_to_file
 
 logger = logging.getLogger(__name__)
 

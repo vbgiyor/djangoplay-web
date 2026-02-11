@@ -194,8 +194,8 @@ def has_sufficient_balance(employee, leave_type, start_date, end_date):
    - Added a `LeaveBalance` record for the employee:
      ```python
      from users.models.employee import Employee
-     from users.models.leave_type import LeaveType
-     from users.models.leave_balance import LeaveBalance
+     from teamcentral.models import LeaveType
+     from teamcentral.models.leave_balance import LeaveBalance
      from decimal import Decimal
 
      employee = Employee.objects.get(employee_code='DJP26A2BCBB4A4B')
@@ -331,8 +331,8 @@ To confirm the fixes, you:
      ```python
      from django.core.management.base import BaseCommand
      from users.models.employee import Employee
-     from users.models.leave_type import LeaveType
-     from users.models.leave_balance import LeaveBalance
+     from teamcentral.models import LeaveType
+     from teamcentral.models.leave_balance import LeaveBalance
      from decimal import Decimal
 
      class Command(BaseCommand):
