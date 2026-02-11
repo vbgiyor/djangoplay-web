@@ -1,5 +1,3 @@
-# users/adapters/context/password_reset.py
-
 import logging
 
 from django.conf import settings
@@ -67,45 +65,3 @@ class PasswordResetContextProvider:
         )
 
         return context
-
-# import logging
-# from django.contrib.auth.tokens import default_token_generator
-# from django.utils.http import int_to_base36
-# from utilities.admin.url_utils import get_site_base_url
-# from django.conf import settings
-
-# logger = logging.getLogger(__name__)
-
-
-# class PasswordResetContextProvider:
-
-#     @staticmethod
-#     def inject_password_reset_context(*, user, context: dict) -> dict:
-#         """
-#         Inject password-reset-specific context expected by templates.
-
-#         This is intentionally small and isolated to avoid leaking
-#         password reset logic into adapters or services.
-#         """
-#         if context is None:
-#             context = {}
-
-#         # Do not override if already provided (safety)
-#         if context.get("reset_url"):
-#             return context
-
-#         uidb36 = int_to_base36(user.pk)
-#         token = default_token_generator.make_token(user)
-#         base_url = get_site_base_url()
-
-#         context["reset_url"] = (
-#             f"{base_url}/accounts/password/reset/key/{uidb36}/{token}/"
-#         )
-
-#         context.update(
-#                 {
-#                     'site_name': getattr(settings, 'SITE_NAME', 'DjangoPlay'),
-#                 }
-#             )
-
-#         return context

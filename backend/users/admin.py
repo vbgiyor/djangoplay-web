@@ -9,20 +9,19 @@ from django.db.models import Prefetch, Q
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
+from helpdesk.models import *
 from locations.utils.location_filters import *
 from mailer.engine.unsubscribe import UnsubscribeService
 from mailer.flows.member.verification import send_manual_verification_email_task
 from mailer.throttling.throttle import check_and_increment_email_limit
+from teamcentral.models import *
 from utilities.admin.admin_filters import *
 
-from users.forms.common import AddressForm, UserActivityLogForm
+from users.forms.common import AddressForm
 from users.forms.employee import *
 from users.forms.member import *
-from users.models import *
-from users.models.address import Address
 from users.models.password_reset_request import PasswordResetRequest
 from users.models.signup_request import SignUpRequest
-from users.models.user_activity_log import UserActivityLog
 from users.utils.helpers import user_is_verified_employee
 
 logger = logging.getLogger(__name__)
@@ -433,10 +432,10 @@ class MemberStatusAdmin(BaseAdmin):
             base_filters.insert(0, changelist_filter(model=MemberStatus))
         return base_filters
 
-@AdminIconDecorator.register_with_icon(Member)
-class MemberAdmin(BaseAdmin):
+@AdminIconDecorator.register_with_icon(MemberProfile)
+class MemberProfileAdmin(BaseAdmin):
     icon = 'fas fa-user-friends'
-    form = MemberForm
+    form = MemberProfileForm
     list_display = ('member_code', 'email', 'first_name', 'last_name', 'employee_display', 'status_display')
     # list_filter = ('status__code', CountryFilterMixin.CountryAdminFilter)
     search_fields = ('member_code', 'email', 'first_name', 'last_name')
@@ -494,7 +493,7 @@ class MemberAdmin(BaseAdmin):
             changelist_filter("status"),
         ]
         if user_is_verified_employee(request):
-            base_filters.insert(0, changelist_filter(model=Member))
+            base_filters.insert(0, changelist_filter(model=MemberProfile))
         return base_filters
 
 @AdminIconDecorator.register_with_icon(SignUpRequest)
@@ -605,7 +604,7 @@ class SignUpRequestAdmin(BaseAdmin):
 
         employee = obj.user
         member = (
-            Member.objects
+            MemberProfile.objects
             .filter(employee=employee, deleted_at__isnull=True)
             .order_by("-id")
             .first()
@@ -901,63 +900,6 @@ class AddressAdmin(BaseAdmin):
         return base
 
 
-@AdminIconDecorator.register_with_icon(UserActivityLog)
-class UserActivityLogAdmin(BaseAdmin):
-    form = UserActivityLogForm
-    list_display = ('user_display', 'action', 'client_ip', 'event_timestamp')
-    list_filter = ('action',)
-    search_fields = ('user__email', 'action')
-    list_per_page = 50
-    select_related_fields = ['user']
-    readonly_fields = ('user', 'action', 'event_timestamp')
-    ordering = ('-created_at',)
-
-    base_fieldsets_config = [
-        (None, {
-            'fields': ('user', 'action')
-        }),
-    ]
-
-    def get_fieldset_conditions(self, request, obj=None):
-        return []
-
-    def get_queryset(self, request):
-        return super().get_queryset(request).only(
-            'user__email', 'action', 'created_at'
-        )
-
-    @admin.display(description='User')
-    def user_display(self, obj):
-        if obj.user:
-            url = reverse('admin:users_employee_change', args=[obj.user.pk])
-            return format_html('<a href="{}">{}</a>', url, obj.user.email)
-        return '-'
-
-    @admin.display(description='Event Timestamp')
-    def event_timestamp(self, obj):
-        return obj.created_at
-
-    def get_list_display(self, request):
-        # Override to ensure 'event_timestamp' is included, bypassing audit field exclusion
-        return ('user_display', 'action', 'client_ip', 'event_timestamp')
-
-    def get_fieldsets(self, request, obj=None):
-        # Ensure 'event_timestamp' is always included, even if audit fields are restricted
-        fieldsets = list(self.base_fieldsets_config)
-        if self.user_can_see_audit(request):
-            audit_fields = self.get_audit_fields(obj)
-            fieldsets.append((_('Metadata'), {
-                'fields': audit_fields
-            }))
-        return fieldsets
-
-    def has_add_permission(self, request):
-        return False
-
-    def has_change_permission(self, request, obj=None):
-        return False
-
-
 @AdminIconDecorator.register_with_icon(Department)
 class DepartmentAdmin(BaseAdmin):
     list_display = ('code', 'name', 'get_is_active')
@@ -1076,13 +1018,13 @@ class EmploymentStatusAdmin(BaseAdmin):
 @AdminIconDecorator.register_with_icon(SupportTicket)
 class SupportTicketAdmin(BaseAdmin):
     form = SupportTicketForm
-    list_display = ('ticket_number', 'subject', 'is_bug_report', 'status_display', 'email','file_count', 'created_at')
+    list_display = ('ticket_number', 'subject', 'status_display', 'email','file_count', 'created_at')
     search_fields = ('ticket_number', 'subject', 'full_name', 'email')
     list_per_page = 50
-    select_related_fields = ['employee', 'created_by', 'updated_by', 'deleted_by']
+    select_related_fields = ['user', 'created_by', 'updated_by', 'deleted_by']
     prefetch_related_fields = ['file_uploads']
     actions = ['soft_delete', 'restore']
-    autocomplete_fields = ['employee']
+    autocomplete_fields = ['user']
     base_fieldsets_config = [
         (None, {
             'fields': ('subject', 'email', 'message', 'status', 'resolved_at', 'is_active')
@@ -1100,7 +1042,7 @@ class SupportTicketAdmin(BaseAdmin):
     def get_readonly_fields(self, request, obj=None):
         ro = list(super().get_readonly_fields(request, obj))
         if obj and obj.status in (SupportStatus.RESOLVED, SupportStatus.CLOSED):
-            ro += ["full_name", "email", "is_bug_report"]
+            ro += ["full_name", "email"]
             # optionally:
             # ro += ["subject", "message"]
         return ro
@@ -1130,9 +1072,9 @@ class SupportTicketAdmin(BaseAdmin):
         return '-'
 
     def get_list_filter(self, request):
-        base_filters = [changelist_filter("is_bug_report"), IsActiveFilter]
+        base_filters = [IsActiveFilter]
         if user_is_verified_employee(request):
-            base_filters.insert(0, changelist_filter("employee"),)
+            base_filters.insert(0, changelist_filter(model=SupportTicket))
         return base_filters
 
 

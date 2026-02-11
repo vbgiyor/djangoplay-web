@@ -158,7 +158,6 @@ class SubRegionAdmin(BaseAdmin):
     autocomplete_fields = ['region']
     actions = ['soft_delete', 'restore']
     readonly_fields = ('geoname_id', 'asciiname', 'slug', 'code', 'created_by', 'updated_by', 'created_at', 'updated_at')
-    # change_list_template = "admin/custom_changelist.html"
 
     def get_queryset(self, request):
         qs = super().get_queryset(request).select_related('region')

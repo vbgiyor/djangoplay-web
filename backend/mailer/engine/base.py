@@ -5,6 +5,8 @@ from typing import Any, Dict, Optional
 
 from allauth.account.adapter import get_adapter
 
+from mailer.engine.unsubscribe import UnsubscribeService
+
 logger = logging.getLogger(__name__)
 
 

@@ -1,3 +1,7 @@
+# NOTE:
+# ACTION_PERMISSIONS currently acts as a fallback only.
+# All real authorization is driven by MODEL_ROLE_PERMISSIONS.
+
 ACTION_PERMISSIONS = {
     'create': {'DJGO', 'CEO', 'CFO'},
     'update': {'DJGO', 'CEO', 'CFO'},
@@ -9,6 +13,10 @@ ACTION_PERMISSIONS = {
 
 MODEL_ROLE_PERMISSIONS = {
     # ---------------- USERS ----------------
+
+    "apidocs": {
+        "view_redoc": ["CEO", "DJGO"],
+    },
     "employee": {
         "list": ["ADMIN", "HR"],
         "retrieve": ["ADMIN", "HR"],
@@ -16,7 +24,7 @@ MODEL_ROLE_PERMISSIONS = {
         "update": ["ADMIN", "HR"],
         "destroy": ["ADMIN"],
     },
-    "member": {
+    "memberprofile": {
         "list": ["ADMIN"],
         "retrieve": ["ADMIN"],
         "create": ["ADMIN"],
@@ -50,10 +58,6 @@ MODEL_ROLE_PERMISSIONS = {
         "create": ["HR"],
         "update": ["HR"],
         "destroy": ["HR"],
-    },
-    "useractivitylog": {
-        "list": ["ADMIN"],
-        "retrieve": ["ADMIN"],
     },
     "signuprequest": {
         "list": ["ADMIN"],

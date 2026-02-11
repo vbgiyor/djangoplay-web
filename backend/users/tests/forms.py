@@ -10,8 +10,8 @@ from django.core.exceptions import ValidationError
 from django.db import transaction
 from django.utils import timezone
 
-from ..constants import EMPLOYEE_TYPE_CODES
-from ..models.employee import Address, User
+from users.constants import EMPLOYEE_TYPE_CODES
+from users.models.employee import Address, User
 
 logger = logging.getLogger(__name__)
 

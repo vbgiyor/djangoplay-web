@@ -14,7 +14,8 @@ from simple_history.models import HistoricalRecords
 from utilities.utils.general.normalize_text import normalize_text
 from utilities.utils.locations.postal_code_validations import validate_postal_code
 
-from ..exceptions import InvalidLocationData
+from locations.exceptions import InvalidLocationData
+
 from .custom_city import CustomCity
 from .custom_country import CustomCountry
 from .custom_region import CustomRegion

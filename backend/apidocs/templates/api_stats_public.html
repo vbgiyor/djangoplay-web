@@ -37,7 +37,11 @@
   <!-- ====================== PAGE TITLE ====================== -->
   <div class="page-description text-center">
     <div class="page-description-inner">
-      <h1 class="mb-2">API Statistics{% if is_personal %} (Personal){% else %} (Public){% endif %}</h1>
+      {% comment %} <h1 class="mb-2">API Statistics{% if is_personal %} (Personal){% else %} (Public){% endif %}</h1> {% endcomment %}
+      <h1 class="mb-2">
+        API Stats{% if is_personal %} (Personal){% else %} (Public){% endif %}
+      </h1>
+
       <p class="lead text-muted">
         Monitor your API usage in real time. View daily and weekly activity, success rates, and top endpoints.
         You can also export detailed usage logs as a CSV file or send reports directly to your email.

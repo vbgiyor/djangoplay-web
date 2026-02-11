@@ -4,7 +4,10 @@ from typing import Any
 from celery import shared_task
 from django.conf import settings
 from django.urls import reverse
-from users.models import Member
+from teamcentral.models import MemberProfile
+from users.services.identity_verification_token_service import (
+    SignupTokenManagerService,
+)
 from utilities.admin.url_utils import get_site_base_url
 from utilities.commons import helpers
 from utilities.constants.template_registry import TemplateRegistry as T
@@ -13,7 +16,6 @@ from mailer.engine.base import send_email_via_adapter
 from mailer.links.verification import build_verification_url
 
 logger = logging.getLogger(__name__)
-
 base_url = get_site_base_url()
 
 
@@ -25,10 +27,15 @@ def send_successful_signup_email_task(self: Any, member_id: int) -> None:
     Order:
       1) Welcome email
       2) Verification email (manual vs SSO)
+
+    Important:
+    - No users.models imports
+    - SignupRequest access ONLY via SignupTokenManagerService
+
     """
     try:
-        member = Member.objects.select_related("employee").get(pk=member_id)
-    except Member.DoesNotExist:
+        member = MemberProfile.objects.select_related("employee").get(pk=member_id)
+    except MemberProfile.DoesNotExist:
         logger.warning(
             "send_successful_signup_email_task: member_id=%s not found",
             member_id,
@@ -36,10 +43,27 @@ def send_successful_signup_email_task(self: Any, member_id: int) -> None:
         return
 
     # --------------------------------------------------
-    # Build verification URL
+    # Build verification URL (via identity service)
     # --------------------------------------------------
     try:
-        verification_url = build_verification_url(member)
+        signup_request = SignupTokenManagerService.get_latest_active_request(
+            user=member.employee
+        )
+
+        if not signup_request:
+            logger.error(
+                "send_successful_signup_email_task: no active signup_request "
+                "user_id=%s member_id=%s",
+                member.employee_id,
+                member.pk,
+            )
+            verification_url = None
+        else:
+            verification_url = build_verification_url(
+                member=member,
+                signup_request=signup_request,
+            )
+
     except Exception as exc:
         logger.exception(
             "send_successful_signup_email_task: failed to build verification URL "
@@ -83,10 +107,11 @@ def send_successful_signup_email_task(self: Any, member_id: int) -> None:
     # --------------------------------------------------
     try:
         provider = getattr(member.employee, "sso_provider", None) or "EMAIL"
-        if provider.upper() == "EMAIL":
-            verification_prefix = T.EMAIL_VERIFICATION_MANUAL
-        else:
-            verification_prefix = T.EMAIL_VERIFICATION_SSO
+        verification_prefix = (
+            T.EMAIL_VERIFICATION_MANUAL
+            if provider.upper() == "EMAIL"
+            else T.EMAIL_VERIFICATION_SSO
+        )
 
         send_email_via_adapter(
             template_prefix=verification_prefix,

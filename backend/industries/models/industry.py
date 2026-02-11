@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from simple_history.models import HistoricalRecords
 
-from ..exceptions import InvalidIndustryData
+from industries.exceptions import InvalidIndustryData
 
 logger = logging.getLogger('industries')
 

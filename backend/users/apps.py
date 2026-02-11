@@ -10,12 +10,3 @@ class UsersConfig(AppConfig):
 
     def ready(self):
         pass
-        # Prevent multiple imports
-        # if hasattr(self, 'signals_loaded'):
-        #     return
-        # try:
-        #     import users.signals
-        #     self.signals_loaded = True
-        #     logger.info("Users signals imported successfully (once)")
-        # except Exception as e:
-        #     logger.error(f"Failed to import users.signals: {e}")

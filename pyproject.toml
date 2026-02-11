@@ -1,17 +1,18 @@
 [project]
-name = "paystream"
-version = "0.1.0"
-description = "PaystreamA modern, full-stack **PayStream** built with **Django + React**. Designed for small businesses and freelancers to manage businesses, invoices, payments, and uploaded PDFs—securely, intuitively, and efficiently."
+name = "djangoplay"
+version = "0.3.0"
+description = "DjangoPlay is a modular, enterprise-grade backend platform built with Django and Django REST Framework, designed for internal organizational systems where identity, permissions, auditability, and correctness are first-class concerns. It is intentionally structured to support long-lived systems, regulatory requirements, and complex organizational workflows."
 authors = [
-    {name = "Shekhar Bhosale", email = "vbgiyor@gmail.com"},
+    { name = "Shekhar Bhosale", email = "vbgiyor@gmail.com" },
 ]
 dependencies = [
     "Django>=4.2,<5.0",
-    "djangorestframework>=3.14,<4.0",    
-    "psycopg2-binary=2.9.9",
+    "djangorestframework>=3.14,<4.0",
+    "psycopg2-binary==2.9.9",
     "python-dotenv>=1.0,<2.0",
     "requests>=2.31,<3.0",
 ]
+
 [project.optional-dependencies]
 dev = [
     "pytest>=7.4,<8.0",
@@ -21,18 +22,28 @@ dev = [
     "ruff>=0.7.0",
     "coverage>=7.3,<8.0",
 ]
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+# ─────────────────────────────────────────────
+# FORMATTERS
+# ─────────────────────────────────────────────
+
 [tool.black]
 line-length = 255
-target-version = ['py310']
+target-version = ["py310"]
 
 [tool.isort]
 profile = "black"
 line_length = 255
 skip = ["migrations"]
+
+
+# ─────────────────────────────────────────────
+# RUFF
+# ─────────────────────────────────────────────
 
 [tool.ruff]
 line-length = 255
@@ -48,6 +59,7 @@ exclude = [
     "devtools/commands/management/**",
 ]
 
+
 [tool.ruff.lint]
 select = [
     "E",   # pycodestyle errors
@@ -57,37 +69,72 @@ select = [
     "B",   # flake8-bugbear
     "C4",  # flake8-comprehensions
     "D",   # pydocstyle
+    "TID", # flake8-tidy-imports (banned-api)
 ]
+
 ignore = [
-    "E203",  # Whitespace before ':', ignored for black compatibility
-    "D100",  # Missing docstring in public module
-    "D104",  # Missing docstring in public package
-    "D205",  #blank line required between summary line and description
-    "D211",  # No blank line before class
-    "D212",  # Multi-line docstring summary should start at the first line
-    "D101",  # Missing docstring in public class
-    "D102",  # Missing docstring in public method
-    "D105",  # Missing docstring in magic method
-    "D107",  # Missing docstring in __init__
-    "D103",  # Missing docstring in public function
-    "D106", 
-    "E902",
-    "D401",  # First line of docstring should be in imperative mood
-    "D200",  # One-line docstring should fit on one line
-    "D400",  # First line should end with a period
-    "D415",  # First line should end with a period, question mark, or exclamation point
-    "B904",  # Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
-    "F403",  # from module import *
-    "F401",  # from module import *
-    "F405",  # from module import *
-    "E722",  # Do not use bare `except`
-    "D417",  # Missing argument
-    "B007",  # Loop control variable `receiver_id` not used within loop nody
-    "F821",  # Undefined name
-    "F811",  # Redefinition of unused
+    "E203",  # Whitespace before ':'
     "E402",  # Module level import not at top of file
-    "E501",  # Line too long (256 > 255)
+    "E501",  # Line too long
+
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D106",
+    "D107",
+    "D200",
+    "D205",
+    "D211",
+    "D212",
+    "D400",
+    "D401",
+    "D415",
+    "D417",
+
+    "B904",
+    "B007",
+
+    "F401",
+    "F403",
+    "F405",
+    "F811",
+    "F821",
+
+    "E722",
+    "E902",
 ]
+
+# ✅ THIS IS THE IMPORTANT FIX
+# Allow banned-api imports *inside* users app
+[tool.ruff.lint.per-file-ignores]
+"backend/users/**" = ["TID251"]
+
+# ─────────────────────────────────────────────
+# flake8-tidy-imports
+# ─────────────────────────────────────────────
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "parents"
+
+
+[tool.ruff.lint.flake8-tidy-imports.banned-api]
+# ─────────────────────────────────────────────
+# USERS APP — IDENTITY BOUNDARY ENFORCEMENT
+# ─────────────────────────────────────────────
+
+"users.models" = { msg = "❌ Do not import users.models outside users app. Use users.services or users.contracts." }
+"users.models.employee" = { msg = "❌ Identity model access forbidden. Use identity services/contracts." }
+
+"users.services.common" = { msg = "❌ Legacy mixed service. Use identity_* services only." }
+"users.services.member" = { msg = "❌ Member logic moved to teamcentral." }
+"users.services.employee" = { msg = "❌ Employee logic moved to teamcentral." }
+
+# ─────────────────────────────────────────────
+# RUFF FORMAT
+# ─────────────────────────────────────────────
 
 [tool.ruff.format]
 quote-style = "double"

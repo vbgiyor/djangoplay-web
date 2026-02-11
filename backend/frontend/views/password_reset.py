@@ -7,8 +7,11 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth import login as auth_login
 from django.shortcuts import redirect
 from django.urls import reverse, reverse_lazy
-from users.services.common import CommonService
-from users.services.password_reset import PasswordResetService
+from django.views.generic import FormView
+from users.services.identity_password_reset_service import PasswordResetService
+from users.services.identity_password_reset_token_service import (
+    PasswordResetTokenManagerService,
+)
 from utilities.constants.login import (
     RESET_STATUS_INVALID,
     RESET_STATUS_LIMIT,
@@ -21,6 +24,7 @@ from utilities.constants.template_registry import TemplateRegistry
 from frontend.forms.password_reset import CustomResetPasswordForm, CustomResetPasswordKeyForm
 
 logger = logging.getLogger(__name__)
+
 UserModel = get_user_model()
 
 
@@ -157,11 +161,6 @@ class CustomPasswordResetView(PasswordResetView):
         return redirect(self.get_success_url())
 
 
-from django.views.generic import FormView
-from users.services.password_reset_token_manager import (
-    PasswordResetTokenManagerService,
-)
-
 
 class CustomPasswordResetConfirmView(FormView):
     template_name = TemplateRegistry.PASSWORD_RESET_FORM
@@ -234,37 +233,5 @@ class CustomPasswordResetConfirmView(FormView):
                 "Your password has been reset. Please log in with your new password.",
             )
             redirect_url = reverse("account_login")
-
-
-        # =========================================================
-        # AUDIT LOG
-        # =========================================================
-        try:
-            CommonService.log_user_activity(
-                user=self.reset_user,
-                action="RESET_PASSWORD",
-                client_ip=getattr(self.reset_request, "client_ip", None),
-            )
-        except Exception:
-            logger.exception("Failed to log RESET_PASSWORD activity")
-
-        # Audit log (best effort)
-        # try:
-        #     UserActivityLog = apps.get_model("users", "UserActivityLog")
-        #     client_ip = (
-        #         self.request.META.get("REMOTE_ADDR")
-        #         or self.request.META.get("HTTP_X_FORWARDED_FOR")
-        #     )
-        #     if client_ip and "," in client_ip:
-        #         client_ip = client_ip.split(",")[0].strip()
-
-        #     UserActivityLog.objects.create(
-        #         user=user,
-        #         action="RESET_PASSWORD",
-        #         client_ip=client_ip,
-        #         created_at=timezone.now(),
-        #     )
-        # except Exception:
-        #     logger.exception("Failed to log RESET_PASSWORD activity")
 
         return redirect(redirect_url)

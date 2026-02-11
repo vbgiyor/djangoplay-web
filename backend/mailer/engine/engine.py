@@ -8,7 +8,6 @@ from django.core.mail import EmailMultiAlternatives
 from users.adapters.context.email import EmailContextProvider
 from users.adapters.context.password_reset import PasswordResetContextProvider
 from users.adapters.context.support import SupportContextProvider
-from users.models import Employee
 from utilities.constants.template_registry import TemplateRegistry as T
 
 from mailer.engine.inline_images import InlineImageService
@@ -94,48 +93,29 @@ class EmailEngine:
         if not user and context.get("employee"):
             user = context["employee"]
 
-        if not user and context.get("ticket"):
-            ticket = context["ticket"]
-            try:
-                user = Employee.objects.get(email__iexact=ticket.email)
-            except Employee.DoesNotExist:
-                user = None
-
-        if not user and context.get("email"):
-            try:
-                user = Employee.objects.get(email__iexact=context["email"])
-            except Employee.DoesNotExist:
-                user = None
-
-        # Fallback: use email parameter itself
-        if not user:
-            try:
-                user = Employee.objects.get(email__iexact=email)
-            except Employee.DoesNotExist:
-                user = None
-
         return user
 
-    # ------------------------------------------------------------------
-    # Build unsubscribe URL using service abstraction
-    # ------------------------------------------------------------------
-    @staticmethod
-    def attach_unsubscribe_url(context: dict, user):
-        if "unsubscribe_url" in context:
-            return  # already set by the caller
+    # # ------------------------------------------------------------------
+    # # Build unsubscribe URL using service abstraction
+    # # ------------------------------------------------------------------
+    # @staticmethod
+    # def attach_unsubscribe_url(context: dict, user):
+    #     if "unsubscribe_url" in context:
+    #         return  # already set by the caller
 
-        if not user:
-            context["unsubscribe_url"] = "#"
-            return
+    #     if not user:
+    #         context["unsubscribe_url"] = "#"
+    #         return
 
-        url = UnsubscribeService.build_unsubscribe_url(user)
-        context["unsubscribe_url"] = url
+    #     url = UnsubscribeService.build_unsubscribe_url(user)
+    #     context["unsubscribe_url"] = url
+
 
     # ------------------------------------------------------------------
     # Main send entrypoint
     # ------------------------------------------------------------------
     @staticmethod
-    def send(prefix: str, email: str, context: dict, request=None):
+    def send(prefix: str, email: str, context: dict, request=None, user=None):
         """
         MAIN SEND METHOD
         ----------------
@@ -152,9 +132,14 @@ class EmailEngine:
             - send email safely
         """
         email = email.lower().strip()
+
+        # Explicit user always wins
+        explicit_user = user
+        if explicit_user and "user" not in context:
+            context["user"] = explicit_user
+
         # Normalize prefix once for engine logic
         normalized_prefix = TemplateResolver(prefix).prefix
-
 
         # Skip redstar globally (your existing behavior)
         if email == "redstar@djangoplay.com":
@@ -162,15 +147,17 @@ class EmailEngine:
             return None
 
         # Resolve user from context
-        user = EmailEngine.resolve_user(email, context)
-        if user and "user" not in context:
-            context["user"] = user
+        if not explicit_user:
+            explicit_user = EmailEngine.resolve_user(email, context)
+            if explicit_user and "user" not in context:
+                context["user"] = explicit_user
 
         # Inject defaults
         context = EmailEngine.inject_defaults(context)
 
         # Inject canonical email context
-        context.update(EmailContextProvider.get())
+        for k, v in EmailContextProvider.get().items():
+            context.setdefault(k, v)
 
         # ------------------------------------------------------------------
         # Invariant enforcement: password reset emails must have reset_url
@@ -187,19 +174,25 @@ class EmailEngine:
                     "reset_url must be present in context for PASSWORD_RESET_EMAIL"
                 )
 
-
         if normalized_prefix == T.PASSWORD_RESET_EMAIL and user:
             PasswordResetContextProvider.inject_password_reset_context(user=user, context=context)
 
+        # ------------------------------------------------------------------
+        # Enforce unsubscribe URL using service abstraction
+        # ------------------------------------------------------------------
+        effective_user = context.get("user")
 
-        # Unsubscribe enforcement
-        allowed = UnsubscribeService.is_allowed(user, normalized_prefix)
-        if not allowed:
-            logger.info("EmailEngine.send: blocked by unsubscribe policy (prefix=%s)", normalized_prefix)
+        if not UnsubscribeService.is_allowed(effective_user, normalized_prefix):
+            logger.info(
+                "EmailEngine.send: blocked by unsubscribe policy "
+                "(user=%s prefix=%s)",
+                getattr(effective_user, "pk", None),
+                normalized_prefix,
+            )
             return None
 
-        # Add unsubscribe URL (always safe)
-        EmailEngine.attach_unsubscribe_url(context, user)
+        if (effective_user and "unsubscribe_url" not in context):
+            context["unsubscribe_url"] = UnsubscribeService.build_unsubscribe_url(effective_user)
 
         # Support context (phone, github, linkedin, etc.)
         context.update(SupportContextProvider.get())

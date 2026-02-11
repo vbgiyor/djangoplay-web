@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     "utilities.apps.UtilitiesConfig",
     "mailer",
     "users.apps.UsersConfig",
+    "teamcentral",
+    "helpdesk",
     "locations.apps.LocationsConfig",
     "industries",
     "entities.apps.EntitiesConfig",
@@ -94,6 +96,8 @@ APP_DISPLAY_NAMES = {
     "entities": "Businesses",
     "invoices": "Invoices & Billing",
     "audit": "Logging Journal",
+    "helpdek": "Help & Support",
+    "teamcentral": "HR Catalogue",
 }
 
 APPS_READY = {
@@ -104,4 +108,6 @@ APPS_READY = {
     "industries": True,
     "entities": True,
     "audit": True,
+    "helpdesk": True,
+    "teamcentral": True,
 }

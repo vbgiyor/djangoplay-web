@@ -6,8 +6,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views import View
-from users.services.common import CommonService
-from users.services.signup_token_manager import SignupTokenManagerService
+from users.services.identity_verification_token_service import SignupTokenManagerService
 
 logger = logging.getLogger(__name__)
 
@@ -110,19 +109,6 @@ class UnifiedEmailVerifyView(View):
             _("Your email address has been verified successfully."),
             extra_tags="account_verify success",
         )
-
-        # =========================================================
-        # AUDIT LOG
-        # =========================================================
-        try:
-            CommonService.log_user_activity(
-                user=token_owner,
-                action="VERIFY_EMAIL",
-                client_ip=getattr(request, "client_ip", None),
-            )
-        except Exception:
-            logger.exception("Failed to log VERIFY_EMAIL activity")
-
         return redirect(
             reverse("console_dashboard")
             if request.user.is_authenticated

@@ -10,7 +10,7 @@ from django.core.management.base import BaseCommand
 from django.db import IntegrityError, transaction
 from django.utils import timezone
 from paystream.security.crypto import decrypt_value
-from users.models import Department, EmployeeType, EmploymentStatus, Role
+from teamcentral.models import Department, EmployeeType, EmploymentStatus, Role
 
 logger = logging.getLogger(__name__)
 

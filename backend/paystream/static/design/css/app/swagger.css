@@ -428,7 +428,7 @@ header .logout-btn:not(:hover) .logout-label {
   border-radius: 50%;
   background: #eff1f3;
   border: none;
-  color: #9a9a9a;
+  color: #d9d9d9;
   font-size: 1.15rem;
   display: flex;
   align-items: center;
@@ -455,7 +455,7 @@ header .logout-btn:not(:hover) .logout-label {
 /* Hover effect — keep pulse visible but add glow */
 #bug-report-btn-swagger:hover {
   background: #e2e8f0;
-  color: #666;
+  color: #a7a5a5;
   box-shadow: 0 4px 16px rgba(90, 90, 90, 0.25),
               0 0 0 6px rgba(200, 200, 200, 0.15);
   transform: scale(1.12);

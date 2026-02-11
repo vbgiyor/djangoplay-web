@@ -3,12 +3,10 @@ import logging
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
-
-# from rest_framework.views import APIView
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from drf_spectacular.utils import extend_schema
-from users.services.report_bug import BugService
+from helpdesk.services import BugService
 
 from frontend.forms.report_bug import BugReportForm
 
@@ -18,7 +16,6 @@ logger = logging.getLogger(__name__)
 @method_decorator(csrf_exempt, name="dispatch")
 @extend_schema(exclude=True)
 class ReportBugView(View):
-    # permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -57,14 +54,14 @@ class ReportBugView(View):
             if getattr(request.user, "is_unsubscribed", False):
                 messages.warning(
                     request,
-                    f"Bug #{result.ticket.ticket_number} recorded. "
+                    f"Bug #{result.bug.bug_number} recorded. "
                     "You’ve unsubscribed from emails, so you won’t receive a confirmation email.",
                     extra_tags="bug_report warning",
                 )
             else:
                 messages.success(
                     request,
-                    f"Bug #{result.ticket.ticket_number} submitted successfully. Thank you!",
+                    f"Bug #{result.bug.bug_number} submitted successfully. Thank you!",
                     extra_tags="bug_report success",
                 )
             return redirect(request.META.get("HTTP_REFERER", "/"))

@@ -8,8 +8,8 @@ from django.urls import reverse
 
 from users.adapters.base import BaseAdapter
 from users.models import Employee
-from users.services.sso_onboarding import SSOOnboardingService
-from users.services.unified_login import UnifiedLoginService
+from users.services.identity_login_policy_service import UnifiedLoginService
+from users.services.identity_sso_onboarding_service import SSOOnboardingService
 
 logger = logging.getLogger(__name__)
 

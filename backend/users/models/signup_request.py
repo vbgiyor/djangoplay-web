@@ -4,7 +4,9 @@ import logging
 
 from core.models import ActiveManager, AuditFieldsModel, TimeStampedModel
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
+from django.utils import timezone
 from simple_history.models import HistoricalRecords
 
 logger = logging.getLogger(__name__)
@@ -63,25 +65,23 @@ class SignUpRequest(TimeStampedModel, AuditFieldsModel):
     # Proper clean()
     # ----------------------------------
     def clean(self):
-        super().clean()
-
-        # Enforce max quota during creation
-        from django.conf import settings
-        from django.core.exceptions import ValidationError
-
-        qs = SignUpRequest.objects.filter(
-            user=self.user,
-            deleted_at__isnull=True
-        )
-
-        if self.pk:
-            qs = qs.exclude(pk=self.pk)
-
-        max_allowed = int(getattr(settings, "SIGNUP_REQUEST_MAX_PER_USER", 1))
-        if qs.count() >= max_allowed:
-            raise ValidationError(
-                {"user": f"Maximum {max_allowed} signup requests allowed per user."}
+        if self.is_active:
+            exists = (
+                SignUpRequest.objects
+                .filter(
+                    user=self.user,
+                    is_active=True,
+                    deleted_at__isnull=True,
+                    expires_at__gt=timezone.now(),
+                )
+                .exclude(pk=self.pk)
+                .exists()
             )
+            if exists:
+                raise ValidationError(
+                    {"user": "An active signup request already exists for this user."}
+                )
+
 
     # ----------------------------------
     # Override save for audit fields

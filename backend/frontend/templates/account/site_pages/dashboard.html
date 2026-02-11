@@ -142,6 +142,22 @@
                     </span>
                 </a>
                 {% endwith %}
+                {% with 'helpdesk'|get_app_display_name as name %}
+                <a href="{% url 'admin_single_app' 'helpdesk' %}" class="e-card">
+                    <i class="icon fas fa-users"></i>
+                    <span class="card-label">{{ name }}<br>
+                        <small>(Help and Support)</small>
+                    </span>
+                </a>
+                {% endwith %}
+                {% with 'teamcentral'|get_app_display_name as name %}
+                <a href="{% url 'admin_single_app' 'teamcentral' %}" class="e-card">
+                    <i class="icon fas fa-users"></i>
+                    <span class="card-label">{{ name }}<br>
+                        <small>(HR Catalogue)</small>
+                    </span>
+                </a>
+                {% endwith %}
             </div>
         {% endif %}
     </main>
@@ -152,7 +168,8 @@
             <i class="fas fa-book"></i>
             <a href="{% url 'apidocs:redoc' %}" class="primary-text" target="_blank">Documentation</a>
             <i class="fas fa-headset"></i>
-            <a href="{% url 'support' %}" class="primary-text">Support</a>
+            {% comment %} <a href="{% url 'support' %}" class="primary-text">Support</a> {% endcomment %}
+            <a href="{% url 'support' %}?from=dashboard" class="primary-text">Support</a>
             <i class="fas fa-signature"></i>
             <a href="{% url 'frontend:license' %}" class="primary-text" target="_blank">Apache License 2.0</a>
         </div>

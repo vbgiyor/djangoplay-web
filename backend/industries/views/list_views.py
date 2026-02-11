@@ -11,9 +11,9 @@ from utilities.api.generic_views import BaseListAPIView
 from utilities.api.pagination import StandardResultsSetPagination
 from utilities.api.rate_limits import CustomThrottle
 
-from ..exceptions import InvalidIndustryData
-from ..models import Industry
-from ..serializers import IndustryReadSerializerV1
+from industries.exceptions import InvalidIndustryData
+from industries.models import Industry
+from industries.serializers import IndustryReadSerializerV1
 
 logger = logging.getLogger(__name__)
 add_sanitization_filter_to_logger(logger)

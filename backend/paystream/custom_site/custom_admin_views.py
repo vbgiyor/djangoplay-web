@@ -98,22 +98,28 @@ def single_app_view(request, app_label):
     custom_labels = {
         # Users app models
         'users': {
+            'employee': 'Employees',
+            'passwordresetrequest': 'Password Reset Requests',
+            'signuprequest': 'SignUp Requests',
+        },
+        'teamcentral': {
             'address': 'User Addresses',
             'department': 'Departments',
             'role': 'Roles',
             'employmentstatus': 'Employment Statuses',
             'employeetype': 'Employee Types',
-            'employee': 'Employees',
             'memberstatus': 'Member Statuses',
-            'member': 'Members',
+            'memberprofile': 'Member Profiles',
             'leavetype': 'Leave Types',
             'leaveapplication': 'Leave Applications',
             'leavebalance': 'Leave Balances',
-            'passwordresetrequest': 'Password Reset Requests',
-            'signuprequest': 'SignUp Requests',
             'team': 'Teams',
-            'useractivitylog': 'User Activity Logs',
-            'supportticket': 'Support Tickets',
+        },
+        # Helpdesk app models
+        'helpdesk': {
+            'bugreport': 'Bugs Catalogue',
+            'supportticket': 'Support Requests',
+            'fileupload': "Attachments"
         },
         # Locations app models
         'locations': {

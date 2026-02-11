@@ -1,5 +1,5 @@
-{% if ticket.is_bug_report %}
-Bug #{{ ticket.ticket_number }} Received
+{% if ticket_kind == "bug" %}
+Bug #{{ bug.bug_number }} Received
 {% else %}
 Support Ticket #{{ ticket.ticket_number }} Received
 {% endif %}

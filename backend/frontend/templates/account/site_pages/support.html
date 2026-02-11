@@ -56,6 +56,7 @@
 
     <form method="post" action="{% url 'support' %}" class="card p-4 shadow" enctype="multipart/form-data">
         {% csrf_token %}
+        <input type="hidden" name="from" value="{{ request.GET.from|default:'login' }}">
 
         <!-- Subject -->
         <div class="mb-3">
@@ -136,8 +137,8 @@
     <div class="links-container d-flex justify-content-between mt-3">
         {% if request.GET.from != 'dashboard' %}
             <a href="{% url 'console_dashboard' %}" class="text-link">{% trans "Back to dashboard" %}</a>
-        {% elif request.GET.from != 'swagger' %}
-            <a href="{% url 'account_login' %}" class="text-link">{% trans "Back to Sign In" %}</a>
+        {% elif request.GET.from != 'redoc' %}
+            <a href="{% url 'frontend:api_console' %}" class="text-link">{% trans "Back to Sign In" %}</a>
         {% elif request.GET.from == 'swagger' %}
             <a href="{% url 'apidocs:swagger-ui' %}" class="text-link">{% trans "Back to Swagger" %}</a>
         {% endif %}

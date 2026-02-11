@@ -4,7 +4,9 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from users.models import Member
+
+# from teamcentral.models import MemberProfile
+from teamcentral.models import MemberProfile
 from utilities.constants.template_registry import TemplateRegistry
 
 logger = logging.getLogger(__name__)
@@ -20,7 +22,7 @@ def dashboard_view(request, app_label=None):
         messages.success(request, "You have successfully signed up.")
         del request.session['first_time_signup']
 
-    members = Member.objects.filter(deleted_at__isnull=True, is_active=True)
+    members = MemberProfile.objects.filter(deleted_at__isnull=True, is_active=True)
     context = {
         "app_display_name": app_display_name or True,
         'members': members,

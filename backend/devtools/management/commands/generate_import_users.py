@@ -13,7 +13,7 @@ from django.db import transaction
 from django.db.models import Max
 from django.utils import timezone
 from faker import Faker
-from users.models import Address, Department, Employee, EmployeeType, EmploymentStatus, LeaveApplication, LeaveBalance, LeaveType, Role, Team
+from teamcentral.models import Address, Department, Employee, EmployeeType, EmploymentStatus, LeaveApplication, LeaveBalance, LeaveType, Role, Team
 from utilities.utils.data_sync.load_env_and_paths import load_env_paths
 
 logger = logging.getLogger('data_sync')

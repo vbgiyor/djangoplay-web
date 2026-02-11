@@ -1,7 +1,7 @@
 import re
 
 from django import forms
-from users.models.support import SupportTicket
+from helpdesk.models import BugReport
 
 
 class BugReportForm(forms.ModelForm):
@@ -11,7 +11,7 @@ class BugReportForm(forms.ModelForm):
     github_issue = forms.URLField(required=False)
 
     class Meta:
-        model = SupportTicket
+        model = BugReport
         fields = ['email', 'subject', 'message', 'github_issue']
 
     def enforce_logged_in_email(self, request):

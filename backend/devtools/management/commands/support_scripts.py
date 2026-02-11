@@ -6,7 +6,7 @@ import logging
 
 from django.db import transaction
 from django.db.models.functions import Length
-from users.models import Department, EmployeeType, EmploymentStatus, LeaveType, MemberStatus, Role
+from teamcentral.models import Department, EmployeeType, EmploymentStatus, LeaveType, MemberStatus, Role
 
 logger = logging.getLogger(__name__)
 

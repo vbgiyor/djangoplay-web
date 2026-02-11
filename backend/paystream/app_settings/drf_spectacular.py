@@ -3,7 +3,8 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Unlock the power of the DjangoPlay platform with our APIs for seamless business automation. Integrate and manage users, invoices, and locations effortlessly using our comprehensive OpenAPI specification.",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
-    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAuthenticated"],
+    # "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAuthenticated"],
+    "SERVE_PERMISSIONS": [],
     "CONTACT": {
     },
     "OAS_VERSION": "3.0.3",

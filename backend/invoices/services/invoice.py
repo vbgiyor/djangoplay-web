@@ -12,7 +12,7 @@ from django.db.models.functions import Coalesce
 from django.utils import timezone
 from entities.models import Entity
 from locations.models.custom_country import CustomCountry
-from users.models import Member
+from teamcentral.models import MemberProfile
 from utilities.commons.decimal import get_safe_decimal
 
 from invoices.exceptions import GSTValidationError, InvoiceValidationError

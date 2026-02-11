@@ -3,9 +3,9 @@ import logging
 from allauth.account.models import EmailAddress
 from core.middleware import thread_local
 from django.contrib.auth import get_user_model
-from users.models import Member
-from users.services.member import MemberService
-from users.services.signup_token_manager import SignupTokenManagerService
+from teamcentral.models import MemberProfile
+from teamcentral.services import MemberLifecycleService
+from users.services.identity_verification_token_service import SignupTokenManagerService
 
 from mailer.flows.member.verification import send_verification_email_task
 from mailer.throttling.flow_throttle import allow_flow
@@ -58,24 +58,21 @@ def resend_verification_for_email_task(
     try:
         user = User.all_objects.get(email__iexact=email)
     except User.DoesNotExist:
-        logger.info("resend_verification: no user for email=%s", email)
         return ResendVerificationResult(
             status="no_user",
             message="No user with that email",
         )
 
     if getattr(user, "is_verified", False):
-        logger.info("resend_verification: user already verified: %s", email)
         return ResendVerificationResult(
             status="already_verified",
             user=user,
             message="User is already verified.",
         )
 
-
-    # ------------------------------------------------------------------
-    # Rate limiting (client_ip + email)
-    # ------------------------------------------------------------------
+    # --------------------------------------------------
+    # Rate limiting
+    # --------------------------------------------------
     ip_value = client_ip or getattr(thread_local, "client_ip", None)
 
     allowed, reason, dbg = allow_flow(
@@ -83,132 +80,77 @@ def resend_verification_for_email_task(
         user_id=user.pk,
         email=user.email,
         client_ip=ip_value,
-        prefer_user_identity=False,   # resend prefers email identity
+        prefer_user_identity=False,
     )
 
     if not allowed:
-        logger.info(
-            "resend_verification blocked: reason=%s debug=%s",
-            reason,
-            dbg,
-        )
         return ResendVerificationResult(
             status="rate_limited",
             user=user,
             message=reason,
         )
 
-    # ------------------------------------------------------------------
-    # Token creation (DELEGATED)
-    # ------------------------------------------------------------------
+    # --------------------------------------------------
+    # Token creation / reuse (DELEGATED)
+    # --------------------------------------------------
     try:
         signup_request, status = SignupTokenManagerService.create_for_user(
             user=user,
             request=None,
+            flow="resend_verification",
         )
     except Exception as exc:
-        logger.exception(
-            "resend_verification: token creation failed for %s: %s",
-            email,
-            exc,
-        )
+        logger.exception("resend_verification: token creation failed")
         return ResendVerificationResult(
             status="error",
             user=user,
             message=str(exc),
         )
 
-    if status != "ok":
+    # 🔑 SUCCESS CASES
+    if not signup_request:
         return ResendVerificationResult(
             status=status,
             user=user,
-            message=f"Verification token creation failed: {status}",
+            message=f"Verification token unavailable: {status}",
         )
 
-    # ------------------------------------------------------------------
-    # EmailAddress (ensure primary + unverified)
-    # ------------------------------------------------------------------
-    try:
-        EmailAddress.objects.update_or_create(
-            user=user,
-            email=user.email.lower(),
-            defaults={
-                "verified": False,
-                "primary": True,
+    # --------------------------------------------------
+    # Ensure EmailAddress
+    # --------------------------------------------------
+    EmailAddress.objects.update_or_create(
+        user=user,
+        email=user.email.lower(),
+        defaults={
+            "verified": False,
+            "primary": True,
+        },
+    )
+
+    # --------------------------------------------------
+    # Ensure Member
+    # --------------------------------------------------
+    member = MemberProfile.objects.filter(employee=user).first()
+    if not member:
+        member = MemberLifecycleService.create_member(
+            {
+                "email": user.email,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "employee": user,
             },
-        )
-    except Exception as exc:
-        logger.exception(
-            "resend_verification: EmailAddress update failed for %s: %s",
-            email,
-            exc,
-        )
-        return ResendVerificationResult(
-            status="error",
-            user=user,
-            signup_request=signup_request,
-            message=str(exc),
+            created_by=created_by,
         )
 
-    # ------------------------------------------------------------------
-    # Member (ensure exists)
-    # ------------------------------------------------------------------
-    try:
-        member = Member.objects.filter(employee=user).first()
-        if not member:
-            member = MemberService.create_member(
-                {
-                    "email": user.email,
-                    "first_name": user.first_name,
-                    "last_name": user.last_name,
-                    "employee": user,
-                },
-                created_by=created_by,
-            )
-            logger.info(
-                "resend_verification: created Member for user=%s member_id=%s",
-                user.pk,
-                member.pk,
-            )
-    except Exception as exc:
-        logger.exception(
-            "resend_verification: member creation failed for %s: %s",
-            email,
-            exc,
-        )
-        return ResendVerificationResult(
-            status="error",
-            user=user,
-            signup_request=signup_request,
-            message=str(exc),
-        )
+    # --------------------------------------------------
+    # Queue verification email (ALWAYS on success)
+    # --------------------------------------------------
+    send_verification_email_task.delay(member.id)
 
-    # ------------------------------------------------------------------
-    # Queue verification email
-    # ------------------------------------------------------------------
-    try:
-        send_verification_email_task.delay(member.id)
-        logger.info(
-            "resend_verification: queued verification email for member=%s",
-            member.pk,
-        )
-        return ResendVerificationResult(
-            status="ok",
-            user=user,
-            member=member,
-            signup_request=signup_request,
-            queued=True,
-        )
-    except Exception as exc:
-        logger.exception(
-            "resend_verification: failed to queue email for member=%s: %s",
-            member.pk,
-            exc,
-        )
-        return ResendVerificationResult(
-            status="error",
-            user=user,
-            member=member,
-            signup_request=signup_request,
-            message=str(exc),
-        )
+    return ResendVerificationResult(
+        status="ok",
+        user=user,
+        member=member,
+        signup_request=signup_request,
+        queued=True,
+    )

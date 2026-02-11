@@ -12,10 +12,11 @@ Filters are reusable across models via dynamic queryset methods.
 """
 
 from django.contrib import admin
+from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import FieldDoesNotExist
 from django.db.models import Q
 from django.utils.translation import gettext_lazy as _
-from users.models import Department, EmployeeType, EmploymentStatus, LeaveType, MemberStatus, Role
+from teamcentral.models import Department, EmployeeType, EmploymentStatus, LeaveType, MemberStatus, Role
 
 
 class IsActiveFilter(admin.SimpleListFilter):
@@ -329,32 +330,6 @@ class GMTOffsetFilter(admin.SimpleListFilter):
         return queryset
 
 
-class GMTOffsetFilter(admin.SimpleListFilter):
-
-    """
-    Filter for GMT Offset (January) in TimezoneAdmin.
-    Allows filtering by distinct gmt_offset_jan values.
-    """
-
-    title = _('GMT Offset (Jan)')
-    parameter_name = 'gmt_offset_jan'
-
-    def lookups(self, request, model_admin):
-        offsets = (
-            model_admin.model.objects
-            .filter(deleted_at__isnull=True)
-            .values_list('gmt_offset_jan', flat=True)
-            .distinct()
-            .order_by('gmt_offset_jan')
-        )
-        return [(str(o), f"{o:+.2f}") for o in offsets]
-
-    def queryset(self, request, queryset):
-        if self.value():
-            return queryset.filter(gmt_offset_jan=self.value())
-        return queryset
-
-
 class DSTOffsetFilter(admin.SimpleListFilter):
 
     """
@@ -381,12 +356,31 @@ class DSTOffsetFilter(admin.SimpleListFilter):
         return queryset
 
 
+class AddressTypeFilter(admin.SimpleListFilter):
+    title = _('Address Type')
+    parameter_name = 'addr_type'
+
+    def lookups(self, request, model_admin):
+        from teamcentral.models import Address
+        addr_type = (Address.objects
+                     .exclude(address_type__exact='')
+                     .values_list('address_type', flat=True)
+                     .distinct()
+                     .order_by('address_type'))
+        return [(c, c) for c in addr_type if c]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(address_type__iexact=self.value())
+        return queryset
+
+
 class AddressCountryFilter(admin.SimpleListFilter):
     title = _('Country')
     parameter_name = 'addr_country'
 
     def lookups(self, request, model_admin):
-        from users.models import Address
+        from teamcentral.models import Address
         countries = (Address.objects
                      .exclude(country__exact='')
                      .values_list('country', flat=True)
@@ -405,7 +399,7 @@ class AddressStateFilter(admin.SimpleListFilter):
     parameter_name = 'addr_state'
 
     def lookups(self, request, model_admin):
-        from users.models import Address
+        from teamcentral.models import Address
         qs = Address.objects.exclude(state__exact='')
 
         # Auto-scope by selected country
@@ -429,7 +423,7 @@ class AddressCityFilter(admin.SimpleListFilter):
     parameter_name = 'addr_city'
 
     def lookups(self, request, model_admin):
-        from users.models import Address
+        from teamcentral.models import Address
         qs = Address.objects.exclude(city__exact='')
 
         # Auto-scope by country + state
@@ -457,7 +451,8 @@ class DepartmentFilter(admin.SimpleListFilter):
     parameter_name = 'dept_code'
 
     def lookups(self, request, model_admin):
-        from users.models import Department
+        # from teamcentral.models import Department
+        from teamcentral.models import Department
         qs = Department.objects.exclude(code__exact='')
 
         # Auto-scope by country + state
@@ -562,6 +557,234 @@ class LeaveTypeFilter(GenericCodeNameFilter):
     model = LeaveType
     field_name = "leave_type"
     display_field = "name"
+
+
+class BugStatusFilter(admin.SimpleListFilter):
+    title = _("Bug Status")
+    parameter_name = "status"
+
+    def lookups(self, request, model_admin):
+        from helpdesk.models import BugStatus
+        return [(k, v.label) for k, v in BugStatus.choices]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(status=self.value())
+        return queryset
+
+class BugSeverityFilter(admin.SimpleListFilter):
+    title = _("Severity")
+    parameter_name = "severity"
+
+    def lookups(self, request, model_admin):
+        from helpdesk.models import Severity
+        return [(k, v.label) for k, v in Severity.choices]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(severity=self.value())
+        return queryset
+
+class BugReporterFilter(admin.SimpleListFilter):
+    title = _("Reporter")
+    parameter_name = "reporter"
+
+    def lookups(self, request, model_admin):
+        qs = model_admin.model.objects.select_related("reporter").values_list(
+            "reporter_id", "reporter__email"
+        ).distinct()
+        return [(pk, email) for pk, email in qs if pk]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(reporter_id=self.value())
+        return queryset
+
+class HasExternalIssueURLFilter(admin.SimpleListFilter):
+    title = _("External Issue URL")
+    parameter_name = "has_external_issue"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("yes", _("Has URL")),
+            ("no", _("No URL")),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "yes":
+            return queryset.exclude(external_issue_url__isnull=True).exclude(external_issue_url="")
+        if self.value() == "no":
+            return queryset.filter(
+                Q(external_issue_url__isnull=True) | Q(external_issue_url="")
+            )
+        return queryset
+
+class SupportStatusFilter(admin.SimpleListFilter):
+    title = _("Support Status")
+    parameter_name = "status"
+
+    def lookups(self, request, model_admin):
+        from helpdesk.models import SupportStatus
+        return [(k, v.label) for k, v in SupportStatus.choices]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(status=self.value())
+        return queryset
+
+class SupportPriorityFilter(admin.SimpleListFilter):
+    title = _("Priority")
+    parameter_name = "priority"
+
+    def lookups(self, request, model_admin):
+        from helpdesk.models import Priority
+        return [(k, v.label) for k, v in Priority.choices]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(priority=self.value())
+        return queryset
+
+
+class SupportCreatedByFilter(admin.SimpleListFilter):
+    title = _("Created By")
+    parameter_name = "created_by"
+
+    def lookups(self, request, model_admin):
+        qs = model_admin.model.objects.select_related("created_by").values_list(
+            "created_by_id", "created_by__email"
+        ).distinct()
+        return [(pk, email) for pk, email in qs if pk]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(created_by_id=self.value())
+        return queryset
+
+
+class FileTypeFilter(admin.SimpleListFilter):
+    title = _("File Type")
+    parameter_name = "file"
+
+    def lookups(self, request, model_admin):
+        qs = model_admin.model.objects.values_list(
+            "file", flat=True
+        ).distinct().exclude(file__isnull=True).exclude(file="")
+        return [(t, t.upper()) for t in qs]
+
+    def queryset(self, request, queryset):
+        if self.value():
+            return queryset.filter(file=self.value())
+        return queryset
+
+
+class FileCategoryFilter(admin.SimpleListFilter):
+
+    """
+    Logical file grouping filter for FileUpload.
+    Derived from file extension.
+    """
+
+    title = _("File Category")
+    parameter_name = "file_category"
+
+    IMAGE_EXT = ("jpg", "jpeg", "png", "gif")
+    VIDEO_EXT = ("mp4",)
+    DOCUMENT_EXT = ("pdf", "txt", "log")
+    ARCHIVE_EXT = ("zip",)
+
+    def lookups(self, request, model_admin):
+        return (
+            ("image", _("Image")),
+            ("video", _("Video")),
+            ("document", _("Document")),
+            ("archive", _("Archive")),
+        )
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if not value:
+            return queryset
+
+        def build_q(exts):
+            q = Q()
+            for ext in exts:
+                q |= Q(file__iendswith=f".{ext}")
+            return q
+
+        if value == "image":
+            return queryset.filter(build_q(self.IMAGE_EXT))
+        if value == "video":
+            return queryset.filter(build_q(self.VIDEO_EXT))
+        if value == "document":
+            return queryset.filter(build_q(self.DOCUMENT_EXT))
+        if value == "archive":
+            return queryset.filter(build_q(self.ARCHIVE_EXT))
+
+        return queryset
+
+
+class HasAttachmentsFilter(admin.SimpleListFilter):
+
+    """
+    Filters models that use GenericRelation(FileUpload)
+    """
+
+    title = _("Attachments")
+    parameter_name = "has_attachments"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("yes", _("Has Attachments")),
+            ("no", _("No Attachments")),
+        )
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if value == "yes":
+            return queryset.filter(attachments__isnull=False).distinct()
+        if value == "no":
+            return queryset.filter(attachments__isnull=True)
+        return queryset
+
+
+class TicketTypeFilter(admin.SimpleListFilter):
+
+    """
+    Filter FileUpload by linked object type (GenericForeignKey).
+    """
+
+    title = _("Ticket Type")
+    parameter_name = "ticket_type"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("bug", _("Bug")),
+            ("support", _("Support")),
+            ("other", _("Other")),
+        )
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if not value:
+            return queryset
+
+        from helpdesk.models import BugReport, SupportTicket
+        bug_ct = ContentType.objects.get_for_model(BugReport)
+        support_ct = ContentType.objects.get_for_model(SupportTicket)
+
+        if value == "bug":
+            return queryset.filter(content_type=bug_ct)
+
+        if value == "support":
+            return queryset.filter(content_type=support_ct)
+
+        if value == "other":
+            return queryset.exclude(
+                content_type__in=[bug_ct, support_ct]
+            )
+
+        return queryset
 
 
 def changelist_filter(field_name=None, *, model=None):
@@ -731,4 +954,11 @@ __all__ = [
     'AddressStateFilter',
     'AddressCityFilter',
     'changelist_filter',
+    'FileTypeFilter',
+    'SupportStatusFilter',
+    'SupportPriorityFilter',
+    'HasExternalIssueURLFilter',
+    'BugReporterFilter',
+    'BugSeverityFilter',
+    'BugStatusFilter'
 ]

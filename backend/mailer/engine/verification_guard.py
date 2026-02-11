@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext as translate
 from users.exceptions import MemberValidationError
 from utilities.commons.helpers import employee_state_by_email
 
@@ -18,7 +18,7 @@ def enforce_email_signup_rules(email: str) -> None:
     if not email:
         return
 
-    state, emp = employee_state_by_email(email)  # <-- FIXED HERE
+    state, emp = employee_state_by_email(email)
 
     # ---------------------------------------------------------
     # Case 1: Email already exists AND is verified
@@ -26,7 +26,7 @@ def enforce_email_signup_rules(email: str) -> None:
     if state == "active":
         login_url = reverse("account_login")
 
-        msg = _(
+        msg = translate(
             "An account already exists with this email address. "
             "Please sign in using your existing account."
         )
@@ -43,7 +43,7 @@ def enforce_email_signup_rules(email: str) -> None:
     if state == "unverified":
         resend_url = build_resend_verification_url(email)
 
-        msg = _(
+        msg = translate(
             "An account already exists with this email address but is not yet verified. "
             "Please activate your account using the link sent to your email, or request a new verification email "
         )
@@ -53,8 +53,6 @@ def enforce_email_signup_rules(email: str) -> None:
             {"email": msg},
             code="email_unverified",
         )
-
-    # All other states → allowed
 
 
 def handle_unverified_email(
@@ -66,27 +64,27 @@ def handle_unverified_email(
     """
     Runtime UX handler for unverified emails.
 
-    Used ONLY in:
-      - Login flow
-      - Support submission
-
-    Does NOT affect signup validation logic.
+    CONTRACT:
+    - MUST ALWAYS return an HttpResponse
     """
+    # ------------------------------------------------------------------
+    # Always return a response (never None)
+    # ------------------------------------------------------------------
     if not email:
-        return None
+        return redirect(reverse("account_login"))
 
-    state, emp = employee_state_by_email(email)
+    state, _ = employee_state_by_email(email)
 
     if state != "unverified":
-        return None
+        return redirect(reverse("account_login"))
 
     resend_url = build_resend_verification_url(email)
 
     if context == "login":
-        msg = _("Email verification pending. Please verify your email.")
+        msg = translate("Email verification pending. Please verify your email.")
         msg = mark_safe(f'{msg} <a href="{resend_url}">Resend activation link</a>.')
     else:
-        msg = _(
+        msg = translate(
             "Your account is not verified. Please activate your account using the link sent to your email, "
             "or request a new verification email "
         )
@@ -99,3 +97,4 @@ def handle_unverified_email(
         if request.user.is_authenticated
         else reverse("account_login")
     )
+
