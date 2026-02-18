@@ -215,6 +215,8 @@ dev-key.pem
 celerybeat-schedule.db
 creds.txt
 .certs
+backend/creds.txt
+backend/*.pem
 
 filemerger-output.txt
 celerybeat-schedule.db

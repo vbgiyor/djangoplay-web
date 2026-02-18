@@ -1,10 +1,14 @@
-import os
+from pathlib import Path
 
 from django.conf import settings
-from django.http import FileResponse
+from django.http import FileResponse, Http404
 
 
 def license_file_view(request):
-    # Path to LICENSE.md in the repository root
-    license_path = os.path.join(settings.BASE_DIR, 'LICENSE.md')
-    return FileResponse(open(license_path, 'rb'), content_type='text/plain')
+    project_root = Path(settings.BASE_DIR).parent  # go one level up
+    license_path = project_root / "LICENSE"
+
+    if not license_path.exists():
+        raise Http404("License file not found")
+
+    return FileResponse(license_path.open("rb"), content_type="text/plain")

@@ -18,7 +18,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'paystream' / 'static' / 'fonts',
     BASE_DIR / 'paystream' / 'static' / 'elements',
     BASE_DIR / 'paystream' / 'static' / 'sounds',
-    BASE_DIR / 'users' / 'static' / 'users',
+    # BASE_DIR / 'users' / 'static' / 'users',
 ]
 
 MEDIA_URL = '/media/'
