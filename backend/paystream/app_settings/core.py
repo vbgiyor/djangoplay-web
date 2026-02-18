@@ -10,7 +10,6 @@ if not SECRET_KEY:
     raise ImproperlyConfigured("DJANGO_SECRET_KEY must be set in encrypted .env")
 
 # SECRET_KEY = "temporary-insecure-key-for-debugging-only"
-
 # ---------------------------------------------------------------------
 # CORE APPLICATION CONFIG
 # ---------------------------------------------------------------------

@@ -16,7 +16,7 @@ from users.exceptions import MemberValidationError
 logger = logging.getLogger(__name__)
 
 
-@receiver(post_save, sender='users.Member')
+@receiver(post_save, sender='users.Employee')
 def assign_member_viewer_group(sender, instance, created, **kwargs):
     """Assign Viewer group to SSO members after Member creation or update."""
     from policyengine.components.ssopolicies import setup_role_based_group  # ← lazy import

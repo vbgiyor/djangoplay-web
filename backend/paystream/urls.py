@@ -78,6 +78,7 @@ urlpatterns = [
     path("api/v1/fincore/",include("fincore.urls")),
     path("api/v1/entities/", include(("entities.urls"))),
     path("api/v1/invoices/", include("invoices.urls")),
+    path("api/v1/", include("frontend.urls")),
     path("api/v1/", include("apidocs.urls")),
 
     # ------------------------------------------------------------------
@@ -97,7 +98,6 @@ urlpatterns = [
     # ------------------------------------------------------------------
     # Frontend & Console Routes
     # ------------------------------------------------------------------
-    path("api/v1/", include("frontend.urls")),
     path("console/dashboard/", dashboard_view, name="console_dashboard"),
     path("support/", support_view, name="support"),
 

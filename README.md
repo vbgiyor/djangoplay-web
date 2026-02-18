@@ -333,7 +333,7 @@ DjangoPlay - Chandrashekhar Bhosale
 ```
 
 You may use, modify, and distribute this software under the terms of the Apache 2.0 License.
-See `LICENSE.md` for the full license text.
+See `LICENSE` for the full license text.
 
 ---
 

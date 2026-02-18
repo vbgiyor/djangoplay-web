@@ -22,11 +22,11 @@ def strip_quotes(value: str) -> str:
 def encrypt_and_update_env():
     # Resolve paths
     script_dir = Path(__file__).resolve().parent
-    creds_path = script_dir.parent / "../creds.txt"
+    creds_path = script_dir.parent.parent / "../creds.txt"
     env_path = script_dir.parent / "../.env"
 
     # Validate files exist
-    for path, name in [(creds_path, "creds.txt"), (env_path, ".env")]:
+    for path, name in [(creds_path, "../creds.txt"), (env_path, ".env")]:
         if not path.exists():
             raise FileNotFoundError(f"{name} not found at {path}")
 

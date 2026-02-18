@@ -16,6 +16,9 @@ env = environ.Env(
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'), override=True)
 
+# Project Root
+PROJECT_ROOT = BASE_DIR.parent
+
 # Get encryption key
 ENCRYPTION_KEY = env('ENCRYPTION_KEY')
 if not ENCRYPTION_KEY:
