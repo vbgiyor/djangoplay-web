@@ -15,7 +15,11 @@ GENERIC_ISSUETRACKER_IDENTITY_RESOLVER = \
 # Issue Status Transition Policy
 # --------------------------------------------------------------
 TRANSITION_POLICY = "paystream.integrations.issuetracker.access-control.permissions.IssueStateTransitionOwnerPolicy"
-ISSUE_STATUS_ALLOWED_ROLES = [
+
+# --------------------------------------------------------------
+# Issue Internal Visibility (RBAC)
+# --------------------------------------------------------------
+ISSUE_INTERNAL_ALLOWED_ROLES = [
     "CEO",
     "DJGO",
     "SSO",
