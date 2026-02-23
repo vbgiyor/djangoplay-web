@@ -2,25 +2,29 @@
 Integrated Attachment ViewSet
 =============================
 
-Extends GenericIssueTracker AttachmentCRUDViewSet.
-
-Future Responsibilities
------------------------
-- Physical file deletion
-- Attachment audit logging
-- Permission enforcement
+Enforces RBAC visibility governance.
 """
 
 from genericissuetracker.views.v1.crud.attachment import (
     AttachmentCRUDViewSet,
 )
 
+from genericissuetracker.services.identity import get_identity_resolver
+
+from paystream.integrations.issuetracker.services.visibility import (
+    IssueVisibilityService,
+)
+
 
 class IntegratedAttachmentCRUDViewSet(AttachmentCRUDViewSet):
     """
     DjangoPlay-integrated Attachment ViewSet.
-
-    Currently identical to base implementation.
-    Physical deletion logic will be added in Phase 3.
     """
-    pass
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        identity = get_identity_resolver().resolve(self.request)
+        visibility = IssueVisibilityService(identity)
+
+        return visibility.filter_attachment_queryset(queryset)
