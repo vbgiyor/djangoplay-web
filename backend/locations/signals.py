@@ -67,10 +67,10 @@ def cascade_region_delete(sender, instance, **kwargs):
     """Soft delete subregions and cities associated with a region on deletion."""
     logger.debug(f"Handling pre_delete for CustomRegion: {instance.name} (ID: {instance.id})")
     subregion_queryset = CustomSubRegion.objects.filter(
-        region=instance, deleted_at__isnull=True
+        subregion__region=instance, deleted_at__isnull=True
     ).select_related('region', 'created_by', 'updated_by')
     city_queryset = CustomCity.objects.filter(
-        region=instance, deleted_at__isnull=True
+        subregion__region=instance, deleted_at__isnull=True
     ).select_related('country', 'region', 'subregion', 'timezone', 'created_by', 'updated_by')
     _cascade_soft_delete(CustomSubRegion, subregion_queryset, "CustomRegion", instance)
     _cascade_soft_delete(CustomCity, city_queryset, "CustomRegion", instance)
@@ -80,7 +80,7 @@ def cascade_subregion_delete(sender, instance, **kwargs):
     """Soft delete cities associated with a subregion on deletion."""
     logger.debug(f"Handling pre_delete for CustomSubRegion: {instance.name} (ID: {instance.id})")
     queryset = CustomCity.objects.filter(
-        subregion=instance, deleted_at__isnull=True
+        subsubregion__region=instance, deleted_at__isnull=True
     ).select_related('country', 'region', 'subregion', 'timezone', 'created_by', 'updated_by')
     _cascade_soft_delete(CustomCity, queryset, "CustomSubRegion", instance)
 
@@ -132,24 +132,36 @@ def handle_country_restore(sender, instance, **kwargs):
         _cascade_restore(CustomRegion, queryset, "CustomCountry", instance)
 
 @receiver(post_save, sender=CustomRegion)
-def handle_region_restore(sender, instance, **kwargs):
-    """Restore subregions and cities when a region is restored."""
+def handle_region_restore(sender, instance, created, **kwargs):
+    if created:
+        return
+
     if instance.deleted_at is None:
+
         subregion_queryset = CustomSubRegion.objects.filter(
-            region=instance, deleted_at__isnull=False
-        ).select_related('region', 'created_by', 'updated_by')
+            region=instance,
+            deleted_at__isnull=False
+        ).select_related('region')
+
         city_queryset = CustomCity.objects.filter(
-            region=instance, deleted_at__isnull=False
-        ).select_related('country', 'region', 'subregion', 'timezone', 'created_by', 'updated_by')
+            subregion__region=instance,
+            deleted_at__isnull=False
+        ).select_related(
+            'subregion',
+            'subregion__region',
+            'subregion__region__country',
+            'timezone'
+        )
+
         _cascade_restore(CustomSubRegion, subregion_queryset, "CustomRegion", instance)
         _cascade_restore(CustomCity, city_queryset, "CustomRegion", instance)
-
+        
 @receiver(post_save, sender=CustomSubRegion)
 def handle_subregion_restore(sender, instance, **kwargs):
     """Restore cities when a subregion is restored."""
     if instance.deleted_at is None:
         queryset = CustomCity.objects.filter(
-            subregion=instance, deleted_at__isnull=False
+            subsubregion__region=instance, deleted_at__isnull=False
         ).select_related('country', 'region', 'subregion', 'timezone', 'created_by', 'updated_by')
         _cascade_restore(CustomCity, queryset, "CustomSubRegion", instance)
 

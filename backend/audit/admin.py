@@ -5,6 +5,8 @@ from policyengine.commons.base import get_user_role
 
 from audit.constants import AUDIT_ADMIN_ROLES
 from audit.models.audit_event import AuditEvent
+from django.contrib import admin
+
 
 
 @AdminIconDecorator.register_with_icon(AuditEvent)

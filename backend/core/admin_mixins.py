@@ -12,6 +12,7 @@ from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
 
 logger = logging.getLogger(__name__)
 
@@ -187,8 +188,12 @@ class FieldsetMixin(AuditVisibilityMixin):
         fieldsets = self.get_injected_fieldsets(request, obj)
         # ensure no duplicate metadata entries
         fieldsets = [fs for fs in fieldsets if fs[0] != _('Metadata')]
+        # if self.user_can_see_audit(request):
+        #     fieldsets.append((_('Metadata'), {'fields': self.get_audit_fields(obj)}))
         if self.user_can_see_audit(request):
-            fieldsets.append((_('Metadata'), {'fields': self.get_audit_fields(obj)}))
+            audit_fields = self._resolve_audit_fields(obj)
+            if audit_fields:
+                fieldsets.append((_('Metadata'), {'fields': audit_fields}))
         return fieldsets
 
 
@@ -517,7 +522,21 @@ class CustomAdminFormMixin:
                 except Exception:
                     snapshot[field.name] = {"_display": None, "_pk": None}
 
-            payload = {"meta": {"ts": obj.updated_at.isoformat()}, "data": snapshot}
+            # payload = {"meta": {"ts": obj.updated_at.isoformat()}, "data": snapshot}
+            ts_value = None
+
+            for field in ("updated_at", "created_at"):
+                if hasattr(obj, field):
+                    val = getattr(obj, field, None)
+                    if val:
+                        try:
+                            ts_value = val.isoformat()
+                            break
+                        except Exception:
+                            pass
+
+            payload = {"meta": {"ts": ts_value}, "data": snapshot}
+            
             try:
                 cache.set(f"admin_history_snap:{obj._meta.app_label}.{obj._meta.model_name}:{obj.pk}:{request.user.pk}", json.dumps(payload), timeout=DEFAULT_SNAPSHOT_TTL)
             except Exception:
@@ -539,7 +558,8 @@ class CustomAdminFormMixin:
             ),
             'adminform': self._get_admin_form(request, obj),
             'add': False,
-            'audit_fields': self.get_audit_fields(obj),
+            # 'audit_fields': self.get_audit_fields(obj),
+            'audit_fields': self._resolve_audit_fields(obj),
             'user_can_see_audit': self.user_can_see_audit(request),
             'history': history,
         })
@@ -571,20 +591,45 @@ class BaseAdmin( FieldsetMixin, CustomAdminFormMixin, HistoryMixin, SoftDeleteMi
 
     def get_readonly_fields(self, request, obj=None):
         model_fields = [f.name for f in self.model._meta.fields]
-        readonly = ['created_at', 'updated_at', 'created_by', 'updated_by']
+        # readonly = ['created_at', 'updated_at', 'created_by', 'updated_by']
+        audit_fields = ['created_at', 'updated_at', 'created_by', 'updated_by']
+
+        model_fields = {f.name for f in self.model._meta.fields}
+        readonly = [f for f in audit_fields if f in model_fields]
+        
         if obj and getattr(obj, 'deleted_at', None):
             readonly += ['deleted_at', 'deleted_by']
         return [f for f in readonly if f in model_fields]
 
+    # def get_fieldsets(self, request, obj=None):
+    #     # delegate to FieldsetMixin-compatible method if present; else fallback to default
+    #     if hasattr(self, 'get_injected_fieldsets'):
+    #         fieldsets = self.get_injected_fieldsets(request, obj)
+    #         fieldsets = [fs for fs in fieldsets if fs[0] != _('Metadata')]
+    #         if self.user_can_see_audit(request):
+    #             fieldsets.append((_('Metadata'), {'fields': self.get_audit_fields(obj)}))
+    #         return fieldsets
+    #     return super().get_fieldsets(request, obj)
+    
     def get_fieldsets(self, request, obj=None):
-        # delegate to FieldsetMixin-compatible method if present; else fallback to default
-        if hasattr(self, 'get_injected_fieldsets'):
+        # If admin explicitly defines fieldsets, respect them
+        if self.fieldsets:
+            fieldsets = list(self.fieldsets)
+        elif hasattr(self, 'get_injected_fieldsets'):
             fieldsets = self.get_injected_fieldsets(request, obj)
-            fieldsets = [fs for fs in fieldsets if fs[0] != _('Metadata')]
-            if self.user_can_see_audit(request):
-                fieldsets.append((_('Metadata'), {'fields': self.get_audit_fields(obj)}))
-            return fieldsets
-        return super().get_fieldsets(request, obj)
+        else:
+            return super().get_fieldsets(request, obj)
+
+        # Remove duplicate Metadata
+        fieldsets = [fs for fs in fieldsets if fs[0] != _('Metadata')]
+
+        # Add safe audit fields
+        if self.user_can_see_audit(request):
+            audit_fields = self._resolve_audit_fields(obj)
+            if audit_fields:
+                fieldsets.append((_('Metadata'), {'fields': audit_fields}))
+
+        return fieldsets
 
     def save_model(self, request, obj, form, change):
         """

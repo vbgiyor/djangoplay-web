@@ -1,21 +1,21 @@
 {
     "valid_domains": [
-        "aol.com",
-        "outlook.com",
-        "fastmail.com",
-        "icloud.com",
-        "hotmail.com",
-        "yandex.com",
-        "tutanota.com",
-        "gmail.com",
-        "zoho.com",
-        "mail.com",
-        "live.com",
-        "protonmail.com",
-        "comcast.net",
         "gmx.com",
         "yahoo.com",
+        "tutanota.com",
+        "live.com",
+        "mail.com",
+        "aol.com",
+        "fastmail.com",
+        "hotmail.com",
+        "comcast.net",
+        "zoho.com",
+        "yandex.com",
         "msn.com",
-        "rediffmail.com"
+        "rediffmail.com",
+        "gmail.com",
+        "protonmail.com",
+        "outlook.com",
+        "icloud.com"
     ]
 }
