@@ -10,22 +10,21 @@ Mount Path:
 """
 
 from django.urls import path
-from rest_framework.routers import DefaultRouter
-
-from .views import (
-    IntegratedIssueCRUDViewSet,
-    IntegratedCommentCRUDViewSet,
-    IntegratedAttachmentCRUDViewSet,
-)
-from .views.attachment_download import protected_attachment_download
-
+from genericissuetracker.views.v1.crud.label import LabelCRUDViewSet
+from genericissuetracker.views.v1.read.attachment import AttachmentReadViewSet
+from genericissuetracker.views.v1.read.comment import CommentReadViewSet
+from genericissuetracker.views.v1.read.label import LabelReadViewSet
 from paystream.integrations.issuetracker.views.v1.read.issue import (
     IntegratedIssueReadViewSet,
 )
-from genericissuetracker.views.v1.read.comment import CommentReadViewSet
-from genericissuetracker.views.v1.read.attachment import AttachmentReadViewSet
-from genericissuetracker.views.v1.read.label import LabelReadViewSet
-from genericissuetracker.views.v1.crud.label import LabelCRUDViewSet
+from rest_framework.routers import DefaultRouter
+
+from .views import (
+    IntegratedAttachmentCRUDViewSet,
+    IntegratedCommentCRUDViewSet,
+    IntegratedIssueCRUDViewSet,
+)
+from .views.attachment_download import protected_attachment_download
 
 router = DefaultRouter()
 

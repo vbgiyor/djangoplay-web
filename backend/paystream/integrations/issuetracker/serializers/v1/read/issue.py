@@ -9,7 +9,6 @@ to enforce secure download URLs.
 from genericissuetracker.serializers.v1.read.issue import (
     IssueReadSerializer as BaseIssueReadSerializer,
 )
-
 from paystream.integrations.issuetracker.serializers.v1.read.attachment import (
     IntegratedAttachmentReadSerializer,
 )

@@ -1,8 +1,10 @@
 from genericissuetracker.services.identity import DefaultIdentityResolver
+
 from users.services.identity_query_service import IdentityQueryService
 
 
 class DjangoPlayIssueTrackerIdentityResolver(DefaultIdentityResolver):
+
     """
     Identity adapter between DjangoPlay and GenericIssueTracker.
 
@@ -29,4 +31,6 @@ class DjangoPlayIssueTrackerIdentityResolver(DefaultIdentityResolver):
             "id": snapshot["id"],
             "email": snapshot["email"],
             "is_authenticated": True,
+            "is_superuser": user.is_superuser,
+            "role_code": getattr(user, "role_code", None),
         }

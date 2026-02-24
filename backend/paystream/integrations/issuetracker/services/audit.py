@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 class IssueTrackerAuditService:
+
     """
     Integration-layer audit mapper for IssueTracker.
     """

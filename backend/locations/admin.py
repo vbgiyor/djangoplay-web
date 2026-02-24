@@ -154,7 +154,7 @@ class SubRegionAdmin(BaseAdmin):
     date_hierarchy = 'created_at'
     ordering = ('-id',)
     list_per_page = 50
-    select_related_fields = ['region', 'region__country']
+    select_related_fields = ['region__country']
     autocomplete_fields = ['region']
     actions = ['soft_delete', 'restore']
     readonly_fields = ('geoname_id', 'asciiname', 'slug', 'code', 'created_by', 'updated_by', 'created_at', 'updated_at')
@@ -165,7 +165,7 @@ class SubRegionAdmin(BaseAdmin):
 
     base_fieldsets_config = [
         (None, {
-            'fields': ('name', 'region', 'code', 'asciiname', 'slug', 'geoname_id')
+            'fields': ('name', 'code', 'asciiname', 'slug', 'geoname_id')
         }),
     ]
 

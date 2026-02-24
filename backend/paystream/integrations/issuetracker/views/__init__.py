@@ -13,9 +13,9 @@ Purpose
 - Maintain upgrade safety
 """
 
-from .v1.crud.issue import IntegratedIssueCRUDViewSet
-from .v1.crud.comment import IntegratedCommentCRUDViewSet
 from .v1.crud.attachment import IntegratedAttachmentCRUDViewSet
+from .v1.crud.comment import IntegratedCommentCRUDViewSet
+from .v1.crud.issue import IntegratedIssueCRUDViewSet
 
 __all__ = [
     "IntegratedIssueCRUDViewSet",

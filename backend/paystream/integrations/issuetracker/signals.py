@@ -17,15 +17,14 @@ import logging
 from audit.contracts.actor import AuditActor
 from audit.contracts.target import AuditTarget
 from audit.services.recorder import AuditRecorder
-
-from genericissuetracker.signals import (
-    issue_created,
-    issue_updated,
-    issue_deleted,
-    issue_commented,
-    issue_status_changed,
-)
 from django.dispatch import receiver
+from genericissuetracker.signals import (
+    issue_commented,
+    issue_created,
+    issue_deleted,
+    issue_status_changed,
+    issue_updated,
+)
 
 logger = logging.getLogger(__name__)
 

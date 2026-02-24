@@ -7,25 +7,24 @@ Integrated Issue ViewSet
 """
 
 from django.db import transaction
-from rest_framework.response import Response
-
-from genericissuetracker.views.v1.crud.issue import IssueCRUDViewSet
-from genericissuetracker.signals import issue_created, issue_deleted
 from genericissuetracker.services.identity import get_identity_resolver
-
-from paystream.integrations.issuetracker.services.visibility import (
-    IssueVisibilityService,
-)
+from genericissuetracker.signals import issue_created, issue_deleted, issue_updated
+from genericissuetracker.views.v1.crud.issue import IssueCRUDViewSet
 from paystream.integrations.issuetracker.serializers.v1.read.issue import (
     IntegratedIssueReadSerializer,
 )
-from genericissuetracker.services.identity import get_identity_resolver
+from paystream.integrations.issuetracker.services.visibility import (
+    IssueVisibilityService,
+)
+from rest_framework.response import Response
 
 
 class IntegratedIssueCRUDViewSet(IssueCRUDViewSet):
+
     """
     DjangoPlay-integrated Issue ViewSet.
     """
+
     read_serializer_class = IntegratedIssueReadSerializer
 
     # ----------------------------------------------------------
@@ -48,7 +47,7 @@ class IntegratedIssueCRUDViewSet(IssueCRUDViewSet):
 
         with transaction.atomic():
             issue = serializer.save()
-            
+
             # Enforce internal creation privilege
             if not visibility._is_privileged() and issue.is_public is False:
                 issue.is_public = True
@@ -59,20 +58,18 @@ class IntegratedIssueCRUDViewSet(IssueCRUDViewSet):
                 issue=issue,
                 identity=identity,
             )
-    
+
     def perform_destroy(self, instance):
         identity = get_identity_resolver().resolve(self.request)
 
         instance.soft_delete()
-
-        from genericissuetracker.signals import issue_deleted
 
         issue_deleted.send(
             sender=self.__class__,
             issue=instance,
             identity=identity,
         )
-    
+
     def perform_update(self, serializer):
         identity = get_identity_resolver().resolve(self.request)
 
@@ -95,7 +92,6 @@ class IntegratedIssueCRUDViewSet(IssueCRUDViewSet):
         }
 
         if old_data != new_data:
-            from genericissuetracker.signals import issue_updated
 
             issue_updated.send(
                 sender=self.__class__,

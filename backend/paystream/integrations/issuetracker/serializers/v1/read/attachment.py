@@ -7,14 +7,15 @@ Provides secure download endpoint only.
 """
 
 from django.urls import reverse
-from rest_framework import serializers
-
+from drf_spectacular.utils import extend_schema_field
 from genericissuetracker.serializers.v1.read.attachment import (
     IssueAttachmentReadSerializer,
 )
+from rest_framework import serializers
 
 
 class IntegratedAttachmentReadSerializer(IssueAttachmentReadSerializer):
+
     """
     Secure attachment serializer.
     """
@@ -33,7 +34,8 @@ class IntegratedAttachmentReadSerializer(IssueAttachmentReadSerializer):
             "download_url",
         ]
 
-    def get_download_url(self, obj):
+    @extend_schema_field(serializers.URLField())
+    def get_download_url(self, obj) -> str:
         request = self.context.get("request")
 
         url = reverse(

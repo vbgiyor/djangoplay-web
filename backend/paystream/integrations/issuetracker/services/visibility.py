@@ -16,52 +16,26 @@ Design Principles
 """
 
 from django.conf import settings
-from users.models import Employee
 
 
 class IssueVisibilityService:
+
     """
     Enforces RBAC visibility rules for IssueTracker.
     """
 
     def __init__(self, identity: dict):
         self.identity = identity
-        self._employee = None
-
-    # ----------------------------------------------------------
-    # EMPLOYEE RESOLUTION
-    # ----------------------------------------------------------
-    def _get_employee(self):
-        if not self.identity.get("is_authenticated"):
-            return None
-
-        if self._employee is not None:
-            return self._employee
-
-        user_id = self.identity.get("id")
-        if not user_id:
-            return None
-
-        try:
-            self._employee = Employee.objects.get(
-                id=user_id,
-                deleted_at__isnull=True,
-            )
-        except Employee.DoesNotExist:
-            self._employee = None
-
-        return self._employee
 
     # ----------------------------------------------------------
     # PRIVILEGE CHECK (RBAC)
     # ----------------------------------------------------------
     def _is_privileged(self) -> bool:
-        employee = self._get_employee()
-        if not employee:
+
+        if not self.identity.get("is_authenticated"):
             return False
 
-        # Superuser override (industry standard)
-        if employee.is_superuser:
+        if self.identity.get("is_superuser"):
             return True
 
         allowed_roles = getattr(
@@ -70,7 +44,7 @@ class IssueVisibilityService:
             [],
         )
 
-        role_code = getattr(employee.role, "code", None)
+        role_code = self.identity.get("role_code")
 
         return role_code in allowed_roles
 

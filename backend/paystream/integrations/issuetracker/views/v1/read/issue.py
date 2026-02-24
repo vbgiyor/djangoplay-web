@@ -6,18 +6,15 @@ Integrated Issue Read ViewSet
 - Uses secure nested attachment serializer
 """
 
+from genericissuetracker.services.identity import get_identity_resolver
 from genericissuetracker.views.v1.read.issue import (
     IssueReadViewSet as BaseIssueReadViewSet,
 )
-
-from genericissuetracker.services.identity import get_identity_resolver
-
-from paystream.integrations.issuetracker.services.visibility import (
-    IssueVisibilityService,
-)
-
 from paystream.integrations.issuetracker.serializers.v1.read.issue import (
     IntegratedIssueReadSerializer,
+)
+from paystream.integrations.issuetracker.services.visibility import (
+    IssueVisibilityService,
 )
 
 

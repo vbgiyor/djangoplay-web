@@ -1,9 +1,7 @@
+from genericissuetracker.services.identity import get_identity_resolver
 from genericissuetracker.views.v1.read.comment import (
     CommentReadViewSet as BaseCommentReadViewSet,
 )
-
-from genericissuetracker.services.identity import get_identity_resolver
-
 from paystream.integrations.issuetracker.services.visibility import (
     IssueVisibilityService,
 )

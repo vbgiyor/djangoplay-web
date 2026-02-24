@@ -7,17 +7,16 @@ Integrated Comment ViewSet
 """
 
 from django.db import transaction
-
-from genericissuetracker.views.v1.crud.comment import CommentCRUDViewSet
-from genericissuetracker.signals import issue_commented
 from genericissuetracker.services.identity import get_identity_resolver
-
+from genericissuetracker.signals import issue_commented
+from genericissuetracker.views.v1.crud.comment import CommentCRUDViewSet
 from paystream.integrations.issuetracker.services.visibility import (
     IssueVisibilityService,
 )
 
 
 class IntegratedCommentCRUDViewSet(CommentCRUDViewSet):
+
     """
     DjangoPlay-integrated Comment ViewSet.
     """

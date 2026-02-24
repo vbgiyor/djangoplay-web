@@ -16,6 +16,7 @@ from paystream.app_settings.core import *
 from paystream.app_settings.database import *
 from paystream.app_settings.drf_spectacular import SPECTACULAR_SETTINGS
 from paystream.app_settings.email import *
+from paystream.app_settings.genericissuetracker import *
 from paystream.app_settings.jwt import *
 from paystream.app_settings.link_expiry import *
 from paystream.app_settings.logging import *
@@ -27,7 +28,6 @@ from paystream.app_settings.static_media import *
 from paystream.app_settings.templates import *
 from paystream.app_settings.werkzeug import *
 from paystream.settings.validation import *
-from paystream.app_settings.genericissuetracker import *
 
 # Default; overridden by dev/staging/prod
 DEBUG = False

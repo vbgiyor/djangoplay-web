@@ -2,6 +2,7 @@ from django.apps import AppConfig
 
 
 class IssueTrackerIntegrationConfig(AppConfig):
+
     """
     Integration adapter between DjangoPlay and GenericIssueTracker.
     """

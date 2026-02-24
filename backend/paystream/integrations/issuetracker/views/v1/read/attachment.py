@@ -5,17 +5,15 @@ Integrated Attachment Read ViewSet
 Uses secure serializer.
 """
 
+from genericissuetracker.services.identity import get_identity_resolver
 from genericissuetracker.views.v1.read.attachment import (
     AttachmentReadViewSet as BaseAttachmentReadViewSet,
 )
-
-from genericissuetracker.services.identity import get_identity_resolver
-
-from paystream.integrations.issuetracker.services.visibility import (
-    IssueVisibilityService,
-)
 from paystream.integrations.issuetracker.serializers.v1.read.attachment import (
     IntegratedAttachmentReadSerializer,
+)
+from paystream.integrations.issuetracker.services.visibility import (
+    IssueVisibilityService,
 )
 
 

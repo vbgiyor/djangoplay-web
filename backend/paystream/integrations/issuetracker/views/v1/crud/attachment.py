@@ -7,23 +7,20 @@ Integrated Attachment ViewSet
 - Emits audit events
 """
 
+from audit.contracts.actor import AuditActor
+from audit.contracts.target import AuditTarget
+from audit.services.recorder import AuditRecorder
 from django.db import transaction
-
+from genericissuetracker.services.identity import get_identity_resolver
 from genericissuetracker.views.v1.crud.attachment import (
     AttachmentCRUDViewSet,
-)
-from genericissuetracker.services.identity import get_identity_resolver
-
-from paystream.integrations.issuetracker.services.visibility import (
-    IssueVisibilityService,
 )
 from paystream.integrations.issuetracker.serializers.v1.read.attachment import (
     IntegratedAttachmentReadSerializer,
 )
-
-from audit.contracts.actor import AuditActor
-from audit.contracts.target import AuditTarget
-from audit.services.recorder import AuditRecorder
+from paystream.integrations.issuetracker.services.visibility import (
+    IssueVisibilityService,
+)
 
 
 class IntegratedAttachmentCRUDViewSet(AttachmentCRUDViewSet):

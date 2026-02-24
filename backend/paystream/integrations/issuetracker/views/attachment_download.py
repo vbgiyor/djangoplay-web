@@ -16,10 +16,8 @@ import os
 
 from django.http import FileResponse, Http404
 from django.shortcuts import get_object_or_404
-
 from genericissuetracker.models import IssueAttachment
 from genericissuetracker.services.identity import get_identity_resolver
-
 from paystream.integrations.issuetracker.services.visibility import (
     IssueVisibilityService,
 )
@@ -31,7 +29,6 @@ def protected_attachment_download(request, pk):
     """
     Secure attachment streaming endpoint.
     """
-
     attachment = get_object_or_404(
         IssueAttachment.objects.select_related("issue"),
         pk=pk,
