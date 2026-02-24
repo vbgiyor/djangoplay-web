@@ -155,7 +155,7 @@ def handle_region_restore(sender, instance, created, **kwargs):
 
         _cascade_restore(CustomSubRegion, subregion_queryset, "CustomRegion", instance)
         _cascade_restore(CustomCity, city_queryset, "CustomRegion", instance)
-        
+
 @receiver(post_save, sender=CustomSubRegion)
 def handle_subregion_restore(sender, instance, **kwargs):
     """Restore cities when a subregion is restored."""

@@ -6,13 +6,13 @@ from urllib.parse import urlparse
 from django.conf import settings
 from django.contrib import admin, messages
 from django.contrib.admin.helpers import AdminForm
+from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
-from django.contrib.contenttypes.models import ContentType
 
 logger = logging.getLogger(__name__)
 
@@ -536,7 +536,7 @@ class CustomAdminFormMixin:
                             pass
 
             payload = {"meta": {"ts": ts_value}, "data": snapshot}
-            
+
             try:
                 cache.set(f"admin_history_snap:{obj._meta.app_label}.{obj._meta.model_name}:{obj.pk}:{request.user.pk}", json.dumps(payload), timeout=DEFAULT_SNAPSHOT_TTL)
             except Exception:
@@ -596,7 +596,7 @@ class BaseAdmin( FieldsetMixin, CustomAdminFormMixin, HistoryMixin, SoftDeleteMi
 
         model_fields = {f.name for f in self.model._meta.fields}
         readonly = [f for f in audit_fields if f in model_fields]
-        
+
         if obj and getattr(obj, 'deleted_at', None):
             readonly += ['deleted_at', 'deleted_by']
         return [f for f in readonly if f in model_fields]
@@ -610,7 +610,7 @@ class BaseAdmin( FieldsetMixin, CustomAdminFormMixin, HistoryMixin, SoftDeleteMi
     #             fieldsets.append((_('Metadata'), {'fields': self.get_audit_fields(obj)}))
     #         return fieldsets
     #     return super().get_fieldsets(request, obj)
-    
+
     def get_fieldsets(self, request, obj=None):
         # If admin explicitly defines fieldsets, respect them
         if self.fieldsets:

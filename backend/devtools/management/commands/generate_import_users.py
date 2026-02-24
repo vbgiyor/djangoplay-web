@@ -4,7 +4,7 @@ import random
 import time
 import uuid
 from collections import Counter
-from datetime import timedelta, date
+from datetime import date, timedelta
 from decimal import Decimal
 from pathlib import Path
 
@@ -13,15 +13,14 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
 from faker import Faker
-
 from teamcentral.models import (
-    Department,
-    Role,
-    EmploymentStatus,
-    EmployeeType,
-    LeaveType,
-    LeaveBalance,
     Address,
+    Department,
+    EmployeeType,
+    EmploymentStatus,
+    LeaveBalance,
+    LeaveType,
+    Role,
 )
 from users.models import Employee
 

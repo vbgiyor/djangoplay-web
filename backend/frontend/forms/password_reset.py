@@ -5,7 +5,10 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
 from django.utils.translation import gettext_lazy as _
-from utilities.commons.validators import is_valid_email, is_valid_username
+from utilities.commons.basic_validators import (
+    is_valid_email,
+    is_valid_username,
+)
 
 logger = logging.getLogger(__name__)
 
