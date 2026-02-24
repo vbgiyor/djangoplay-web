@@ -9,6 +9,7 @@ from utilities.commons.basic_validators import (
     is_valid_email,
     is_valid_username,
 )
+
 logger = logging.getLogger(__name__)
 
 UserModel = get_user_model()

@@ -1,6 +1,7 @@
 import json
 import os
 from functools import lru_cache
+
 from django.core.exceptions import ValidationError
 
 # Immutable constant
