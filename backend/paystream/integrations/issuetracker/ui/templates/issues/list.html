@@ -1,0 +1,24 @@
+{% extends "issues/base.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h3 class="mb-4">Issues</h3>
+
+    {% include "issues/partials/status_tabs.html" %}
+
+    <div class="list-group mt-3">
+        {% for issue in page_obj %}
+            {% include "issues/partials/issue_row.html" %}
+        {% empty %}
+            <div class="list-group-item text-muted">
+                No issues found.
+            </div>
+        {% endfor %}
+    </div>
+
+    {% include "issues/partials/pagination.html" %}
+
+</div>
+{% endblock %}

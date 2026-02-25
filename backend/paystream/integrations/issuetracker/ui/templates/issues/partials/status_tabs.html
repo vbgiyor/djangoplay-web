@@ -1,0 +1,15 @@
+<ul class="nav nav-pills">
+    <li class="nav-item">
+        <a class="nav-link {% if status_filter == 'ALL' %}active{% endif %}"
+           href="?status=ALL">All</a>
+    </li>
+
+    {% for value, label in status_choices %}
+        <li class="nav-item">
+            <a class="nav-link {% if status_filter == value %}active{% endif %}"
+               href="?status={{ value }}">
+                {{ label }}
+            </a>
+        </li>
+    {% endfor %}
+</ul>

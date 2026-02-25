@@ -6,6 +6,9 @@ MIDDLEWARE = [
     "core.middleware.client_ip.ClientIPMiddleware",
     "audit.middleware.api_audit.APIAuditMiddleware",
 
+    # --- django-hosts subdomain config ---
+    "django_hosts.middleware.HostsRequestMiddleware",
+
     # --- Security & HTTP ---
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -29,6 +32,9 @@ MIDDLEWARE = [
 
     # --- API request persistence (near the end) ---
     "core.middleware.api_request_logging.APIRequestLoggingMiddleware",
+
+    # --- django-hosts subdomain config ---
+    "django_hosts.middleware.HostsResponseMiddleware",
 ]
 
 if settings.DEBUG:

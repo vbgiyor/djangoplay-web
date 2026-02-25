@@ -4,6 +4,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
+            BASE_DIR / 'paystream' / 'integrations' / 'issuetracker' / 'ui' / 'templates',
             BASE_DIR / 'paystream' / 'templates',
             BASE_DIR / 'templates',
             BASE_DIR / 'frontend' / 'templates',

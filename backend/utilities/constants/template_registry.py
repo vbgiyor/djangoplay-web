@@ -132,3 +132,9 @@ class TemplateRegistry:
     # from account/email/. Subject fallback is ignored for this flow.
     # So use account/email/password_reset_subject.txt, instead of account/fallback/password_reset_subject.txt
     PASSWORD_RESET_EMAIL = "password_reset"
+
+    # -------------------------------------------------------------------------
+    # ISSUE TRACKER UI TEMPLATES
+    # -------------------------------------------------------------------------
+
+    ISSUES_LIST = "issues/list.html"

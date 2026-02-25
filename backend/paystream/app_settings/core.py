@@ -17,6 +17,7 @@ INSTALLED_APPS = [
     "mptt",
     "dal",
     "dal_select2",
+    "django_hosts",
 
     # Django core
     "django.contrib.admin",
@@ -69,6 +70,7 @@ INSTALLED_APPS = [
     # Issue Tracker Integration
     "genericissuetracker",
     "paystream.integrations.issuetracker.apps.IssueTrackerIntegrationConfig",
+    "paystream.integrations.issuetracker.ui",
 ]
 
 # Custom User Model
@@ -114,3 +116,8 @@ APPS_READY = {
     "helpdesk": True,
     "teamcentral": True,
 }
+
+# django-hosts config
+
+ROOT_HOSTCONF = "paystream.hosts"
+DEFAULT_HOST = "default"
