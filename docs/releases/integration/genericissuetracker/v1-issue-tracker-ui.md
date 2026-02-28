@@ -1,26 +1,21 @@
+# 🧠 Issue Tracker UI – Architecture & Roadmap (DRY + Enterprise-Aligned)
 
-# 🧠 3️⃣ DRY + Proper Django Architecture Strategy (Important)
-
-Now the critical part — design correctness.
-
-You correctly stated:
-
-> UI must not duplicate business logic.
-
-Here is the proper layered architecture we will follow:
+This document defines the **architectural strategy and phased roadmap** for building the server-rendered UI layer for the `genericissuetracker` library inside DjangoPlay (Paystream).
 
 ---
 
-## 🔷 Final Architecture (Strictly DRY)
+# 🏗 Architectural Strategy (Strictly DRY)
+
+We are enforcing a **clean layered architecture** with zero business-logic duplication.
 
 ```
 issues_ui (Presentation Layer)
         ↓
-Service Adapter Layer (thin integration wrapper)
+Integration Service Layer (Thin Adapter)
         ↓
 genericissuetracker (Domain Logic)
         ↓
-RBAC + Audit + Signals (already complete)
+RBAC + Audit + Signals (Already Implemented)
 ```
 
 ---
@@ -29,26 +24,23 @@ RBAC + Audit + Signals (already complete)
 
 * ❌ No HTTP calls to `/api/v1/issuetracker/`
 * ❌ No duplicated permission checks
-* ❌ No re-implementing visibility logic
+* ❌ No reimplementation of visibility rules
 * ❌ No direct MEDIA exposure
-* ❌ No business rules inside templates
+* ❌ No business logic inside templates
+* ❌ No lifecycle or transition logic in UI
 
 ---
 
 ## ✅ Correct Integration Pattern
 
-Inside `issues_ui`:
-
-### views.py
-
-Only:
+UI views must:
 
 * Call visibility service
-* Call permission class
-* Call existing transition service
-* Render template
+* Call existing permission classes
+* Call existing transition services (in later phases)
+* Render templates
 
-Example pattern (conceptual only):
+**Conceptual pattern:**
 
 ```python
 class IssueListView(LoginRequiredMixin, TemplateView):
@@ -58,173 +50,16 @@ class IssueListView(LoginRequiredMixin, TemplateView):
         return IssueVisibilityService.get_visible_issues(self.request.user)
 ```
 
-This ensures:
+This guarantees:
 
 * Single source of truth
-* UI stays thin
-* Domain logic centralized
+* Thin presentation layer
+* Centralized domain logic
+* Library remains untouched
 
 ---
 
-# 🏗 4️⃣ Subdomain Routing Strategy (Future-Proof)
-
-For now:
-
-```
-/issues/
-```
-
-Later, production Nginx config:
-
-```
-server_name issues.djangoplay.com;
-
-location / {
-    proxy_pass http://django_app;
-}
-```
-
-Inside Django:
-
-```python
-if request.get_host().startswith("issues."):
-    include("issues_ui.urls")
-```
-
-Or cleaner:
-
-Use Django `Site` object routing.
-
-We will implement that in UI-4.
-
----
-
-# 🧱 5️⃣ Final Clean Implementation Roadmap (Locked)
-
-We will strictly follow this order:
-
-### UI-1
-
-* issues_ui app
-* urls.py
-* ListView
-* Pagination
-* Status filter
-
-### UI-2
-
-* DetailView
-* Comment thread
-* Attachment secure links
-
-### UI-3
-
-* CreateView
-* Comment form
-* Status change form
-* Django messages integration
-
-### UI-4
-
-* Subdomain binding
-* Production routing
-* Final UI polish
-
----
-
-# 🔒 6️⃣ Security Guarantees
-
-UI layer will:
-
-* Never query `.all()` directly
-* Always go through visibility service
-* Use existing permission classes
-* Use signed URLs for attachments
-* Respect EmploymentStatus.ACTV requirement
-
-We will treat `issues_ui` strictly as presentation.
-
----
-
-# 🌐 Subdomain Confirmation
-
-You already configured:
-
-```
-127.0.0.1 issues.localhost
-```
-
-Your `devssl()` already generates certificates including:
-
-```
-mkcert localhost issues.localhost 127.0.0.1 ::1
-```
-
-✅ You DO NOT need new certificates.
-Your script already supports `issues.localhost`.
-
-The only required change will be:
-
-```bash
-export SITE_HOST=issues.localhost
-```
-
-instead of `localhost` when you want to run the issues subdomain locally.
-
-Your SSL + mkcert setup is already correct.
-
----
-
-Now let’s redefine UI-1 properly.
-
----
-
-# 🌿 Git Branch
-
-```
-feature/issue-tracker-integration-ui-1
-```
-
----
-
-# 📘 Phase UI-1 — Architecture Scope (Enterprise-Aligned)
-
----
-
-## 🎯 Objective
-
-Introduce a **server-rendered UI layer** for the third-party library:
-
-```
-genericissuetracker
-```
-
-Integrated into DjangoPlay (Paystream), mounted exclusively on:
-
-```
-https://issues.localhost:9999/issues/
-```
-
-And in production:
-
-```
-https://issues.djangoplay.com/issues/
-```
-
-This phase delivers:
-
-* Subdomain-aware routing
-* Integration-bound UI module (not a new domain app)
-* GitHub-style Issue List page
-* Status filtering (ALL statuses from enum)
-* Pagination (library-config driven)
-* Strict reuse of visibility governance
-* Zero duplication of permission/business logic
-* Zero modification to genericissuetracker core
-
----
-
-# 🧱 Architectural Placement
+# 📁 Architectural Placement
 
 UI lives inside the integration boundary:
 
@@ -244,66 +79,180 @@ paystream/
                     partials/
 ```
 
-This respects your established pattern:
-
-```
-app/
-    models/
-    serializers/
-    views/
-    services/
-    permissions.py
-    signals.py
-    ui/
-```
-
 We are extending the **integration layer**, not creating:
 
 * ❌ A new domain
 * ❌ A shadow Issue model
-* ❌ A duplicate permission system
-* ❌ A second lifecycle engine
+* ❌ A second permission system
+* ❌ A duplicate lifecycle engine
 
 ---
 
-# 🧠 Architectural Principles Applied
+# 🌐 Subdomain Strategy (Future-Proof)
+
+## Local Development
+
+```
+https://issues.localhost:9999/issues/
+```
+
+You already configured:
+
+```
+127.0.0.1 issues.localhost
+```
+
+Your `mkcert` setup includes:
+
+```
+mkcert localhost issues.localhost 127.0.0.1 ::1
+```
+
+No new certificates required.
+
+To activate subdomain locally:
+
+```bash
+export SITE_HOST=issues.localhost
+```
 
 ---
 
-## 1️⃣ Third-Party Boundary Respect
+## Production (Future)
 
-The Issue model and enums are imported strictly from:
+```
+https://issues.djangoplay.com/issues/
+```
+
+Example Nginx:
+
+```nginx
+server_name issues.djangoplay.com;
+
+location / {
+    proxy_pass http://django_app;
+}
+```
+
+---
+
+## Django Host Routing
+
+If host starts with `issues.`:
+
+```python
+if request.get_host().startswith("issues."):
+    include("issues_ui.urls")
+```
+
+(Will be refined using Django `Site` framework in UI-4.)
+
+---
+
+## Subdomain Behavior Matrix
+
+| Host                  | Behavior                |
+| --------------------- | ----------------------- |
+| issues.localhost      | Issue UI routes only    |
+| localhost             | Normal Paystream routes |
+| issues.djangoplay.com | Issue UI routes only    |
+
+Root on subdomain:
+
+```
+/  → redirect → /issues/
+```
+
+---
+
+# 🗺 Implementation Roadmap (Locked Order)
+
+## UI-1 
+
+* `issues_ui` app scaffold
+* Subdomain-aware routing
+* Issue List View
+* Enum-driven status filtering
+* Pagination (library-config driven)
+* Strict visibility reuse
+
+## UI-2
+
+* DetailView
+* Comment thread
+* Secure attachment links
+
+## UI-3
+
+* CreateView
+* Comment form
+* Status transition form
+* Django messages integration
+
+## UI-4
+
+* Production subdomain binding
+* Site-based routing
+* Final UI polish
+
+---
+
+# 🔐 Security Guarantees
+
+The UI layer:
+
+* Never calls `.all()` directly in views
+* Always goes through visibility service
+* Uses existing permission classes
+* Uses signed URLs for attachments
+* Respects `EmploymentStatus.ACTIVE`
+* Never mutates `genericissuetracker`
+* Never bypasses lifecycle validation
+
+UI is strictly presentation.
+
+---
+
+# 📘 Phase UI-1 — Read-Only Issue List
+
+## 🎯 Objective
+
+Introduce a **server-rendered UI** for the third-party library:
+
+```
+genericissuetracker
+```
+
+Mounted exclusively on the issues subdomain.
+
+Delivered:
+
+* Subdomain-aware routing
+* GitHub-style issue list
+* Enum-driven status filter
+* Config-driven pagination
+* Strict visibility governance
+* Zero duplication of business logic
+
+---
+
+# 🧱 Design Principles Applied
+
+### 1️⃣ Third-Party Boundary Respect
+
+Imports strictly from:
 
 ```python
 from genericissuetracker.models import Issue, IssueStatus, IssuePriority
 ```
 
-Never from:
+Never from integration shadow modules.
 
-```python
-paystream.integrations.issuetracker.models  ❌
-```
-
-We treat `genericissuetracker` as an immutable, reusable library.
-
-All UI logic is a consumer of its public contract.
+We treat `genericissuetracker` as immutable.
 
 ---
 
-## 2️⃣ Integration Cohesion
-
-The UI belongs inside the integration because:
-
-* It renders `Issue` objects
-* It depends on visibility governance implemented during backend phases
-* It must respect IssueTrackerAccessPermission rules
-* It must align with lifecycle policy and identity resolver behavior
-
-Keeping UI inside the integration prevents domain leakage.
-
----
-
-## 3️⃣ Thin Views
+### 2️⃣ Thin Views
 
 Location:
 
@@ -314,21 +263,19 @@ ui/views/read/issue_list.py
 Responsibilities:
 
 * Parse query parameters
-* Call IssueQueryService
+* Call `IssueQueryService`
 * Handle pagination
 * Render template
 
-It must NOT:
+Must NOT:
 
-* Contain filtering logic
-* Contain role checks
-* Call lifecycle services
-* Apply business rules
-* Reimplement visibility filtering
+* Apply business filtering
+* Perform role checks
+* Implement lifecycle rules
 
 ---
 
-## 4️⃣ Query Responsibility in Service Layer
+### 3️⃣ Service-Layer Query Abstraction
 
 Location:
 
@@ -338,101 +285,39 @@ ui/services/issue_query_service.py
 
 Responsibilities:
 
-* Construct base queryset using:
+1. Base queryset:
 
-  ```python
-  Issue.objects.all()
-  ```
+```python
+Issue.objects.all()
+```
 
-  (Soft delete automatically respected via default manager)
+(Soft-delete respected automatically.)
 
-* Apply visibility filtering using existing integration visibility service
+2. Apply visibility filtering
+3. Apply enum-driven status filtering
+4. Apply deterministic ordering
+5. Return clean queryset
 
-* Apply enum-driven status filtering
+Reusable for:
 
-* Apply deterministic ordering
-
-* Return clean queryset
-
-This makes logic reusable for:
-
-* UI-2 (detail page)
-* UI-3 (dashboard widgets)
+* UI-2 detail page
+* UI-3 dashboard
 * Future search features
 
 ---
 
-## 5️⃣ Subdomain Isolation
+# 🔎 URL Endpoints (UI-1)
 
-Routing logic in main `urls.py`:
-
-If:
-
-```python
-request.get_host().startswith("issues.")
-```
-
-→ Load Issue UI routes only
-
-Else:
-
-→ Load normal Paystream routes
-
-This ensures:
-
-* Console stays isolated
-* API stays isolated
-* Issue UI cannot accidentally render on main domain
-* Security surface remains bounded
-
----
-
-# 🌐 Subdomain Behavior (UI-1)
-
-| Host                  | Route Behavior          |
-| --------------------- | ----------------------- |
-| issues.localhost      | UI routes only          |
-| localhost             | Normal Paystream routes |
-| issues.djangoplay.com | UI routes only          |
-
----
-
-## Root Behavior (Subdomain Only)
-
-Visiting:
-
-```
-https://issues.localhost:9999/
-```
-
-Redirects to:
-
-```
-/issues/
-```
-
-This redirect only applies to `issues.*` hosts.
-
----
-
-# 🏗 What UI-1 Implements
-
----
-
-## 1️⃣ URL Endpoints (Subdomain Only)
-
-| URL        | Behavior              |
-| ---------- | --------------------- |
-| `/`        | Redirect → `/issues/` |
-| `/issues/` | Issue List Page       |
+| URL        | Behavior                    |
+| ---------- | --------------------------- |
+| `/`        | Redirect → `/issues/`       |
+| `/issues/` | Issue list page (read-only) |
 
 No other endpoints in this phase.
 
 ---
 
-## 2️⃣ Issue List Page Requirements
-
-### Query Parameters
+# 🔁 Status Filtering
 
 Supported:
 
@@ -446,26 +331,24 @@ Supported:
 
 Rules:
 
-* Default if omitted → ALL
+* Default: `ALL`
+* Values derived from:
 
-* Values must be derived from:
+```python
+IssueStatus.choices
+```
 
-  ```python
-  IssueStatus.choices
-  ```
-
-* No hardcoded string literals
-
-Invalid values → fallback to ALL
+* No hardcoded literals
+* Invalid values → fallback to `ALL`
 
 ---
 
-## 3️⃣ Query Flow (Strict DRY Enforcement)
+# 🔄 Query Flow (Strict DRY)
 
 ```
 IssueListView
     ↓
-IssueQueryService.get_issues_for_list(request.user, status)
+IssueQueryService.get_issues_for_list(user, status)
     ↓
 Issue.objects.all()
     ↓
@@ -476,33 +359,32 @@ Apply enum status filter
 order_by("-created_at")
 ```
 
-View must not perform filtering directly.
+Views never filter directly.
 
 ---
 
-## 4️⃣ Pagination
+# 📄 Pagination
 
-Must use library-configured page size:
+* Page size derived from:
 
 ```
 GENERIC_ISSUETRACKER_PAGE_SIZE
 ```
 
-Never hardcode.
-
-Implementation:
+* Resolved using:
 
 ```python
 from genericissuetracker.services.pagination import resolve_page_size
 ```
 
-Pagination must be Django Paginator (UI context), but page size derived from library configuration.
+* Uses Django `Paginator`
+* No hardcoded page size
 
 ---
 
-## 5️⃣ UI Rendering Requirements
+# 🎨 UI Rendering Requirements
 
-Each issue row must display:
+Each issue row displays:
 
 * Status badge (enum-driven)
 * Issue number
@@ -517,74 +399,25 @@ Each issue row must display:
 
 ## Badge Mapping (UI Concern Only)
 
-### Status Color Mapping
+### Status → Bootstrap
 
-| Status      | Bootstrap Class |
-| ----------- | --------------- |
-| OPEN        | success         |
-| IN_PROGRESS | primary         |
-| RESOLVED    | info            |
-| CLOSED      | secondary       |
+| Status      | Class     |
+| ----------- | --------- |
+| OPEN        | success   |
+| IN_PROGRESS | primary   |
+| RESOLVED    | info      |
+| CLOSED      | secondary |
 
-Derived from enum value, not hardcoded logic branches.
+### Priority → Bootstrap
 
-### Priority Mapping
+| Priority | Class     |
+| -------- | --------- |
+| LOW      | secondary |
+| MEDIUM   | info      |
+| HIGH     | warning   |
+| CRITICAL | danger    |
 
-| Priority | Bootstrap Class |
-| -------- | --------------- |
-| LOW      | secondary       |
-| MEDIUM   | info            |
-| HIGH     | warning         |
-| CRITICAL | danger          |
-
----
-
-# 🎨 Layout Requirements
-
-GitHub-inspired:
-
-* White background
-* Clean bordered list rows
-* Compact spacing
-* Status filter nav pills
-* Pagination footer
-* Bootstrap 5
-* Extend existing base template
-* No SPA
-* No heavy JS
-* No HTMX (UI-1)
-
----
-
-# 🔐 Security Guarantees (UI-1)
-
-UI must:
-
-* Always use integration visibility service
-* Never manually filter `is_public`
-* Never check roles directly
-* Never expose file paths
-* Never bypass permission classes
-* Never replicate lifecycle validation
-* Never mutate Issue model
-* Never modify genericissuetracker
-
----
-
-# 🚫 Explicitly NOT Included in UI-1
-
-* Issue detail page
-* Create issue form
-* Comment submission
-* Status change dropdown
-* Attachment download UI
-* Edit/delete actions
-* Search
-* AJAX
-* HTMX
-* Transition handling
-
-This phase is strictly read-only list view.
+Mapping derived from enum values (no hardcoded logic trees).
 
 ---
 
@@ -599,31 +432,31 @@ ui/templates/issues/
         pagination.html
 ```
 
-Templates extend global base template.
-
-No duplication of layout components.
-
----
-
-# 🧠 Django Design Principles Observed
-
-✔ Third-party library boundary respected
-✔ Integration cohesion preserved
-✔ Thin views
-✔ Service-layer abstraction
-✔ Enum-driven filtering
-✔ Subdomain isolation
-✔ No permission duplication
-✔ No lifecycle duplication
-✔ No schema mutation
-✔ Soft-delete automatically respected
-✔ Config-driven pagination
+* Extends global base template
+* Bootstrap 5
+* Clean GitHub-inspired layout
+* No SPA
+* No heavy JS
+* No HTMX (UI-1)
 
 ---
 
-# 📦 Deliverable After UI-1
+# 🚫 Explicitly Out of Scope (UI-1)
 
-After completion:
+* Issue detail page
+* Create issue form
+* Comment submission
+* Status transitions
+* Attachment download UI
+* Edit/delete actions
+* Search
+* AJAX / HTMX
+
+This phase is strictly **read-only list view**.
+
+---
+
+# 📦 Final Deliverable (UI-1)
 
 Visiting:
 
@@ -631,21 +464,20 @@ Visiting:
 https://issues.localhost:9999/
 ```
 
-→ Redirects to:
+Redirects to:
 
 ```
 /issues/
 ```
 
-Issue list renders:
+Result:
 
 * Pagination works
 * Status filtering works
 * Visibility rules enforced
-* Layout matches frontend theme
-* No impact to console
-* No modification to genericissuetracker
-* No new domain created
+* Layout aligned with frontend theme
+* No console impact
+* No modification to `genericissuetracker`
 * No architectural leakage
 
 ---

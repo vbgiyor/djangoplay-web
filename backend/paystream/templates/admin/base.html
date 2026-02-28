@@ -24,18 +24,21 @@
     <!-- HEADER -->
     <header class="text-center">
         <div class="header-container">
-            {% if user.is_authenticated %}
-            <a href="{% url 'console_dashboard' %}">
-                <img src="{% static 'elements/images/logo/logo_icon.png' %}" class="logo-icon">
-                <img src="{% static 'elements/images/logo/logotext-color.png' %}" class="logo">
+            <a href="{% if 'issues.' in request.get_host %}
+                        {% url 'issues:list' %}
+                    {% else %}
+                        {% url 'console_dashboard' %}
+                    {% endif %}">
+                <img src="{% static 'elements/images/logo/logo_icon.png' %}" class="logo-icon"><img src="{% static 'elements/images/logo/logotext-color.png' %}" class="logo">
             </a>
-            <div class="user-section">
-                <div class="user-info">Hello, {{ user.first_name|default:user.username }}</div>
-                <a href="{% url 'account_logout' %}" class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span class="logout-label">Logout</span>
-                </a>
-            </div>
+            {% if request.user.is_authenticated %}
+                <div class="user-section">
+                    <div class="user-info">Hello, {{ user.first_name|default:user.username }}</div>
+                    <a href="{% url 'account_logout' %}" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="logout-label">Logout</span>
+                    </a>
+                </div>
             {% endif %}
         </div>
     </header>
@@ -50,7 +53,7 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="footer-container">
+    {% comment %} <footer class="footer-container">
         <div class="links-container">
             <i class="fas fa-copyright"></i> 2025 DjangoPlay
             <i class="fas fa-book"></i>
@@ -60,6 +63,45 @@
             <i class="fas fa-signature"></i>
             <a href="{% url 'frontend:license' %}" class="primary-text" target="_blank" rel="noopener noreferrer">Apache License 2.0</a>
             </div>            
+    </footer> {% endcomment %}
+
+    <footer class="footer-container">       
+        <div class="links-container">
+            &copy; {% now "Y" %} {{ SITE_NAME }}<br>  
+
+            <i class="fas fa-book"></i>            
+            {% if request.user.is_authenticated %}
+                <a href="{{ SITE_URL }}{% url 'apidocs:redoc' %}"
+                class="primary-text"
+                target="_blank"
+                rel="noopener noreferrer">
+                    Documentation
+                </a>
+            {% else %}
+                <a href="{{ SITE_URL }}{% url 'frontend:api_login' %}?from=redoc&next={% url 'apidocs:redoc' %}"
+                class="primary-text"
+                target="_blank"
+                rel="noopener noreferrer">
+                    Documentation
+                </a>
+            {% endif %}
+
+            <i class="fas fa-headset"></i>
+            <a href="{{ SITE_URL }}{% url 'support' %}"
+            class="primary-text"
+            target="_blank"
+            rel="noopener noreferrer">
+                Support
+            </a>
+
+            <i class="fas fa-signature"></i>
+            <a href="{{ SITE_URL }}{% url 'frontend:license' %}"
+            class="primary-text"
+            target="_blank"
+            rel="noopener noreferrer">
+                Apache License 2.0
+            </a>
+        </div>
     </footer>
 
     {% include 'admin/bug_report_include.html' with show_bug_report=True %}
@@ -73,85 +115,3 @@
     {% block footer_scripts %}{% endblock %}
 </body>
 </html>
-
-{% comment %} {% load i18n static compress %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}DjangoPlay{% endblock %}</title>
-    <link rel="icon" type="image/png" href="{% static 'elements/images/logo/logo_icon.png' %}">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    {% compress css %}
-    <link rel="stylesheet" href="{% static 'design/css/app/common.css' %}">
-    <link rel="stylesheet" href="{% static 'design/css/themes/space.css' %}">
-    <link rel="stylesheet" href="{% static 'design/css/themes/toggle.css' %}">
-    {% endcompress %}
-</head> 
-<body class="has-relative-footer">
-    <div id="stars"></div>
-
-    <!-- EXACT SAME HEADER AS DASHBOARD -->
-    <header class="text-center">
-        <div class="header-container">
-            {% if request.user.is_authenticated %}
-            <a href="{% url 'console_dashboard' %}">
-                <img src="{% static 'elements/images/logo/logo_icon.png' %}" alt="DjangoPlay Logo" class="logo-icon">
-                <img src="{% static 'elements/images/logo/logotext-color.png' %}" alt="DjangoPlay Logo" class="logo">
-            </a>
-            <div class="user-section">
-                <div class="user-info">Hello, {{ request.user.first_name|default:request.user.username }}</div>
-                <a href="{% url 'account_logout' %}" class="logout-btn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span class="logout-label">Logout</span>
-                </a>
-            </div>
-            {% endif %}
-        </div>
-    </header>
-    <div class="theme-toggle-container">
-        <input type="checkbox" id="theme-switch" class="theme-toggle">
-        <label for="theme-switch" class="slider"></label>
-    </div>
-
-    <main class="container text-center mt-15 mb-8">
-        {% block content %}{% endblock %}
-    </main>
-
-    <footer class="footer-container">
-        <div class="links-container">
-            <i class="fas fa-copyright"></i> 2025 DjangoPlay
-            <i class="fas fa-book"></i>
-            <a href="{% url 'apidocs:redoc' %}" class="primary-text" target="_blank">Documentation</a>
-            <i class="fas fa-headset"></i>
-            <a href="{% url 'support' %}" class="primary-text">Support</a>
-            <i class="fas fa-signature"></i>
-            <a href="{% url 'frontend:license' %}" class="primary-text" target="_blank">Apache License 2.0</a>
-        </div>
-        <button id="bug-report-btn-dashboard"
-                class="bug-report-btn-dashboard"
-                data-bs-toggle="modal"
-                data-bs-target="#bug-modal"
-                title="{% trans 'Report Bug' %}">
-            <i class="fas fa-bug"></i>
-        </button>
-    </footer>
-    {% include 'admin/bug_report_include.html' with show_bug_report=True %}
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    {% compress js %}
-    <script src="{% static 'design/js/space.js' %}"></script>
-    <script src="{% static 'design/js/file_upload.js' %}"></script>
-    <script src="{% static 'design/js/reportbug.js' %}"></script>
-    <script src="{% static 'design/js/toast.js' %}"></script>
-    <script src="{% static 'design/js/api.js' %}"></script>
-    <script src="{% static 'design/js/auth.js' %}"></script>
-    <script src="{% static 'design/js/permissions.js' %}"></script>
-    {% endcompress %}
-    <audio id="toggle-sound" src="{% static 'sounds/strings.mp3' %}" preload="auto" loop></audio>
-</body>
-</html> {% endcomment %}

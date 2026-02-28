@@ -2,7 +2,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import include, path
 from frontend.views import *
-
 from paystream.custom_site.admin_site import admin_site
 from paystream.custom_site.custom_admin_views import (
     app_index_view,

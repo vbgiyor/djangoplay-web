@@ -4,6 +4,7 @@ from typing import Any
 from celery import shared_task
 from django.conf import settings
 from helpdesk.models import BugReport
+from paystream.services.context_processors.site_context import build_subdomain_url
 from utilities.admin.url_utils import get_admin_url
 from utilities.constants.template_registry import TemplateRegistry as T
 
@@ -45,6 +46,7 @@ def send_bug_report_email_task(self: Any, bug_id: int) -> None:
         "file_names": file_names,
         "has_attachments": bool(file_names),
         "site_name": getattr(settings, "SITE_NAME", "DjangoPlay"),
+        "ISSUES_TRACKER_URL": build_subdomain_url("issues", "/issues/"),
     }
 
     # --------------------------------------------------

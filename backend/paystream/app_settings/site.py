@@ -27,30 +27,3 @@ def build_site_url(protocol: str, host: str, port: str | None) -> str:
 
     return f"{protocol}://{host}:{port}"
 
-
-
-def ensure_runtime_site(protocol: str, host: str, port: str):
-    """
-    Create/update Site entry at runtime using settings.SITE_HOST, SITE_PORT.
-    Called from PaystreamConfig.ready().
-    """
-    if port and port not in ("80", "443", ""):
-        domain = f"{host}:{port}"
-    else:
-        domain = host
-
-    if len(domain) > 50:
-        raise ValueError(f"Site.domain '{domain}' exceeds max_length=50")
-
-    from django.contrib.sites.models import Site
-    site, created = Site.objects.get_or_create(
-        domain=domain,
-        defaults={"name": domain},
-    )
-
-    if created:
-        logger.info(f"[Site] Created site entry: {domain}")
-    else:
-        logger.info(f"[Site] Loaded site entry: {domain}")
-
-    return site

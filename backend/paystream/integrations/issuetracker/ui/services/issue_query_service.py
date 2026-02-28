@@ -1,6 +1,6 @@
 from typing import Optional
 
-from django.db.models import QuerySet
+from django.db.models import Count, QuerySet
 from genericissuetracker.models import Issue, IssueStatus
 from genericissuetracker.services.pagination import resolve_page_size
 from paystream.integrations.issuetracker.services.visibility import (
@@ -31,8 +31,9 @@ class IssueQueryService:
         optionally filtered by status.
         """
         # Base queryset (soft-delete automatically respected)
-        queryset = Issue.objects.all()
-
+        queryset = Issue.objects.all().annotate(
+                comment_count=Count("comments", distinct=True)
+            )
         # Apply integration visibility governance
         identity = {
             "is_authenticated": user.is_authenticated,

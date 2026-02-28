@@ -147,20 +147,38 @@ class CustomAccountAdapter(BaseAdapter, DefaultAccountAdapter):
     # ------------------------------------------------------------------ #
     # Redirect handling (safer `next` support)
     # ------------------------------------------------------------------ #
+
     def get_login_redirect_url(self, request):
         """
         Minimal, non-opinionated adapter fallback.
 
         - If an explicit safe `next` param exists, return it.
         - Otherwise go to console dashboard.
+        - Intercept redirect resolution before Allauth uses `next`.
         """
-        redirect_to = get_request_param(request, "next")
-        logger.info("CustomAccountAdapter.get_login_redirect_url: next=%r", redirect_to)
+        current_host = request.get_host()
 
-        if redirect_to and isinstance(redirect_to, str) and redirect_to.startswith("/"):
+        # Respect safe next first
+        redirect_to = get_request_param(request, "next")
+        if redirect_to and redirect_to.startswith("/"):
             return redirect_to
 
+        # Host-based redirect
+        if current_host.startswith("issues."):
+            return "/issues/"
+
         return reverse("console_dashboard")
+
+    def get_logout_redirect_url(self, request):
+        """
+        Host-aware logout redirect.
+        """
+        current_host = request.get_host()
+        if current_host.startswith("issues."):
+            return "/issues/"
+
+        return reverse("account_login")
+
 
     def is_safe_url(self, url, allowed_hosts=None):
         """

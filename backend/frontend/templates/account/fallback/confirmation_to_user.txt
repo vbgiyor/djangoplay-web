@@ -8,20 +8,20 @@ Thanks for letting us know about this issue. Your report has been received and l
 
 Ticket ID: #{{ bug.bug_number }}
 
-Issue: {{ subject|default:"(No subject)" }}
+Issue: {{ bug.summary|default:"(No subject)" }}
 
-{% if github_issue %}
-GitHub Issue: {{ github_issue }}
+{% if bug.external_issue_url %}
+GitHub Issue: {{ bug.external_issue_url }}
 {% endif %}
 
 Our team will review it soon. While we may not reply individually,
-every report helps us improve {{ site_name}} for everyone.
+every report helps us improve {{ site_name }} for everyone.
 
 You can also view the public bug tracker here:
-https://bugs.djangoplay.com
+{{ ISSUES_TRACKER_URL }}
 
-Thanks for helping us build a better {{ site_name}}.
-— The {{ site_name}} Team
+Thanks for helping us build a better {{ site_name }}.
+— The {{ site_name }} Team
 
 {% else %}
 Support Ticket #{{ ticket.ticket_number }} Received
@@ -41,7 +41,7 @@ Message:
 {{ ticket.message }}
 
 {% if has_attachments %}
-Attachments ({{ file_count }}):
+Attachments:
 {% for name in file_names %}
  - {{ name }}
 {% endfor %}

@@ -17,7 +17,9 @@ SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
 SOCIALACCOUNT_LOGIN_ON_GET = True
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_ADAPTER = "users.adapters.accounts.social.CustomSocialAccountAdapter"
-ACCOUNT_LOGIN_REDIRECT_URL = '/console/dashboard/'
+# ACCOUNT_LOGIN_REDIRECT_URL = '/console/dashboard/'
+# ACCOUNT_LOGOUT_REDIRECT_URL = "/console/login/"
+
 
 # Determine protocol without relying on Django settings (fix for early imports)
 ACCOUNT_DEFAULT_HTTP_PROTOCOL = get_decrypted_value(
@@ -31,7 +33,6 @@ ACCOUNT_CONFIRM_EMAIL_ON_GET = True
 ACCOUNT_LOGIN_METHODS = {"username", "email"}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_ADAPTER = "users.adapters.accounts.custom.CustomAccountAdapter"
-ACCOUNT_LOGOUT_REDIRECT_URL = "/console/login/"
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = EMAIL_VERIFICATION_EXPIRE_DAYS
 # Email settings
 ACCOUNT_EMAIL_SUBJECT_PREFIX = f'[{get_decrypted_value("SITE_NAME", "")}] '  # Dynamic prefix using SITE_NAME

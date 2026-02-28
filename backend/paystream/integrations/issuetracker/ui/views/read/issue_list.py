@@ -1,9 +1,11 @@
+from django.conf import settings
 from django.core.paginator import Paginator
+from django.db.models import Count
 from django.http import Http404
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from genericissuetracker.models import IssueStatus
+from genericissuetracker.models import Issue, IssueStatus
 from paystream.integrations.issuetracker.ui.services.issue_query_service import (
     IssueQueryService,
 )
@@ -43,6 +45,8 @@ class IssueListView(View):
             "page_obj": page_obj,
             "status_filter": status,
             "status_choices": IssueStatus.choices,
+            "site_name": settings.SITE_NAME,
+            "site_url": settings.SITE_URL,
         }
 
         return render(request, self.template_name, context)

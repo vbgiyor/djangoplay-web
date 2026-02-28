@@ -16,7 +16,11 @@
 {% endblock %}
 
 {% block branding %}
-    <a href="{% url 'console_dashboard' %}" class="brand-link" id="jazzy-logo">
+    {% comment %} <a href="{% url 'console_dashboard' %}" class="brand-link" id="jazzy-logo">
+        <img src="{% static 'elements/images/logo/logo_text.png' %}" alt="DjangoPlay Logo" class="img-fluid brand-image elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light">{{ site_header|default:_('DjangoPlay Administration') }}</span>
+    </a> {% endcomment %}
+    <a href="{{ SITE_URL }}" class="brand-link" id="jazzy-logo">
         <img src="{% static 'elements/images/logo/logo_text.png' %}" alt="DjangoPlay Logo" class="img-fluid brand-image elevation-3" style="opacity: .8">
         <span class="brand-text font-weight-light">{{ site_header|default:_('DjangoPlay Administration') }}</span>
     </a>

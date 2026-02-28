@@ -20,7 +20,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'utilities.context_processors.report_bug.report_bug_context',
+                # 'utilities.context_processors.report_bug.report_bug_context',
+                'paystream.services.context_processors.report_bug_context.report_bug_context',
+                'paystream.services.context_processors.site_context.site_context',
             ],
             'loaders': [
                 ('django.template.loaders.cached.Loader', [

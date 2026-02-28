@@ -1,10 +1,18 @@
-{% extends "issues/base.html" %}
+{% extends "admin/base.html" %}
 {% load humanize %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="mt-4 text-start">
 
-    <h3 class="mb-4">Issues</h3>
+    <h4 class="mb-4"> {{site_name}} Issues</h4>
+    {% if not request.user.is_authenticated %}
+        <div class="card shadow-sm mb-3">
+        <div class="card-body">
+            <a href="{% url 'account_login' %}?next={{ request.get_full_path|urlencode }}">Sign in</a>  to view internal discussions and private tickets, or 
+            <a href="{{ site_url }}{% url 'account_login' %}?tab=signup" target="_blank" rel="noopener noreferrer"> Create a new account</a>.
+        </div>
+    </div>
+    {% endif %}
 
     {% include "issues/partials/status_tabs.html" %}
 

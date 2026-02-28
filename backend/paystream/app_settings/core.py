@@ -76,7 +76,7 @@ INSTALLED_APPS = [
 # Custom User Model
 AUTH_USER_MODEL = "users.Employee"
 
-ROOT_URLCONF = "paystream.urls"
+ROOT_URLCONF = "paystream.urlconf.default"
 WSGI_APPLICATION = "paystream.wsgi.application"
 ASGI_APPLICATION = "paystream.asgi.application"
 
@@ -118,6 +118,5 @@ APPS_READY = {
 }
 
 # django-hosts config
-
 ROOT_HOSTCONF = "paystream.hosts"
 DEFAULT_HOST = "default"
