@@ -38,7 +38,7 @@ def display_value(value):
     except Exception:
         pass
 
-    if isinstance(value, (date, datetime)):
+    if isinstance(value, date | datetime):
         try:
             return value.strftime("%Y-%m-%d %H:%M:%S")
         except Exception:

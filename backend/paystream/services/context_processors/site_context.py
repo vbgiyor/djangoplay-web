@@ -13,7 +13,6 @@ def build_subdomain_url(subdomain: str, path: str) -> str:
         -> https://issues.localhost:9999/issues/
 
     """
-
     parsed = urlparse(settings.SITE_URL)
 
     protocol = parsed.scheme

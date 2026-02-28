@@ -57,7 +57,7 @@ class Command(BaseCommand):
         # Get all fields, including inherited ones
         for field in model._meta.get_fields(include_parents=True):
             # Skip reverse relations
-            if isinstance(field, (models.ManyToOneRel, models.ManyToManyRel)):
+            if isinstance(field, models.ManyToOneRel | models.ManyToManyRel):
                 continue
             field_name = field.attname  # Use exact database column name
             schema["properties"][field_name] = self.get_field_schema(field)
@@ -73,7 +73,7 @@ class Command(BaseCommand):
         # Handle field types
         if isinstance(field, models.AutoField):
             schema["type"] = "integer"
-        elif isinstance(field, (models.CharField, models.TextField)):
+        elif isinstance(field, models.CharField | models.TextField):
             schema["type"] = ["string", "null"] if field.null else "string"
             if isinstance(field, models.CharField) and field.max_length:
                 schema["maxLength"] = field.max_length
@@ -81,7 +81,7 @@ class Command(BaseCommand):
                 schema["enum"] = [choice[0] for choice in field.choices] + ([None] if field.null else [])
         elif isinstance(field, models.BooleanField):
             schema["type"] = ["boolean", "null"] if field.null else "boolean"
-        elif isinstance(field, (models.IntegerField, models.BigIntegerField, models.SmallIntegerField)):
+        elif isinstance(field, models.IntegerField | models.BigIntegerField | models.SmallIntegerField):
             schema["type"] = ["integer", "null"] if field.null else "integer"
         elif nonullable_decimal_field(field):
             schema["type"] = "number"

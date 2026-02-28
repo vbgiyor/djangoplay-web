@@ -41,7 +41,7 @@ class EmployeeManager(BaseUserManager):
                 raise ValueError("Username is required.")
             if not email:
                 raise ValueError("Email is required.")
-            if created_by and not isinstance(created_by, (type(None), get_user_model())):
+            if created_by and not isinstance(created_by, type(None) | get_user_model()):
                 raise ValueError("created_by must be an Employee or None.")
             email = self.normalize_email(email)
             extra_fields['employee_code'] = self._generate_employee_code()

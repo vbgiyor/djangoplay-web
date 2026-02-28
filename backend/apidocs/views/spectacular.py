@@ -26,7 +26,7 @@ class CustomSpectacularAPIView(BaseSchemaView):
 
     def handle_exception(self, exc):
         logger.debug(f"Handling exception in CustomSpectacularAPIView: {exc}, type: {type(exc)}")
-        if isinstance(exc, (PermissionDenied, DjangoPermissionDenied)):
+        if isinstance(exc, PermissionDenied | DjangoPermissionDenied):
             logger.debug("PermissionDenied caught in APIView, rendering 403_login.html")
             context = {
                 'request': self.request,

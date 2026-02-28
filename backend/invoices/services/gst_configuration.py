@@ -23,7 +23,7 @@ def fetch_gst_config(region_id: int = None, issue_date=None, rate_type: str = No
     from invoices.models.gst_configuration import GSTConfiguration
     try:
         # Ensure issue_date is a date object
-        if issue_date and not isinstance(issue_date, (datetime, date)):
+        if issue_date and not isinstance(issue_date, datetime | date):
             logger.warning(f"Invalid issue_date type: {type(issue_date)}. Converting to date.")
             issue_date = timezone.now().date()
 
@@ -265,7 +265,7 @@ def is_interstate_transaction(buyer_gstin: str = None, seller_gstin: str = None,
         from invoices.models.invoice import Invoice
 
         # Validate issue_date
-        if issue_date and not isinstance(issue_date, (datetime, date)):
+        if issue_date and not isinstance(issue_date, datetime | date):
             raise GSTValidationError(
                 message="Issue date must be a valid date object.",
                 code="invalid_issue_date",
