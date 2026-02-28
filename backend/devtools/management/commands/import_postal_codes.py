@@ -136,8 +136,8 @@ For unitary_state or quasi_federal_state, uses region as subregion when admin_co
 
                 if create_locations and (
                     latitude is None or longitude is None
-                    or not isinstance(latitude, (int, float))
-                    or not isinstance(longitude, (int, float))
+                    or not isinstance(latitude, int | float)
+                    or not isinstance(longitude, int | float)
                 ):
                     if len(skipped_sample) < 100:
                         skipped_sample.append({

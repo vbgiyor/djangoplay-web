@@ -31,7 +31,7 @@ def check_serializer_fields(serializer_class, path='', seen=None):
         # Check nested serializers
         if isinstance(field, serializers.Serializer):
             issues.extend(check_serializer_fields(field.__class__, field_path, seen))
-        elif isinstance(field, (serializers.ListSerializer, serializers.SerializerMethodField)):
+        elif isinstance(field, serializers.ListSerializer | serializers.SerializerMethodField):
             if hasattr(field, 'child') and isinstance(field.child, serializers.Serializer):
                 issues.extend(check_serializer_fields(field.child.__class__, field_path, seen))
 

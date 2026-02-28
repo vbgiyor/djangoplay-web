@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 class ChangelistLinkMixin:
     def changelist_link(self, obj):
-        url = reverse('admin:%s_%s_changelist' % (obj._meta.app_label, obj._meta.model_name))
+        url = reverse(f'admin:{obj._meta.app_label}_{obj._meta.model_name}_changelist')
         return format_html('<a href="{}">View All {}</a>', url, obj._meta.verbose_name_plural.title())
 
     changelist_link.short_description = 'Changelist'

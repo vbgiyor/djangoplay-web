@@ -25,7 +25,7 @@ class FincorePermission(BaseAppPermission):
 
     def _get_entity(self, obj):
         """Extract the entity from the object (Address, Contact, or TaxProfile) via FincoreEntityMapping."""
-        if isinstance(obj, (Address, Contact, TaxProfile)):
+        if isinstance(obj, Address | Contact | TaxProfile):
             if obj.entity_mapping:
                 return Entity.objects.filter(
                     id=obj.entity_mapping.entity_id,
@@ -56,7 +56,7 @@ class FincorePermission(BaseAppPermission):
 
     def has_object_permission(self, request, view, obj):
         """Check object-level permissions for fincore model instances."""
-        if not isinstance(obj, (Address, Contact, TaxProfile)):
+        if not isinstance(obj, Address | Contact | TaxProfile):
             logger.warning(f"Object {obj} is not an instance of Address, Contact, or TaxProfile for user {request.user}")
             return False
 
