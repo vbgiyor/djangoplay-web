@@ -2,7 +2,6 @@ import argparse
 import json
 import logging
 import time
-from typing import Dict, List
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -56,7 +55,7 @@ class Command(BaseCommand):
             help="Data source for location_source field (e.g., 'geonames' or 'GOI')",
         )
 
-    def process_region(self, data: Dict, index: int, user, caches: Dict, new_regions: List, update_regions: List, existing_slugs: set, stats: Dict, datasource: str) -> None:
+    def process_region(self, data: dict, index: int, user, caches: dict, new_regions: list, update_regions: list, existing_slugs: set, stats: dict, datasource: str) -> None:
         """Process a single global region record."""
         region_name = data.get('name', 'N/A')
         region_code = data.get('code', 'N/A')
@@ -147,7 +146,7 @@ class Command(BaseCommand):
             return
 
         try:
-            with open(json_filename, 'r', encoding='utf-8') as f:
+            with open(json_filename, encoding='utf-8') as f:
                 region_data = json.load(f)
                 if not region_data:
                     raise ValueError("No valid data found in the JSON file")

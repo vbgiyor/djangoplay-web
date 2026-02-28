@@ -26,7 +26,7 @@ UserModel = get_user_model()
 # ---------------------------------------------------------------------
 @dataclass
 class SignupSaveResult:
-    user: Optional[AbstractBaseUser] = None
+    user: AbstractBaseUser | None = None
     signup_request: Optional["SignUpRequest"] = None
 
 

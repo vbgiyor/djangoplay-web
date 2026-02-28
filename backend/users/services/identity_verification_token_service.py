@@ -1,6 +1,5 @@
 import logging
 from dataclasses import dataclass
-from typing import Optional, Tuple
 
 from allauth.account.models import EmailAddress
 from core.middleware import thread_local
@@ -23,10 +22,10 @@ logger = logging.getLogger(__name__)
 @dataclass
 class TokenValidationResult:
     ok: bool
-    user: Optional[Employee] = None
-    member: Optional[MemberProfile] = None
-    reason: Optional[str] = None
-    signup_request: Optional[SignUpRequest] = None
+    user: Employee | None = None
+    member: MemberProfile | None = None
+    reason: str | None = None
+    signup_request: SignUpRequest | None = None
 
 
 class SignupTokenManagerService:
@@ -53,7 +52,7 @@ class SignupTokenManagerService:
         request=None,
         *,
         flow: str = "signup_request",
-    ) -> Tuple[Optional[SignUpRequest], str]:
+    ) -> tuple[SignUpRequest | None, str]:
 
         client_ip = getattr(thread_local, "client_ip", None) or (
             request.META.get("REMOTE_ADDR") if request else None

@@ -1,5 +1,4 @@
 from core.admin_mixins import AdminIconDecorator, BaseAdmin
-from django.contrib import admin
 from django.contrib.admin import display
 from django.utils.translation import gettext_lazy as _
 from policyengine.commons.base import get_user_role

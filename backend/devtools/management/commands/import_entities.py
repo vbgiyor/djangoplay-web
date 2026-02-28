@@ -39,7 +39,7 @@ JSON files are expected in ENTITIES_JSON/{COUNTRY_CODE}/{entity_name}.json
 
     def load_json_file(self, json_file):
         try:
-            with open(json_file, 'r', encoding='utf-8') as f:
+            with open(json_file, encoding='utf-8') as f:
                 return json_file, json.load(f), None
         except (FileNotFoundError, json.JSONDecodeError) as e:
             return json_file, None, str(e)

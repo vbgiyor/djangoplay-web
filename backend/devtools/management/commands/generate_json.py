@@ -4,7 +4,6 @@ import json
 import logging
 import os
 import time
-from typing import Dict, List, Optional, Tuple
 
 from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand
@@ -178,7 +177,7 @@ Example usage:
             help="Override destination JSON directory"
         )
 
-    def process_code_field(self, value: str, line_num: int, entry: Dict, input_type: str) -> None:
+    def process_code_field(self, value: str, line_num: int, entry: dict, input_type: str) -> None:
         """Process code_field for regions and subregions."""
         try:
             code_parts = value.split('.')
@@ -193,7 +192,7 @@ Example usage:
         except ValueError as e:
             raise ValidationError(f"Invalid code_field format: {e}")
 
-    def validate_entry(self, entry: Dict, input_type: str, line_num: int) -> tuple[Optional[Dict], Optional[Tuple[str, str]]]:
+    def validate_entry(self, entry: dict, input_type: str, line_num: int) -> tuple[dict | None, tuple[str, str] | None]:
         """Validate entry based on input type."""
         if input_type == 'cities':
             if not entry.get('name'):
@@ -208,7 +207,7 @@ Example usage:
                 return None, (None, None)
         return entry, None
 
-    def process_txt_line(self, fields: List[str], columns: List[str], input_type: str, line_num: int) -> tuple[Optional[Dict], Optional[Tuple[str, str]]]:
+    def process_txt_line(self, fields: list[str], columns: list[str], input_type: str, line_num: int) -> tuple[dict | None, tuple[str, str] | None]:
         """Process a single line from a text file."""
         try:
             entry = {}
@@ -255,7 +254,7 @@ Example usage:
             logger.warning(f"Line {line_num} skipped: {str(e)}")
             return None, (None, None)
 
-    def process_csv_line(self, row: List[str], line_num: int) -> tuple[Optional[Dict], Optional[str]]:
+    def process_csv_line(self, row: list[str], line_num: int) -> tuple[dict | None, str | None]:
         """Process a single row from an ISIC CSV file."""
         try:
             if len(row) != 2:
@@ -269,7 +268,7 @@ Example usage:
         except Exception as e:
             return None, f"Error processing row: {str(e)}"
 
-    def _write_batch(self, output_file: str, data_entries: List[Dict], first_entry: bool) -> None:
+    def _write_batch(self, output_file: str, data_entries: list[dict], first_entry: bool) -> None:
         """Write a batch of entries to the JSON file as part of a single array."""
         if not data_entries:
             return
@@ -280,7 +279,7 @@ Example usage:
                     file.write(',\n')
                 file.write(entry_json)
 
-    def process_industries_csv(self, input_file: str, output_file: str, start_time: float) -> Dict:
+    def process_industries_csv(self, input_file: str, output_file: str, start_time: float) -> dict:
         """Process ISIC CSV file and generate a hierarchical JSON file."""
         stats = {'processed': 0, 'skipped': [], 'total': 0}
         self.stdout.write(f"Starting industries conversion... ({time.time() - start_time:.2f}s)")
@@ -301,7 +300,7 @@ Example usage:
         current_group = None
 
         try:
-            with open(input_file, 'r', encoding='utf-8') as file:
+            with open(input_file, encoding='utf-8') as file:
                 reader = csv.reader(file, delimiter=',', quotechar='"')
                 next(reader, None)  # Skip header
                 for index, row in enumerate(reader, 1):
@@ -393,7 +392,7 @@ Example usage:
             logger.error(f"Error processing {input_file}: {str(e)}")
         return stats
 
-    def process_country_txt(self, input_file: str, output_file: str, start_time: float) -> Dict:
+    def process_country_txt(self, input_file: str, output_file: str, start_time: float) -> dict:
         """Process countryInfo.txt file and generate a JSON file."""
         stats = {'processed': 0, 'skipped': [], 'total': 0}
         self.stdout.write(f"Starting country conversion... ({time.time() - start_time:.2f}s)")
@@ -412,7 +411,7 @@ Example usage:
         columns = self.CONFIG['country']['source_file_columns']
 
         try:
-            with open(input_file, 'r', encoding='utf-8') as file:
+            with open(input_file, encoding='utf-8') as file:
                 for line_num, line in enumerate(file, 1):
                     if line.strip() and not line.startswith('#'):
                         stats['total'] += 1
@@ -456,7 +455,7 @@ Example usage:
 
         return stats
 
-    def process_timezones_txt(self, input_file: str, output_file: str, start_time: float) -> Dict:
+    def process_timezones_txt(self, input_file: str, output_file: str, start_time: float) -> dict:
         """Process timeZones.txt file and generate a JSON file."""
         stats = {'processed': 0, 'skipped': [], 'total': 0}
         self.stdout.write(f"Starting timezones conversion... ({time.time() - start_time:.2f}s)")
@@ -476,7 +475,7 @@ Example usage:
         header_row = '\t'.join(columns).lower()
 
         try:
-            with open(input_file, 'r', encoding='utf-8') as file:
+            with open(input_file, encoding='utf-8') as file:
                 for line_num, line in enumerate(file, 1):
                     line = line.strip()
                     if not line or line.startswith('#') or line.lower() == header_row:
@@ -518,7 +517,7 @@ Example usage:
             logger.error(f"Error processing {input_file}: {str(e)}")
         return stats
 
-    def process_input_type(self, input_type: str, source: str, batch_size: int, input_file: str, output_dir: str, start_time: float) -> Dict:
+    def process_input_type(self, input_type: str, source: str, batch_size: int, input_file: str, output_dir: str, start_time: float) -> dict:
         """Process input type and generate JSON files."""
         if input_type == 'industries':
             return self.process_industries_csv(input_file, output_dir, start_time)
@@ -540,7 +539,7 @@ Example usage:
         country_entries = {}
         columns = self.CONFIG[input_type]['source_file_columns']
         try:
-            with open(input_file, 'r', encoding='utf-8') as file:
+            with open(input_file, encoding='utf-8') as file:
                 for line_num, line in enumerate(file, 1):
                     if not line.strip() or line.startswith('#'):
                         continue

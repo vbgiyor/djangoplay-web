@@ -32,7 +32,7 @@ class MemberLifecycleService:
     """
 
     @staticmethod
-    def validate_member_payload(data, *, instance: Optional[MemberProfile] = None):
+    def validate_member_payload(data, *, instance: MemberProfile | None = None):
         errors = {}
 
         email = data.get("email")

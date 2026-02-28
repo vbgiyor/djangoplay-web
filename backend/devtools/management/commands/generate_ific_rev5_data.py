@@ -76,7 +76,7 @@ Example usage:
 
         # Read CSV and build JSON structure
         try:
-            with open(isic_source, 'r', encoding='utf-8') as file:
+            with open(isic_source, encoding='utf-8') as file:
                 reader = csv.reader(file, delimiter=',', quotechar='"')
                 next(reader, None)  # Skip header row ("Code","Description")
 

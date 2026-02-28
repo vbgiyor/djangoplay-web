@@ -107,7 +107,7 @@ JSON file is generated at LINE_ITEM_JSON/invoice_line_items.json
 
         # Read ISIC JSON
         try:
-            with open(industries_json_path, 'r', encoding='utf-8') as f:
+            with open(industries_json_path, encoding='utf-8') as f:
                 isic_data = json.load(f)
             logger.info(f"Successfully loaded ISIC JSON from {industries_json_path}")
         except Exception as e:

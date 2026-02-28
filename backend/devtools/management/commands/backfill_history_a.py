@@ -2,8 +2,8 @@
 import logging
 import sys
 import time
+from collections.abc import Iterable, Iterator
 from datetime import datetime
-from typing import Iterable, Iterator, List, Optional, Set
 
 from django.apps import apps
 from django.core.management.base import BaseCommand, CommandError
@@ -66,7 +66,7 @@ class Command(BaseCommand):
             help="If model count <= threshold, preload existing history PKs into memory for speed (default 1_000_000).",
         )
 
-    def _iter_model_objects(self, model, start_pk: Optional[int], end_pk: Optional[int], chunk_size: int) -> Iterator:
+    def _iter_model_objects(self, model, start_pk: int | None, end_pk: int | None, chunk_size: int) -> Iterator:
         qs = model.objects.all().order_by(model._meta.pk.name)
         if start_pk is not None:
             qs = qs.filter(**{f"{model._meta.pk.name}__gte": start_pk})
@@ -75,7 +75,7 @@ class Command(BaseCommand):
         # Use iterator to avoid caching whole queryset
         return qs.iterator(chunk_size=chunk_size)
 
-    def _chunked(self, iterable: Iterable, n: int) -> Iterator[List]:
+    def _chunked(self, iterable: Iterable, n: int) -> Iterator[list]:
         chunk = []
         for item in iterable:
             chunk.append(item)
@@ -85,22 +85,22 @@ class Command(BaseCommand):
         if chunk:
             yield chunk
 
-    def _get_existing_history_pks_preload(self, historical_model, pk_field_name: str) -> Set:
+    def _get_existing_history_pks_preload(self, historical_model, pk_field_name: str) -> set:
         """Load distinct original-object PKs that already have history entries."""
         qs = historical_model.objects.values_list(pk_field_name, flat=True).distinct()
         return set(qs)
 
-    def _get_existing_history_pks_batch(self, historical_model, pks: List, pk_field_name: str) -> Set:
+    def _get_existing_history_pks_batch(self, historical_model, pks: list, pk_field_name: str) -> set:
         return set(historical_model.objects.filter(**{f"{pk_field_name}__in": pks}).values_list(pk_field_name, flat=True))
 
     def _create_history_instances(
         self,
         model,
         historical_model,
-        objs: List,
-        field_names: List[str],
-        default_dt: Optional[datetime],
-    ) -> List:
+        objs: list,
+        field_names: list[str],
+        default_dt: datetime | None,
+    ) -> list:
         rows = []
         for obj in objs:
             # Compose kwargs for historical model using model fields' names; fall back to None on error

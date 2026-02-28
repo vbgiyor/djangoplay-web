@@ -77,7 +77,7 @@ Example usage:
         try:
             self.stdout.write(f"Loading JSON file: {json_filename} ({time.time() - start_time:.2f}s)")
             logger.info(f"Loading JSON file: {json_filename}")
-            with open(json_filename, 'r', encoding='utf-8') as f:
+            with open(json_filename, encoding='utf-8') as f:
                 data = json.load(f)
             industries = data.get('isic', [])
             if not industries:

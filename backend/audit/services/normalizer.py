@@ -1,10 +1,9 @@
-from typing import Any, Dict, Optional
 
 from audit.contracts.actor import AuditActor
 from audit.contracts.target import AuditTarget
 
 
-def normalize_actor(actor: Optional[AuditActor]) -> Dict[str, Optional[str]]:
+def normalize_actor(actor: AuditActor | None) -> dict[str, str | None]:
     if not actor:
         return {
             "actor_id": None,
@@ -19,7 +18,7 @@ def normalize_actor(actor: Optional[AuditActor]) -> Dict[str, Optional[str]]:
     }
 
 
-def normalize_target(target: Optional[AuditTarget]) -> Dict[str, Optional[str]]:
+def normalize_target(target: AuditTarget | None) -> dict[str, str | None]:
     if not target:
         return {
             "target_type": None,

@@ -1,6 +1,6 @@
 import logging
 from dataclasses import dataclass
-from typing import Any, Optional, Type
+from typing import Any
 
 from core.middleware import thread_local
 from django.contrib.auth import get_user_model
@@ -19,7 +19,7 @@ UserModel = get_user_model()
 @dataclass
 class PasswordResetResult:
     status: str
-    user: Optional[Any] = None
+    user: Any | None = None
 
 
 class PasswordResetService:
@@ -38,7 +38,7 @@ class PasswordResetService:
     # User resolution
     # ------------------------------------------------------------------
     @staticmethod
-    def _find_user(identifier: str, identifier_type: str) -> Optional[Type[Any]]:
+    def _find_user(identifier: str, identifier_type: str) -> type[Any] | None:
         value = (identifier or "").strip()
         if not value or not identifier_type:
             return None

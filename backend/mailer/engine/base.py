@@ -1,11 +1,9 @@
 import logging
 import smtplib
 import socket
-from typing import Any, Dict, Optional
+from typing import Any
 
 from allauth.account.adapter import get_adapter
-
-from mailer.engine.unsubscribe import UnsubscribeService
 
 logger = logging.getLogger(__name__)
 
@@ -14,9 +12,9 @@ def send_email_via_adapter(
     *,
     template_prefix: str,
     to_email: str,
-    context: Optional[Dict[str, Any]] = None,
-    user: Optional[Any] = None,
-    request: Optional[Any] = None,
+    context: dict[str, Any] | None = None,
+    user: Any | None = None,
+    request: Any | None = None,
 ):
     """
     Generic helper used by all email Celery tasks.

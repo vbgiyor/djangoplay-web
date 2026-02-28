@@ -225,7 +225,7 @@ JSON files are read from INVOICES_JSON/{COUNTRY_CODE}/{entity-slug}.json
             logger.info(f"Importing invoices for entity {entity.name} in {entity_country_code}")
 
             try:
-                with open(invoices_json, 'r', encoding='utf-8') as f:
+                with open(invoices_json, encoding='utf-8') as f:
                     json_data = json.load(f)
             except FileNotFoundError:
                 self.stderr.write(self.style.ERROR(f"JSON file not found: {invoices_json}"))

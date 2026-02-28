@@ -144,7 +144,7 @@ class Command(BaseCommand):
                 if file.endswith(".py"):
                     filepath = Path(root) / file
                     try:
-                        with open(filepath, "r", encoding="utf-8") as f:
+                        with open(filepath, encoding="utf-8") as f:
                             tree = ast.parse(f.read(), filename=str(filepath))
 
                         if "serializer" in file:

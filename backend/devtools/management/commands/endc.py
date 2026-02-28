@@ -37,7 +37,7 @@ class Command(BaseCommand):
                 result = encrypt_value(value, key_bytes)
                 self.stdout.write(self.style.SUCCESS(f'Encrypted {target_key}: {result}'))
                 # Update .env file
-                with open(env_path, 'r') as f:
+                with open(env_path) as f:
                     lines = f.readlines()
                 with open(env_path, 'w') as f:
                     for line in lines:

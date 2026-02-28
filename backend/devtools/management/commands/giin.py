@@ -16,7 +16,13 @@ from django.utils import timezone
 from entities.models.entity import Entity
 from fincore.models.tax_profile import TaxProfile
 from industries.models import Industry
-from invoices.constants import BILLING_FREQUENCY_CHOICES, BILLING_STATUS_CODES, DESCRIPTION_MAX_LENGTH, GST_RATE_TYPE_CHOICES, PAYMENT_TERMS_CHOICES
+from invoices.constants import (
+    BILLING_FREQUENCY_CHOICES,
+    BILLING_STATUS_CODES,
+    DESCRIPTION_MAX_LENGTH,
+    GST_RATE_TYPE_CHOICES,
+    PAYMENT_TERMS_CHOICES,
+)
 from invoices.exceptions import GSTValidationError, InvoiceValidationError
 from invoices.models.billing_schedule import BillingSchedule
 from invoices.models.invoice import Invoice
@@ -74,7 +80,7 @@ JSON files are generated in INVOICES_JSON/{COUNTRY_CODE}/{entity-slug}.json unle
             raise ValidationError("LINE_ITEM_JSON not defined in .env")
         file_path = str(Path(line_item_json_path))
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 return json.load(f)
         except Exception as e:
             logger.error(f"Error reading invoice_line_items.json from {file_path}: {str(e)}")

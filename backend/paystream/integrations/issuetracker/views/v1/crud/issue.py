@@ -16,7 +16,6 @@ from paystream.integrations.issuetracker.serializers.v1.read.issue import (
 from paystream.integrations.issuetracker.services.visibility import (
     IssueVisibilityService,
 )
-from rest_framework.response import Response
 
 
 class IntegratedIssueCRUDViewSet(IssueCRUDViewSet):

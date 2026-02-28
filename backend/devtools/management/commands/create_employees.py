@@ -1,8 +1,6 @@
 import argparse
 import json
 import logging
-import random
-import string
 import time
 from decimal import Decimal
 
@@ -10,7 +8,6 @@ from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand
 from django.db import transaction
-from django.utils import timezone
 from teamcentral.models import Address
 from teamcentral.services.employee_lifecycle_service import EmployeeLifecycleService
 from users.constants import ROLE_CODES
@@ -57,7 +54,7 @@ Example usage:
             return
 
         try:
-            with open(json_filename, "r", encoding="utf-8") as fh:
+            with open(json_filename, encoding="utf-8") as fh:
                 payload = json.load(fh)
         except Exception as exc:
             self.stderr.write(self.style.ERROR(f"Failed to load JSON: {exc}"))

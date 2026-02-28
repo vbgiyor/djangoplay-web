@@ -1,13 +1,12 @@
 import random
 import re
-from typing import Dict, List, Optional
 
 
 class CompanyNameGenerator:
 
     """A lightweight, efficient library for generating corporate company names with extensive vocabulary."""
 
-    _vocab: Dict[str, List[str]] = {
+    _vocab: dict[str, list[str]] = {
         'prefixes': [
             'Star', 'Vision', 'Pulse', 'Core', 'Prime', 'Nova', 'Apex', 'Beacon', 'Spark',
             'Global', 'Innovate', 'Dynamic', 'Vantage', 'Horizon', 'Focus', 'Vertex', 'Nexus',
@@ -94,7 +93,7 @@ class CompanyNameGenerator:
         ]
     }
 
-    _industries: Dict[str, List[str]] = {
+    _industries: dict[str, list[str]] = {
         'consulting': [
             'McKinsey & Company', 'Boston Consulting Group', 'Bain & Company', 'Deloitte', 'PwC', 'EY', 'KPMG',
             'Accenture', 'Oliver Wyman', 'Strategy&', 'Booz Allen Hamilton', 'Capgemini', 'IBM Consulting',
@@ -344,23 +343,23 @@ class CompanyNameGenerator:
         ]
     }
 
-    def __init__(self, seed: Optional[int] = None):
+    def __init__(self, seed: int | None = None):
         """Initialize the generator with an optional random seed."""
         if seed is not None:
             random.seed(seed)
         self._recent_acronyms: set = set()
 
-    def _supported_keys(self, key: Optional[str]) -> str:
+    def _supported_keys(self, key: str | None) -> str:
         key = ['bs','ps','pb','rc']
         return random.choice(key)
 
     def generate_name(
         self,
         format_type: str = 'standard',
-        industry: Optional[str] = None,
+        industry: str | None = None,
         descriptor: bool = False,
         acronym: bool = False,
-        org: Optional[str] = None
+        org: str | None = None
     ) -> str:
         """
         Generate a company name based on specified parameters.
@@ -431,7 +430,7 @@ class CompanyNameGenerator:
 
         return ' '.join(parts)
 
-    def _generate_acronym_name(self, industry: Optional[str] = None) -> str:
+    def _generate_acronym_name(self, industry: str | None = None) -> str:
         """Generate an acronym-style company name."""
         words = random.sample(self.prefixes + self.bases, 3)
         if industry:
@@ -446,7 +445,7 @@ class CompanyNameGenerator:
         word1, word2 = random.sample(self._vocab['prefixes'], 2)
         return word1[:len(word1)//2] + word2[len(word2)//2:]
 
-    def generate_multiple_names(self, count: int, **kwargs) -> List[str]:
+    def generate_multiple_names(self, count: int, **kwargs) -> list[str]:
         """
         Generate multiple company names.
 
@@ -465,7 +464,7 @@ class CompanyNameGenerator:
             raise ValueError("Count must be positive")
         return [self.generate_name(**kwargs) for _ in range(count)]
 
-    def customize_vocabulary(self, category: str, words: List[str]) -> None:
+    def customize_vocabulary(self, category: str, words: list[str]) -> None:
         """
         Add words to a vocabulary category.
 
@@ -481,7 +480,7 @@ class CompanyNameGenerator:
             raise ValueError(f"Invalid category. Must be one of: {list(self._vocab.keys())}")
         self._vocab[category] = list(set(self._vocab[category] + words))
 
-    def add_industry(self, industry: str, terms: List[str]) -> None:
+    def add_industry(self, industry: str, terms: list[str]) -> None:
         """
         Add a new industry with specific terms.
 
@@ -497,11 +496,11 @@ class CompanyNameGenerator:
             raise ValueError("Industry name must contain only letters")
         self._industries[industry] = terms
 
-    def get_available_industries(self) -> List[str]:
+    def get_available_industries(self) -> list[str]:
         """Return list of available industries."""
         return list(self._industries.keys())
 
-    def _get_random_company_name(self, industry: Optional[str] = None) -> str:
+    def _get_random_company_name(self, industry: str | None = None) -> str:
         """
         Generate a random company name from the industries dictionary.
 
@@ -525,7 +524,7 @@ class CompanyNameGenerator:
         return random.choice(all_companies)
 
 
-    def _get_random_prefix_suffix_name(self, industry: Optional[str] = None) -> str:
+    def _get_random_prefix_suffix_name(self, industry: str | None = None) -> str:
         """
         Generate a random company name using a prefix and a suffix from the vocabulary.
 
@@ -552,7 +551,7 @@ class CompanyNameGenerator:
 
         return f"{prefix} {suffix}"
 
-    def _get_random_prefix_base_name(self, industry: Optional[str] = None) -> str:
+    def _get_random_prefix_base_name(self, industry: str | None = None) -> str:
         """
         Generate a random company name using a prefix and a base from the vocabulary.
 
@@ -579,7 +578,7 @@ class CompanyNameGenerator:
 
         return f"{prefix} {base}"
 
-    def _get_random_base_suffix_name(self, industry: Optional[str] = None) -> str:
+    def _get_random_base_suffix_name(self, industry: str | None = None) -> str:
         """
         Generate a random company name using a base and a suffix from the vocabulary.
 

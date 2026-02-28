@@ -78,7 +78,7 @@ def load_email_flow_limits():
     if config_path.exists():
         try:
             logger.info(f"Loading email flow limits from {config_path}")
-            with open(config_path, "r") as f:
+            with open(config_path) as f:
                 return json.load(f)
         except Exception as e:
             logger.error(f"Invalid email_flow_limits.json: {e}")

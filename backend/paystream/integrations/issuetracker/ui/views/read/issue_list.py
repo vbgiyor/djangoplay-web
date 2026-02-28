@@ -1,11 +1,8 @@
 from django.conf import settings
 from django.core.paginator import Paginator
-from django.db.models import Count
-from django.http import Http404
 from django.shortcuts import render
-from django.utils.translation import gettext_lazy as _
 from django.views import View
-from genericissuetracker.models import Issue, IssueStatus
+from genericissuetracker.models import IssueStatus
 from paystream.integrations.issuetracker.ui.services.issue_query_service import (
     IssueQueryService,
 )

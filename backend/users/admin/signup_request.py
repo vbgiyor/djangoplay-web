@@ -7,7 +7,6 @@ from django.contrib.admin import display
 from django.db.models import Prefetch
 from django.urls import reverse
 from django.utils.html import format_html
-from django.utils.translation import gettext_lazy as _
 from mailer.flows.member.verification import send_manual_verification_email_task
 from mailer.throttling.throttle import check_and_increment_email_limit
 from teamcentral.models import MemberProfile

@@ -4,7 +4,13 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django_countries.fields import Country
 
-from core.utils import get_current_client_ip, get_machine_ip, thread_local, validate_postal_code, validate_state_country_match
+from core.utils import (
+    get_current_client_ip,
+    get_machine_ip,
+    thread_local,
+    validate_postal_code,
+    validate_state_country_match,
+)
 
 
 class MockState:

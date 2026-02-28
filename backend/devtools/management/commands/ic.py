@@ -2,7 +2,6 @@ import argparse
 import logging
 import time
 from pathlib import Path
-from typing import Optional
 
 import ijson
 from django.contrib.auth import get_user_model
@@ -150,7 +149,7 @@ class Command(BaseCommand):
                 return CustomSubRegion.objects.get(id=result[0])
         return None
 
-    def get_country_code(self, country_input: str) -> Optional[str]:
+    def get_country_code(self, country_input: str) -> str | None:
         """Normalize and validate country input, returning country code."""
         if ' ' in country_input:
             self.stderr.write(self.style.ERROR("Hey Smartpants, why don't you try simple country_code instead of full names. Currently I am out of mood to process names with spaces."))
@@ -174,7 +173,7 @@ class Command(BaseCommand):
         """Load subregion names from JSON file by admin2_code."""
         subregion_names = {}
         try:
-            with open(subregion_file, 'r', encoding='utf-8') as f:
+            with open(subregion_file, encoding='utf-8') as f:
                 data = ijson.items(f, 'item')
                 for record in data:
                     admin2_code = self.safe_strip(record.get('admin2_code'))
@@ -590,7 +589,7 @@ class Command(BaseCommand):
                 if not json_filename:
                     continue
                 try:
-                    with open(json_filename, 'r', encoding='utf-8') as f:
+                    with open(json_filename, encoding='utf-8') as f:
                         data = ijson.items(f, 'item')
                         batch = []
                         index = 0

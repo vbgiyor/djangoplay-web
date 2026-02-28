@@ -1,6 +1,5 @@
 import logging
 from dataclasses import dataclass
-from typing import Optional
 
 from audit.contracts.actor import AuditActor
 from audit.contracts.target import AuditTarget
@@ -31,8 +30,8 @@ class BugReportResult:
     """
 
     status: str
-    bug: Optional[BugReport] = None
-    error: Optional[str] = None
+    bug: BugReport | None = None
+    error: str | None = None
 
 
 class BugService:

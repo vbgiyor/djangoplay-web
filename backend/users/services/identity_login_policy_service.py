@@ -1,6 +1,5 @@
 import logging
 from dataclasses import dataclass
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -8,7 +7,7 @@ logger = logging.getLogger(__name__)
 @dataclass(frozen=True)
 class LoginValidationResult:
     ok: bool
-    reason: Optional[str] = None
+    reason: str | None = None
 
 
 class UnifiedLoginService:

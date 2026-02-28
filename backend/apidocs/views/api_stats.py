@@ -181,8 +181,6 @@ def handle_csv_export(request, logs, start_date, end_date):
 # =============================================================================
 from datetime import datetime
 
-from django.utils import timezone
-
 
 def parse_date_range_from_request(request):
     """

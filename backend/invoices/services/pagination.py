@@ -1,4 +1,3 @@
-from typing import Dict, List
 
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
@@ -10,7 +9,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     page_size_query_param = 'page_size'
     max_page_size = 100
 
-    def get_paginated_response(self, data: List[Dict]) -> Response:
+    def get_paginated_response(self, data: list[dict]) -> Response:
         """Add pagination metadata to response."""
         return Response({
             'count': self.page.paginator.count,

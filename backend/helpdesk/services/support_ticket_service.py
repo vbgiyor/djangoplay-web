@@ -1,6 +1,7 @@
 import logging
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Any, Iterable, Optional
+from typing import Any
 
 from core.middleware import thread_local
 from mailer.flows.support import (
@@ -22,8 +23,8 @@ class SupportRequestResult:
     """
 
     status: str  # "success", "limit", "not_registered", "error"
-    ticket: Optional[SupportTicket] = None
-    error: Optional[str] = None
+    ticket: SupportTicket | None = None
+    error: str | None = None
 
 
 class SupportService:

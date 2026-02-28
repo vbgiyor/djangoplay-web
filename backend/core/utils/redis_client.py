@@ -10,7 +10,8 @@ from __future__ import annotations
 
 import logging
 import threading
-from typing import Any, Iterable, Optional
+from collections.abc import Iterable
+from typing import Any
 
 from django_redis import get_redis_connection
 from django_redis.exceptions import ConnectionInterrupted
@@ -91,7 +92,7 @@ class _RedisClientProxy:
 redis_client = _RedisClientProxy()
 
 # Lightweight safe wrappers (optional)
-def safe_get(key: str) -> Optional[bytes]:
+def safe_get(key: str) -> bytes | None:
     try:
         return redis_client.get(key)
     except Exception:
