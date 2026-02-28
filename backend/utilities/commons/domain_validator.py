@@ -26,7 +26,7 @@ def _load_domains_from_file():
     if not os.path.exists(VALID_DOMAINS_FILE_PATH):
         return []
 
-    with open(VALID_DOMAINS_FILE_PATH, "r") as file:
+    with open(VALID_DOMAINS_FILE_PATH) as file:
         data = json.load(file)
         return data.get("valid_domains", [])
 

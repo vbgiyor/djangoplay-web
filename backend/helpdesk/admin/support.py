@@ -3,7 +3,7 @@ from django.contrib.admin import display
 from django.urls import reverse
 from django.utils.html import format_html
 from users.utils.helpers import user_is_verified_employee
-from utilities.admin.admin_filters import HasAttachmentsFilter, IsActiveFilter, changelist_filter
+from utilities.admin.admin_filters import HasAttachmentsFilter, changelist_filter
 
 from helpdesk.forms import SupportForm
 from helpdesk.models import SupportStatus, SupportTicket

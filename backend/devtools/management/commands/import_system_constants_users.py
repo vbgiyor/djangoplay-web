@@ -6,7 +6,14 @@ from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from teamcentral.models import Department, EmployeeType, EmploymentStatus, LeaveType, MemberStatus, Role
-from users.constants import DEPARTMENT_CODES, EMPLOYEE_TYPE_CODES, EMPLOYMENT_STATUS_CODES, LEAVE_TYPE_CODES, MEMBER_STATUS_CODES, ROLE_CODES
+from users.constants import (
+    DEPARTMENT_CODES,
+    EMPLOYEE_TYPE_CODES,
+    EMPLOYMENT_STATUS_CODES,
+    LEAVE_TYPE_CODES,
+    MEMBER_STATUS_CODES,
+    ROLE_CODES,
+)
 
 logger = logging.getLogger(__name__)
 

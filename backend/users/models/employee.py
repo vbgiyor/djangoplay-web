@@ -11,7 +11,7 @@ from django.core.validators import RegexValidator
 from django.db import models, transaction
 from django.utils import timezone
 from simple_history.models import HistoricalRecords
-from teamcentral.models import Address, Department, EmployeeType, EmploymentStatus, Role
+from teamcentral.models import EmployeeType, EmploymentStatus, Role
 
 logger = logging.getLogger(__name__)
 

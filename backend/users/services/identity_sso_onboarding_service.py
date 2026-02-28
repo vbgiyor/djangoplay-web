@@ -1,6 +1,5 @@
 import logging
 from dataclasses import dataclass
-from typing import Optional
 
 from allauth.account.models import EmailAddress
 from allauth.core.exceptions import ImmediateHttpResponse
@@ -36,7 +35,7 @@ class SSOOnboardingResult:
     and return that response (typically a redirect).
     """
 
-    response: Optional[HttpResponse] = None
+    response: HttpResponse | None = None
 
 
 class SSOOnboardingService:

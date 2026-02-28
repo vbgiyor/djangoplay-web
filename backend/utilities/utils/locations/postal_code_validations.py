@@ -1,6 +1,5 @@
 import logging
 import re
-from typing import Optional
 
 from django.core.exceptions import ValidationError
 from locations.models.custom_country import CustomCountry
@@ -13,7 +12,7 @@ class PostalCodeValidationError(ValidationError):
 
     pass
 
-def get_country_postal_regex(country_code: str) -> Optional[str]:
+def get_country_postal_regex(country_code: str) -> str | None:
     """
     Retrieve the postal code regex for a country from the CustomCountry model.
 
@@ -67,7 +66,7 @@ def validate_postal_code_with_regex(postal_code: str, regex: str) -> str:
         logger.error(f"Invalid regex pattern '{regex}': {e}")
         raise PostalCodeValidationError(f"Invalid regex pattern for postal code validation: {e}")
 
-def validate_postal_code(postal_code: Optional[str], country_code: str, regex: Optional[str] = None) -> Optional[str]:
+def validate_postal_code(postal_code: str | None, country_code: str, regex: str | None = None) -> str | None:
     """
     Validate a postal code based on country-specific regex from CustomCountry model or provided regex.
 

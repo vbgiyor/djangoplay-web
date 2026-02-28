@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass(frozen=True)
@@ -12,7 +11,7 @@ class EmailUser:
     Django ORM, request objects, or domain models.
     """
 
-    id: Optional[int]
+    id: int | None
     email: str
-    full_name: Optional[str] = None
+    full_name: str | None = None
     is_active: bool = True

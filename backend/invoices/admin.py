@@ -14,7 +14,15 @@ from users.utils.helpers import user_is_verified_employee
 from utilities.admin.admin_filters import *
 from utilities.signals.disable_signals import disable_signals
 
-from invoices.forms import BillingScheduleForm, GSTConfigurationForm, InvoiceForm, LineItemForm, PaymentForm, PaymentMethodForm, StatusForm
+from invoices.forms import (
+    BillingScheduleForm,
+    GSTConfigurationForm,
+    InvoiceForm,
+    LineItemForm,
+    PaymentForm,
+    PaymentMethodForm,
+    StatusForm,
+)
 from invoices.models.billing_schedule import BillingSchedule
 from invoices.models.gst_configuration import GSTConfiguration
 from invoices.models.invoice import Invoice

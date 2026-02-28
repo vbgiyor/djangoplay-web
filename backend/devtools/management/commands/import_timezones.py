@@ -2,7 +2,6 @@ import argparse
 import json
 import logging
 import time
-from typing import Dict
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -40,7 +39,7 @@ class Command(BaseCommand):
             help="Override TIMEZONE_JSON path with a custom JSON file",
         )
 
-    def validate_fields(self, data: Dict, timezone_id: str) -> Dict:
+    def validate_fields(self, data: dict, timezone_id: str) -> dict:
         """Validate and clean fields for a timezone."""
         cleaned_data = {}
         for field, config in self.FIELD_CONFIG.items():
@@ -61,7 +60,7 @@ class Command(BaseCommand):
 
         return cleaned_data
 
-    def process_timezone(self, data: Dict, index: int, user, stats: Dict) -> None:
+    def process_timezone(self, data: dict, index: int, user, stats: dict) -> None:
         """Process a single timezone record."""
         timezone_id = data.get('TimeZoneId', 'N/A')
         try:
@@ -99,7 +98,7 @@ class Command(BaseCommand):
             return
 
         try:
-            with open(json_filename, 'r', encoding='utf-8') as f:
+            with open(json_filename, encoding='utf-8') as f:
                 timezone_data = json.load(f)
                 if not timezone_data:
                     raise ValueError("No valid timezone data found in JSON file")

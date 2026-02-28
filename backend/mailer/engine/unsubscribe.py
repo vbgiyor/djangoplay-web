@@ -1,6 +1,6 @@
 # mailer/engine/unsubscribe.py
 import logging
-from typing import Any, Optional, Tuple
+from typing import Any
 
 from allauth.account.models import EmailAddress
 from django.contrib.auth.tokens import default_token_generator
@@ -91,7 +91,7 @@ class UnsubscribeService:
     def validate_unsubscribe_token(
         uidb64: str,
         token: str,
-    ) -> Tuple[Optional[Any], Optional[str]]:
+    ) -> tuple[Any | None, str | None]:
         if not uidb64 or not token:
             return None, "Missing unsubscribe link data."
 

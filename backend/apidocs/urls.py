@@ -1,6 +1,11 @@
 import logging
 
-from apidocs.views import CustomSpectacularRedocView, CustomSpectacularSwaggerView, PersonalAPIStatsView, PublicAPIStatsView
+from apidocs.views import (
+    CustomSpectacularRedocView,
+    CustomSpectacularSwaggerView,
+    PersonalAPIStatsView,
+    PublicAPIStatsView,
+)
 from apidocs.views.spectacular import CustomSpectacularAPIView
 from django.urls import path
 from drf_spectacular.utils import extend_schema

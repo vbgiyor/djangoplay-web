@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from django.core.exceptions import ValidationError
 
@@ -9,7 +9,7 @@ class SoftDeleteMixin:
 
     """Mixin to handle soft delete and restore actions for Django models."""
 
-    def perform_destroy(self, instance: Any, user: Optional[Any] = None) -> None:
+    def perform_destroy(self, instance: Any, user: Any | None = None) -> None:
         """Perform soft delete on the instance."""
         logger.debug(f"Soft deleting {instance.__class__.__name__}: {instance}, user: {user.id if user else 'None'}")
         try:
@@ -22,7 +22,7 @@ class SoftDeleteMixin:
                 code="soft_delete_error"
             )
 
-    def perform_restore(self, instance: Any, user: Optional[Any] = None) -> None:
+    def perform_restore(self, instance: Any, user: Any | None = None) -> None:
         """Perform restore on the instance."""
         logger.debug(f"Restoring {instance.__class__.__name__}: {instance}, user: {user.id if user else 'None'}")
         try:

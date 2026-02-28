@@ -1,6 +1,5 @@
 import hashlib
 import logging
-from typing import Optional
 
 from django.core.cache import cache
 
@@ -9,9 +8,9 @@ logger = logging.getLogger(__name__)
 
 def _build_throttle_key(
     flow: str,
-    user_id: Optional[int] = None,
-    email: Optional[str] = None,
-    client_ip: Optional[str] = None,
+    user_id: int | None = None,
+    email: str | None = None,
+    client_ip: str | None = None,
 ) -> str:
     """
     Build a stable cache key based on flow + identity:
@@ -38,10 +37,10 @@ def check_and_increment_email_limit(
     *,
     flow: str,
     max_total: int,
-    user_id: Optional[int] = None,
-    email: Optional[str] = None,
-    client_ip: Optional[str] = None,
-    ttl_seconds: Optional[int] = None,
+    user_id: int | None = None,
+    email: str | None = None,
+    client_ip: str | None = None,
+    ttl_seconds: int | None = None,
 ) -> bool:
     """
     Generic email throttle.

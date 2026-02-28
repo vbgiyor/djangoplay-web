@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 
 @dataclass(frozen=True)
@@ -20,9 +19,9 @@ class AuditActor:
 
     """
 
-    id: Optional[int]
+    id: int | None
     type: str
-    label: Optional[str] = None
+    label: str | None = None
 
     def to_dict(self) -> dict:
         return {

@@ -1,9 +1,8 @@
-from typing import Optional
 
 from mailer.contracts.user import EmailUser
 
 
-def to_email_user(user) -> Optional[EmailUser]:
+def to_email_user(user) -> EmailUser | None:
     """
     Convert a Django user-like object to EmailUser.
     Adapter helpers for converting domain models into mailer contracts.

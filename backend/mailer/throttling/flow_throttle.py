@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 from django.conf import settings
 
@@ -13,7 +13,7 @@ DEFAULTS = {
 }
 
 
-def _merge_limits(cfg: Optional[Dict]) -> Dict[str, Dict[str, int]]:
+def _merge_limits(cfg: dict | None) -> dict[str, dict[str, int]]:
     """
     Merge flow-specific config with global defaults.
     Ensures both per_email / per_ip exist and have max + window_seconds.
@@ -27,7 +27,7 @@ def _merge_limits(cfg: Optional[Dict]) -> Dict[str, Dict[str, int]]:
     return final
 
 
-def _get_config(flow: str) -> Dict[str, Dict[str, int]]:
+def _get_config(flow: str) -> dict[str, dict[str, int]]:
     """
     Load limits for a flow from:
         1) settings.EMAIL_FLOW_LIMITS[flow]
@@ -53,11 +53,11 @@ def _get_config(flow: str) -> Dict[str, Dict[str, int]]:
 def allow_flow(
     *,
     flow: str,
-    user_id: Optional[int] = None,
-    email: Optional[str] = None,
-    client_ip: Optional[str] = None,
+    user_id: int | None = None,
+    email: str | None = None,
+    client_ip: str | None = None,
     prefer_user_identity: bool = True,
-) -> Tuple[bool, Optional[str], Dict[str, Any]]:
+) -> tuple[bool, str | None, dict[str, Any]]:
     """
     Unified rate-limit handler.
 

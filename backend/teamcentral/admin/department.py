@@ -1,7 +1,6 @@
 import logging
 
 from core.admin_mixins import AdminIconDecorator, BaseAdmin
-from django.utils.translation import gettext_lazy as _
 from users.utils.helpers import user_is_verified_employee
 from utilities.admin.admin_filters import IsActiveFilter, changelist_filter
 

@@ -3,7 +3,6 @@ import logging
 from core.admin_mixins import AdminIconDecorator, BaseAdmin
 from django.contrib.admin import display
 from django.db.models import Prefetch
-from django.utils.translation import gettext_lazy as _
 from utilities.admin.admin_filters import IsActiveFilter, changelist_filter
 
 from users.forms import PasswordResetRequestForm

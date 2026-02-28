@@ -4,7 +4,6 @@ from allauth.account.models import EmailAddress
 from allauth.account.views import SignupView
 from django.contrib import messages
 from django.db import transaction
-from django.db.models import Q
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import timezone

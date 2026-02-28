@@ -634,7 +634,7 @@ For unitary_state or quasi_federal_state, uses region as subregion when admin_co
 
             try:
                 json_start = time.time()
-                with open(postal_filename, 'r', encoding='utf-8') as f:
+                with open(postal_filename, encoding='utf-8') as f:
                     if os.path.getsize(postal_filename) == 0:
                         self.stderr.write(self.style.ERROR(f"JSON file {postal_filename} is empty ({time.time() - start_time:.2f}s)"))
                         continue

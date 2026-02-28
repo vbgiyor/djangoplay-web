@@ -8,7 +8,12 @@ from core.utils.redis_client import redis_client
 from django.db import transaction
 from django.db.models import Sum
 
-from invoices.constants import DESCRIPTION_MAX_LENGTH, PAYMENT_METHOD_CODE_MAX_LENGTH, PAYMENT_METHOD_NAME_MAX_LENGTH, PAYMENT_REFERENCE_MAX_LENGTH
+from invoices.constants import (
+    DESCRIPTION_MAX_LENGTH,
+    PAYMENT_METHOD_CODE_MAX_LENGTH,
+    PAYMENT_METHOD_NAME_MAX_LENGTH,
+    PAYMENT_REFERENCE_MAX_LENGTH,
+)
 from invoices.exceptions import InvoiceValidationError
 from invoices.services.invoice import calculate_total_amount
 

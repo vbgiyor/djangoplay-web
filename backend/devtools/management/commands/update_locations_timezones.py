@@ -2,7 +2,6 @@ import argparse
 import json
 import logging
 import time
-from typing import Dict
 
 from core.utils.redis_client import RedisClient
 from django.contrib.auth import get_user_model
@@ -44,7 +43,7 @@ class Command(BaseCommand):
             help=f"Batch size for bulk operations (default: {self.BATCH_SIZE_DEFAULT})",
         )
 
-    def get_country_timezone_map(self, redis_client: RedisClient) -> Dict[str, str]:
+    def get_country_timezone_map(self, redis_client: RedisClient) -> dict[str, str]:
         """Create a mapping of country codes to their primary timezone ID, using Redis cache."""
         cache_key = 'timezone_map'
         cached_map = redis_client.get(cache_key)
@@ -68,7 +67,7 @@ class Command(BaseCommand):
 
         return timezone_map
 
-    def get_timezone_cache(self, timezone_ids: list, redis_client: RedisClient) -> Dict[str, Timezone]:
+    def get_timezone_cache(self, timezone_ids: list, redis_client: RedisClient) -> dict[str, Timezone]:
         """Cache timezone objects in Redis and return a dictionary of timezone_id to Timezone objects."""
         cache_key_prefix = 'timezone:'
         timezone_cache = {}
@@ -99,7 +98,7 @@ class Command(BaseCommand):
 
         return timezone_cache
 
-    def process_batch(self, cities, timezone_map: Dict[str, str], user, stats: Dict, timezone_cache: Dict) -> None:
+    def process_batch(self, cities, timezone_map: dict[str, str], user, stats: dict, timezone_cache: dict) -> None:
         """Process a batch of cities to update their timezones."""
         update_cities = []
         for city in cities:

@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
 from core.request_context import client_ip, request_id
 from django.utils import timezone
@@ -28,9 +28,9 @@ class AuditRecorder:
         action: str,
         actor=None,
         target=None,
-        metadata: Optional[Dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
         is_system_event: bool = False,
-        user_agent: Optional[str] = None,
+        user_agent: str | None = None,
     ) -> None:
         """
         Record an immutable audit event.

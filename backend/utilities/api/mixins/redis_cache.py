@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
 from core.utils.redis_client import redis_client
 
@@ -10,7 +10,7 @@ class CacheMixin:
 
     """Mixin to handle Redis caching for viewsets."""
 
-    def get_cached_data(self, cache_key: str) -> Optional[Dict]:
+    def get_cached_data(self, cache_key: str) -> dict | None:
         """Retrieve data from Redis cache."""
         if not self.request.user.is_authenticated:
             logger.debug("Skipping cache for unauthenticated user")

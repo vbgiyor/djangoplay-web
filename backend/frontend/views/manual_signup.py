@@ -6,7 +6,6 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views import View
-from mailer.flows.member.verification import send_manual_verification_email_task
 from mailer.links.resend import build_resend_verification_url
 from teamcentral.services.member_lifecycle_service import MemberLifecycleService
 from teamcentral.services.onboarding_policy import OnboardingPolicy

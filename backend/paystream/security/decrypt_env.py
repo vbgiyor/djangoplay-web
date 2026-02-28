@@ -59,7 +59,7 @@ def decrypt_and_update_env():
     new_lines = []
     encrypted_set = set(keys_to_decrypt)
 
-    with open(env_path, "r", encoding="utf-8") as f:
+    with open(env_path, encoding="utf-8") as f:
         for line in f:
             stripped = line.strip()
 

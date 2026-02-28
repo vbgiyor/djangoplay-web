@@ -4,7 +4,6 @@ import logging
 import re
 import string
 import time
-from typing import Dict, List, Optional
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -77,13 +76,13 @@ class Command(BaseCommand):
             help="Data source for location_source field (e.g., 'geonames' or 'GOI')",
         )
 
-    def clean_string(self, value: Optional[str]) -> Optional[str]:
+    def clean_string(self, value: str | None) -> str | None:
         """Remove non-printable characters from a string."""
         if value is None:
             return None
         return ''.join(c for c in str(value) if c in string.printable or ord(c) < 0x10000)
 
-    def validate_fields(self, data: Dict, country_name: str, country_code: str) -> Optional[Dict]:
+    def validate_fields(self, data: dict, country_name: str, country_code: str) -> dict | None:
         """Validate and clean fields for a country."""
         cleaned_data = {}
         for field, config in self.FIELD_CONFIG.items():
@@ -151,7 +150,7 @@ class Command(BaseCommand):
             suffix += 1
         return slug
 
-    def process_country(self, data: Dict, index: int, user, caches: Dict, new_countries: List, update_countries: List, country_global_regions: Dict, existing_slugs: set, stats: Dict, datasource: str) -> None:
+    def process_country(self, data: dict, index: int, user, caches: dict, new_countries: list, update_countries: list, country_global_regions: dict, existing_slugs: set, stats: dict, datasource: str) -> None:
         """Process a single country record."""
         country_name = data.get('Country', 'N/A')
         country_code = data.get('ISO', 'N/A')
@@ -261,7 +260,7 @@ class Command(BaseCommand):
 
         # Load country JSON file
         try:
-            with open(country_json_filename, 'r', encoding='utf-8') as f:
+            with open(country_json_filename, encoding='utf-8') as f:
                 country_data = json.load(f)
                 if not country_data:
                     raise ValueError("No valid data found in the COUNTRY_INFO_JSON file")
@@ -276,7 +275,7 @@ class Command(BaseCommand):
 
         # Load phone and postal length JSON file
         try:
-            with open(phone_postal_json_filename, 'r', encoding='utf-8') as f:
+            with open(phone_postal_json_filename, encoding='utf-8') as f:
                 phone_postal_data = json.load(f)
                 if not phone_postal_data:
                     raise ValueError("No valid data found in the PHONE_POSTAL_LENGTH_JSON file")

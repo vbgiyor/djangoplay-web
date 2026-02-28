@@ -4,10 +4,16 @@ from core.admin_mixins import AdminIconDecorator, BaseAdmin
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.utils.translation import gettext_lazy as _
 from users.forms.common import AddressForm
 from users.utils.helpers import user_is_verified_employee
-from utilities.admin.admin_filters import AddressCityFilter, AddressCountryFilter, AddressStateFilter, AddressTypeFilter, IsActiveFilter, changelist_filter
+from utilities.admin.admin_filters import (
+    AddressCityFilter,
+    AddressCountryFilter,
+    AddressStateFilter,
+    AddressTypeFilter,
+    IsActiveFilter,
+    changelist_filter,
+)
 
 from teamcentral.models import Address
 

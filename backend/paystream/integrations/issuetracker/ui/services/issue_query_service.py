@@ -1,4 +1,3 @@
-from typing import Optional
 
 from django.db.models import Count, QuerySet
 from genericissuetracker.models import Issue, IssueStatus
@@ -25,7 +24,7 @@ class IssueQueryService:
     """
 
     @staticmethod
-    def get_issues_for_list(user, status: Optional[str] = None) -> QuerySet:
+    def get_issues_for_list(user, status: str | None = None) -> QuerySet:
         """
         Returns queryset of issues visible to the given user,
         optionally filtered by status.
