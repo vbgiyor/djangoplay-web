@@ -6,7 +6,7 @@
 
 [project]
 name = "djangoplay"
-version = "1.0.0"
+version = "1.0.1"
 description = "DjangoPlay is a modular, enterprise-grade Django backend platform designed for long-lived internal systems with strict identity, audit, and permission boundaries."
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10"
