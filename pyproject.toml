@@ -1,52 +1,141 @@
+# ======================================================================
+# DjangoPlay
+# Enterprise Web Application
+# PEP 621 compliant
+# ======================================================================
+
 [project]
 name = "djangoplay"
-version = "0.3.0"
-description = "DjangoPlay is a modular, enterprise-grade backend platform built with Django and Django REST Framework, designed for internal organizational systems where identity, permissions, auditability, and correctness are first-class concerns. It is intentionally structured to support long-lived systems, regulatory requirements, and complex organizational workflows."
+version = "1.0.0"
+description = "DjangoPlay is a modular, enterprise-grade Django backend platform designed for long-lived internal systems with strict identity, audit, and permission boundaries."
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.10"
+
+license = { text = "Proprietary" }
+
 authors = [
-    { name = "Shekhar Bhosale", email = "vbgiyor@gmail.com" },
+    { name = "Shekhar Bhosale", email = "vbgiyor@gmail.com" }
 ]
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+# ----------------------------------------------------------------------
+# Runtime Dependencies (Pinned — Deterministic Builds)
+# This is a deployed web application.
+# Exact versions are intentional.
+# ----------------------------------------------------------------------
+
 dependencies = [
-    "Django>=4.2,<5.0",
-    "djangorestframework>=3.14,<4.0",
-    "psycopg2-binary==2.9.9",
-    "python-dotenv>=1.0,<2.0",
-    "requests>=2.31,<3.0",
+    "Django==4.2.11",
+    "djangorestframework==3.15.1",
+    "djangorestframework-simplejwt==5.5.0",
+    "djangorestframework-bulk==0.2.1",
+    "django-filter==25.1",
+    "django-countries==7.6.1",
+    "django-timezone-field==7.1",
+    "django-extensions==4.1",
+    "django-redis==6.0.0",
+    "django-environ==0.12.0",
+    "django-ajax-selects==3.0.3",
+    "django-cities-light==3.10.1",
+    "django-ratelimit==4.1.0",
+    "django-select2==8.4.1",
+    "django-autocomplete-light==3.12.1",
+    "django-compressor==4.6.0",
+    "django-inlinecss==0.3.0",
+    "django-mptt==0.17.0",
+    "django-allauth==65.1.0",
+    "django-simple-history==3.11.0",
+    "django-hosts==7.0.0",
+    "drf-spectacular==0.28.0",
+
+    "celery==5.3.6",
+    "redis==5.0.4",
+
+    "psycopg2-binary==2.9.10",
+
+    "whitenoise==6.11.0",
+
+    "requests==2.32.4",
+    "phonenumbers==9.0.6",
+    "pillow==11.2.1",
+    "pytz==2025.2",
+    "timezonefinder==6.5.9",
+    "ijson==3.4.0",
+    "cryptography==45.0.7",
+    "python-dotenv==1.1.1",
+    "python-json-logger==3.3.0",
+    "Unidecode==1.4.0",
+
+    "pandas==2.3.0",
+    "numpy==2.3.1",
 ]
+
+# ----------------------------------------------------------------------
+# Optional Dependencies (Development Only)
+# Install via:
+#     pip install .[dev]
+# ----------------------------------------------------------------------
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=7.4,<8.0",
+    "ruff==0.11.12",
+    "pytest>=7.4,<9.0",
     "pytest-django>=4.5,<5.0",
-    "black>=23.0,<24.0",
+    "coverage[toml]>=7.3,<8.0",
+    "black>=23.0,<25.0",
     "isort>=5.12,<6.0",
-    "ruff>=0.7.0",
-    "coverage>=7.3,<8.0",
+    "pre-commit==4.2.0",
+    "django-debug-toolbar==5.2.0",
+    "Faker==37.4.0",
 ]
 
+# ======================================================================
+# Build System
+# Even though this is not distributed via PyPI,
+# we keep PEP 517 compliance.
+# ======================================================================
+
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling>=1.18"]
 build-backend = "hatchling.build"
 
-# ─────────────────────────────────────────────
-# FORMATTERS
-# ─────────────────────────────────────────────
+# ======================================================================
+# Black
+# ======================================================================
 
 [tool.black]
-line-length = 255
+line-length = 120
 target-version = ["py310"]
+
+# ======================================================================
+# isort
+# ======================================================================
 
 [tool.isort]
 profile = "black"
-line_length = 255
+line_length = 120
 skip = ["migrations"]
+combine_as_imports = true
 
-
-# ─────────────────────────────────────────────
-# RUFF
-# ─────────────────────────────────────────────
+# ======================================================================
+# Ruff (Architecture-Enforcing Configuration)
+# ======================================================================
 
 [tool.ruff]
-line-length = 255
+line-length = 120
 target-version = "py310"
 
 exclude = [
@@ -59,24 +148,26 @@ exclude = [
     "devtools/commands/management/**",
 ]
 
-
 [tool.ruff.lint]
 select = [
-    "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings
-    "F",   # pyflakes
-    "I",   # isort
-    "B",   # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "D",   # pydocstyle
-    "TID", # flake8-tidy-imports (banned-api)
+    "E",
+    "W",
+    "F",
+    "I",
+    "B",
+    "C4",
+    "UP",
+    "D",
+    "TID",
 ]
 
 ignore = [
-    "E203",  # Whitespace before ':'
-    "E402",  # Module level import not at top of file
-    "E501",  # Line too long
+    # Formatting conflicts
+    "E203",
+    "E402",
+    "E501",
 
+    # Docstring noise (existing codebase)
     "D100",
     "D101",
     "D102",
@@ -93,37 +184,36 @@ ignore = [
     "D401",
     "D415",
     "D417",
+    # Use `super()` instead of `super(__class__, self)`
+    "UP008",
 
+    # Bugbear exceptions used intentionally
     "B904",
     "B007",
 
-    "F401",
-    "F403",
+    # Existing semantic / unresolved issues
+    "F401",  # unused imports
+    "F403",  # star imports
     "F405",
     "F811",
     "F821",
 
+    # Broad exception catches
     "E722",
+
+    # Syntax/import edge cases in large refactors
     "E902",
 ]
 
-# ✅ THIS IS THE IMPORTANT FIX
-# Allow banned-api imports *inside* users app
+# Allow banned-api imports inside users app only
 [tool.ruff.lint.per-file-ignores]
 "backend/users/**" = ["TID251"]
 
-# ─────────────────────────────────────────────
-# flake8-tidy-imports
-# ─────────────────────────────────────────────
-
+# Enforce architectural boundaries
 [tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "parents"
 
-
 [tool.ruff.lint.flake8-tidy-imports.banned-api]
-# ─────────────────────────────────────────────
-# USERS APP — IDENTITY BOUNDARY ENFORCEMENT
-# ─────────────────────────────────────────────
 
 "users.models" = { msg = "❌ Do not import users.models outside users app. Use users.services or users.contracts." }
 "users.models.employee" = { msg = "❌ Identity model access forbidden. Use identity services/contracts." }
@@ -132,11 +222,14 @@ ban-relative-imports = "parents"
 "users.services.member" = { msg = "❌ Member logic moved to teamcentral." }
 "users.services.employee" = { msg = "❌ Employee logic moved to teamcentral." }
 
-# ─────────────────────────────────────────────
-# RUFF FORMAT
-# ─────────────────────────────────────────────
+# ======================================================================
+# Coverage
+# ======================================================================
 
-[tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-line-ending = "lf"
+[tool.coverage.run]
+branch = true
+source = ["backend"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
