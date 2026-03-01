@@ -849,3 +849,194 @@ System now supports:
 No write operations exposed in UI yet.
 
 ---
+
+# ✅ 📘 UI-3 — **Updated Final Scope**
+
+Branch:
+
+```bash
+feature/issue-tracker-integration-ui-3
+```
+
+---
+
+# 🎯 Phase Goal (Achieved)
+
+Introduce controlled write operations into Issue Detail UI:
+
+1. Add Comment (anonymous + authenticated)
+2. Change Issue Status (policy-driven lifecycle)
+3. Proper domain lifecycle delegation
+4. Signal-based audit consistency
+5. No duplication of lifecycle rules
+
+---
+
+# 🧱 1️⃣ Add Comment From UI
+
+### Location
+
+```
+/issues/<issue_number>/
+```
+
+---
+
+## ✅ Visibility Rules (Implemented)
+
+| User Type           | Comment Allowed?                                                |
+| ------------------- | --------------------------------------------------------------- |
+| Anonymous           | ✅ Only if `GENERIC_ISSUETRACKER_ALLOW_ANONYMOUS_REPORTING=True` |
+| Anonymous           | ❌ Blocked for internal issues                                   |
+| Authenticated       | ✅ Yes (any issue visible to them)                               |
+| Invalid login state | ❌ Blocked                                                       |
+| Soft-deleted        | ❌ Blocked via identity validation                               |
+
+---
+
+## ✅ Behavior
+
+* POST → same URL
+* `action=add_comment`
+* Anonymous requires email
+* Authenticated email resolved via `get_identity_resolver()`
+* Emits `issue_commented` signal
+* Audit logged via integration signals
+* PRG redirect enforced
+* Structured result handling via service layer
+
+---
+
+## ✅ Architecture (Final)
+
+```
+ui/services/issue_mutation_service.py
+```
+
+### add_comment()
+
+* Identity resolved via `get_identity_resolver()`
+* Anonymous internal-issue safeguard added
+* Creates `IssueComment`
+* Emits `issue_commented`
+* No serializer reuse
+* No lifecycle duplication
+
+---
+
+# 🔐 2️⃣ Status Change From UI
+
+### Location
+
+Near status badge in header
+
+---
+
+## ✅ Visibility Rules (Final)
+
+| User Type                            | Status Change Allowed?       |
+| ------------------------------------ | ---------------------------- |
+| Anonymous                            | ❌                            |
+| Authenticated                        | Depends on transition policy |
+| Superuser                            | ✅                            |
+| Role in `ISSUE_STATUS_ALLOWED_ROLES` | ✅                            |
+| Other roles                          | ❌                            |
+
+---
+
+## ✅ Behavior
+
+* POST → same URL
+* `action=change_status`
+* Delegates to:
+
+```python
+change_issue_status(issue, new_status, identity)
+```
+
+* Lifecycle engine enforces:
+
+  * Transition map
+  * Transition policy
+  * Status history creation
+  * Atomic DB write
+  * Signal emission
+* PRG redirect
+
+---
+
+## 🚨 Important Correction from Original Scope
+
+Original scope mentioned:
+
+> Update issue.status manually and emit signal
+
+That was incorrect architecturally.
+
+Final implementation:
+
+✔ Delegates entirely to lifecycle engine
+✔ Does NOT duplicate transition validation
+✔ Does NOT manually emit `issue_status_changed`
+
+This is the correct enterprise approach.
+
+---
+
+# 🧭 View Strategy (Final)
+
+`IssueDetailView` handles:
+
+```python
+if action == "add_comment":
+    IssueMutationService.add_comment(...)
+elif action == "change_status":
+    IssueMutationService.change_status(...)
+```
+
+* No new routes
+* No fragmented mutation endpoints
+* Thin orchestration only
+
+---
+
+# 🛡 Security Guarantees (Final State)
+
+✔ Visibility still enforced via `IssueVisibilityService`
+✔ Internal issues masked via 404
+✔ Anonymous cannot comment on internal issues
+✔ Lifecycle policy enforced centrally
+✔ Transition policy injected via integration
+✔ Signals power audit layer
+✔ PRG pattern enforced
+✔ No role logic in templates
+✔ No business logic in templates
+
+---
+
+# 🚫 Still Explicitly Not Included
+
+* Attachment upload from UI
+* Edit issue
+* Delete issue
+* Delete comment
+* Label editing
+* AJAX transitions
+
+---
+
+# 🏁 UI-3 Final Architecture State
+
+| Concern                        | Status |
+| ------------------------------ | ------ |
+| Domain lifecycle enforcement   | ✅      |
+| Policy RBAC                    | ✅      |
+| UI mutation thin orchestration | ✅      |
+| Audit integration              | ✅      |
+| Anonymous governance           | ✅      |
+| 404 masking                    | ✅      |
+| Attachment security            | ✅      |
+
+UI-3 is structurally sound.
+
+---

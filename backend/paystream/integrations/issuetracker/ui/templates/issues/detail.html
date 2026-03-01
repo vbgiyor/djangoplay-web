@@ -18,6 +18,24 @@
                 <span class="badge bg-secondary">{{ issue.status }}</span>
                 <span class="badge bg-info text-dark">{{ issue.priority }}</span>
             </h4>
+            {% if can_change_status %}
+                <form method="post" class="mt-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="change_status">
+                    <div class="d-flex gap-2 align-items-center">
+                        <select name="new_status" class="form-select form-select-sm w-auto">
+                            {% for value,label in status_choices %}
+                                <option value="{{ value }}" {% if issue.status == value %}selected{% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                            Update
+                        </button>
+                    </div>
+                </form>
+            {% endif %}
 
             <p class="text-muted mb-2">
                 Opened by {{ issue.reporter_email }} • 
@@ -40,13 +58,48 @@
             Comments ({{ issue.comments.count }})
         </div>
         <div class="card-body">
-            {% for comment in issue.comments.all %}
+            {% for comment in comments %}
                 {% include "issues/partials/comment_row.html" %}
             {% empty %}
                 <div class="text-muted">No comments yet.</div>
             {% endfor %}
         </div>
     </div>
+
+    <hr class="my-4">
+
+    <h5>Add Comment</h5>
+
+    <form method="post" class="mt-3">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add_comment">
+
+        {% if not request.user.is_authenticated %}
+            {% if allow_anonymous %}
+                <div class="mb-3">
+                    <label>Email</label>
+                    <input type="email"
+                        name="commenter_email"
+                        class="form-control"
+                        required>
+                </div>
+            {% else %}
+                <p class="text-muted">Login required to comment.</p>
+            {% endif %}
+        {% endif %}
+
+        <div class="mb-3">
+            <label>Comment</label>
+            <textarea name="body"
+                    rows="4"
+                    class="form-control"
+                    required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Submit Comment
+        </button>
+    </form>
 
 </div>
 {% endblock %}
