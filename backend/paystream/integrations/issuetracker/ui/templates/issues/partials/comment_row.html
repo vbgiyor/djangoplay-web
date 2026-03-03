@@ -1,8 +1,10 @@
 {% load humanize %}
+{% load tz%}
+
 <div class="mb-3 border-bottom pb-3">
-    <strong>{{ comment.commenter_email }}</strong>
+    <strong>{{ comment.commenter_email }}</strong>    
     <span class="text-muted small">
-        • {{ comment.created_at|naturaltime }}
+        • {% include "issues/partials/timestamp.html" with value=comment.created_at %}
     </span>
     <div class="mt-2">
         {{ comment.body|linebreaks }}

@@ -1,12 +1,11 @@
+from django.conf import settings
 from django.contrib import messages
+from django.http import Http404
 from django.shortcuts import redirect, render
 from django.views import View
-from django.http import Http404
-from django.conf import settings
-
 from genericissuetracker.models import Issue, IssueStatus
 from genericissuetracker.services.identity import get_identity_resolver
-
+from genericissuetracker.settings import get_setting
 from paystream.integrations.issuetracker.services.visibility import (
     IssueVisibilityService,
 )
@@ -16,12 +15,14 @@ from paystream.integrations.issuetracker.ui.services.issue_mutation_service impo
 
 
 class IssueDetailView(View):
+
     """
     Read-only Issue detail view.
 
     Responsibilities:
         - Resolve issue via service
         - Render template
+        - Handle controlled write operations
     """
 
     template_name = "issues/detail.html"
@@ -47,11 +48,14 @@ class IssueDetailView(View):
 
         if action == "add_comment":
 
+            files = request.FILES.getlist("files")
+
             result = IssueMutationService.add_comment(
                 issue=issue,
                 request=request,
                 body=request.POST.get("body"),
                 commenter_email=request.POST.get("commenter_email"),
+                files=files,
             )
 
             if result.success:
@@ -69,6 +73,19 @@ class IssueDetailView(View):
 
             if result.success:
                 messages.success(request, "Status updated.")
+            else:
+                messages.error(request, result.error)
+
+        elif action == "add_attachment":
+
+            result = IssueMutationService.add_attachments(
+                issue=issue,
+                request=request,
+                files=request.FILES.getlist("files"),
+            )
+
+            if result.success:
+                messages.success(request, "Files attached successfully.")
             else:
                 messages.error(request, result.error)
 
@@ -98,21 +115,25 @@ class IssueDetailView(View):
     def _build_context(self, request, issue):
 
         resolver = get_identity_resolver()
-        identity = resolver.resolve(request)
+        identity = resolver.resolve(request) or {}
         visibility = IssueVisibilityService(identity=identity)
 
         comment_queryset = visibility.filter_comment_queryset(
             issue.comments.all()
+        ).order_by("-created_at")
+
+        attachment_queryset = visibility.filter_attachment_queryset(
+            issue.attachments.all()
         )
 
         return {
             "issue": issue,
             "comments": comment_queryset,
-            "allow_anonymous": getattr(
-                settings,
-                "GENERIC_ISSUETRACKER_ALLOW_ANONYMOUS_REPORTING",
-                False,
-            ),
+            "attachments": attachment_queryset,
+            "allow_anonymous": get_setting("ALLOW_ANONYMOUS_REPORTING"),
             "status_choices": IssueStatus.choices,
             "identity": identity,
+            "can_change_status": identity.get("is_authenticated", False),
+            "max_comment_length": get_setting("MAX_COMMENT_LENGTH"),
+            "site_name": settings.SITE_NAME,
         }

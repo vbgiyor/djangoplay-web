@@ -3978,12 +3978,10 @@ paths:
     post:
       operationId: attachment_create
       description: |-
-        Base class for write-capable endpoints.
+        Uploads a file attachment.
 
-        Requirements:
-            - Must define `read_serializer_class`
-            - Must define `write_serializer_class`
-            - Must define `queryset`
+        Attachment may optionally belong to a specific comment.
+        Uploader identity is automatically injected.
       summary: Upload attachment
       tags:
       - Attachment
@@ -4031,7 +4029,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/IssueAttachmentRead'
           description: ''
-  /api/v1/issuetracker/attachments-read/{id}/:
+  /api/v1/issuetracker/attachments-read/{number}/:
     get:
       operationId: attachment_read_retrieve
       description: |-
@@ -4043,11 +4041,10 @@ paths:
       summary: Retrieve attachment (read-only)
       parameters:
       - in: path
-        name: id
+        name: number
         schema:
-          type: string
-          format: uuid
-          description: Universally unique identifier for this record.
+          type: integer
+          description: Sequential human-friendly identifier for this attachment.
         required: true
       tags:
       - Attachment
@@ -4060,7 +4057,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/IssueAttachmentRead'
           description: ''
-  /api/v1/issuetracker/attachments/{id}/:
+  /api/v1/issuetracker/attachments/{number}/:
     get:
       operationId: attachment_crud_retrieve
       description: |-
@@ -4073,11 +4070,10 @@ paths:
       summary: Retrieve attachment (write-capable endpoint)
       parameters:
       - in: path
-        name: id
+        name: number
         schema:
-          type: string
-          format: uuid
-          description: Universally unique identifier for this record.
+          type: integer
+          description: Sequential human-friendly identifier for this attachment.
         required: true
       tags:
       - Attachment
@@ -4102,11 +4098,10 @@ paths:
       summary: Soft delete attachment
       parameters:
       - in: path
-        name: id
+        name: number
         schema:
-          type: string
-          format: uuid
-          description: Universally unique identifier for this record.
+          type: integer
+          description: Sequential human-friendly identifier for this attachment.
         required: true
       tags:
       - Attachment
@@ -4135,8 +4130,13 @@ paths:
           description: ''
     post:
       operationId: comment_create
-      description: DjangoPlay-integrated Comment ViewSet.
-      summary: Create comment
+      description: |-
+        Creates a new comment.
+
+        Supports atomic comment + attachment creation when submitted as multipart/form-data.
+
+        If any attachment fails validation, the entire transaction is rolled back.
+      summary: Create comment (supports atomic file upload)
       tags:
       - Comment
       requestBody:
@@ -4144,6 +4144,16 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/IssueCommentCreateRequest'
+            examples:
+              MultipartCommentWithAttachments:
+                value:
+                  issue: 15
+                  body: Here are the logs.
+                  files:
+                  - error.log
+                  - trace.txt
+                summary: Create comment with files
+                description: Atomic comment + attachment creation.
           application/x-www-form-urlencoded:
             schema:
               $ref: '#/components/schemas/IssueCommentCreateRequest'
@@ -4159,6 +4169,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/IssueCommentCreate'
+              examples:
+                MultipartCommentWithAttachments:
+                  value:
+                    issue: 15
+                    body: Here are the logs.
+                    files:
+                    - error.log
+                    - trace.txt
+                  summary: Create comment with files
+                  description: Atomic comment + attachment creation.
           description: ''
   /api/v1/issuetracker/comments-read/:
     get:
@@ -4183,7 +4203,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/IssueCommentRead'
           description: ''
-  /api/v1/issuetracker/comments-read/{id}/:
+  /api/v1/issuetracker/comments-read/{number}/:
     get:
       operationId: comment_read_retrieve
       description: |-
@@ -4195,11 +4215,10 @@ paths:
       summary: Retrieve comment (read-only)
       parameters:
       - in: path
-        name: id
+        name: number
         schema:
-          type: string
-          format: uuid
-          description: Universally unique identifier for this record.
+          type: integer
+          description: Sequential human-friendly identifier for this comment.
         required: true
       tags:
       - Comment
@@ -4212,18 +4231,17 @@ paths:
               schema:
                 $ref: '#/components/schemas/IssueCommentRead'
           description: ''
-  /api/v1/issuetracker/comments/{id}/:
+  /api/v1/issuetracker/comments/{number}/:
     get:
       operationId: comment_crud_retrieve
       description: DjangoPlay-integrated Comment ViewSet.
       summary: Retrieve comment (write-capable endpoint)
       parameters:
       - in: path
-        name: id
+        name: number
         schema:
-          type: string
-          format: uuid
-          description: Universally unique identifier for this record.
+          type: integer
+          description: Sequential human-friendly identifier for this comment.
         required: true
       tags:
       - Comment
@@ -4242,11 +4260,10 @@ paths:
       summary: Soft delete comment
       parameters:
       - in: path
-        name: id
+        name: number
         schema:
-          type: string
-          format: uuid
-          description: Universally unique identifier for this record.
+          type: integer
+          description: Sequential human-friendly identifier for this comment.
         required: true
       tags:
       - Comment
@@ -4552,7 +4569,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/LabelRead'
           description: ''
-  /api/v1/issuetracker/labels-read/{id}/:
+  /api/v1/issuetracker/labels-read/{number}/:
     get:
       operationId: label_read_retrieve
       description: |-
@@ -4564,11 +4581,10 @@ paths:
       summary: Retrieve label (read-only)
       parameters:
       - in: path
-        name: id
+        name: number
         schema:
-          type: string
-          format: uuid
-          description: Universally unique identifier for this record.
+          type: integer
+          description: Sequential human-friendly identifier for this label.
         required: true
       tags:
       - Label
@@ -4581,7 +4597,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/LabelRead'
           description: ''
-  /api/v1/issuetracker/labels/{id}/:
+  /api/v1/issuetracker/labels/{number}/:
     get:
       operationId: label_crud_retrieve
       description: |-
@@ -4594,11 +4610,10 @@ paths:
       summary: Retrieve label (write-capable endpoint)
       parameters:
       - in: path
-        name: id
+        name: number
         schema:
-          type: string
-          format: uuid
-          description: Universally unique identifier for this record.
+          type: integer
+          description: Sequential human-friendly identifier for this label.
         required: true
       tags:
       - Label
@@ -4623,11 +4638,10 @@ paths:
       summary: Soft delete label
       parameters:
       - in: path
-        name: id
+        name: number
         schema:
-          type: string
-          format: uuid
-          description: Universally unique identifier for this record.
+          type: integer
+          description: Sequential human-friendly identifier for this label.
         required: true
       tags:
       - Label
@@ -13301,18 +13315,32 @@ components:
       - sector
     IntegratedAttachmentRead:
       type: object
-      description: Secure attachment serializer.
+      description: |-
+        Secure attachment serializer.
+
+        - Hides raw file path
+        - Exposes secure download endpoint
       properties:
         id:
           type: string
           format: uuid
           readOnly: true
           description: Universally unique identifier for this record.
+        number:
+          type: integer
+          readOnly: true
+          description: Sequential human-friendly identifier for this attachment.
         issue:
           type: string
           format: uuid
           description: Issue this attachment belongs to.
           readOnly: true
+        comment:
+          type: string
+          format: uuid
+          description: Optional comment this attachment belongs to.
+          readOnly: true
+          nullable: true
         original_name:
           type: string
           readOnly: true
@@ -13321,6 +13349,16 @@ components:
           type: integer
           readOnly: true
           description: File size in bytes.
+        uploaded_by_user_id:
+          type: integer
+          readOnly: true
+          nullable: true
+          description: Optional user ID from host application identity system.
+        uploaded_by_email:
+          type: string
+          format: email
+          readOnly: true
+          description: Email address of the uploader.
         created_at:
           type: string
           format: date-time
@@ -13336,13 +13374,17 @@ components:
           format: uri
           readOnly: true
       required:
+      - comment
       - created_at
       - download_url
       - id
       - issue
+      - number
       - original_name
       - size
       - updated_at
+      - uploaded_by_email
+      - uploaded_by_user_id
     IntegratedIssueRead:
       type: object
       description: |-
@@ -14683,11 +14725,21 @@ components:
           format: uuid
           readOnly: true
           description: Universally unique identifier for this record.
+        number:
+          type: integer
+          readOnly: true
+          description: Sequential human-friendly identifier for this attachment.
         issue:
           type: string
           format: uuid
           description: Issue this attachment belongs to.
           readOnly: true
+        comment:
+          type: string
+          format: uuid
+          description: Optional comment this attachment belongs to.
+          readOnly: true
+          nullable: true
         file:
           type: string
           format: uri
@@ -14701,6 +14753,16 @@ components:
           type: integer
           readOnly: true
           description: File size in bytes.
+        uploaded_by_user_id:
+          type: integer
+          readOnly: true
+          nullable: true
+          description: Optional user ID from host application identity system.
+        uploaded_by_email:
+          type: string
+          format: email
+          readOnly: true
+          description: Email address of the uploader.
         created_at:
           type: string
           format: date-time
@@ -14712,21 +14774,29 @@ components:
           readOnly: true
           description: Timestamp when this record was last updated.
       required:
+      - comment
       - created_at
       - file
       - id
       - issue
+      - number
       - original_name
       - size
       - updated_at
+      - uploaded_by_email
+      - uploaded_by_user_id
     IssueAttachmentUpload:
       type: object
       description: Serializer for uploading attachments.
       properties:
         issue:
+          type: integer
+          description: Issue number (not UUID).
+        comment:
           type: string
           format: uuid
-          description: Issue this attachment belongs to.
+          description: Optional comment this attachment belongs to.
+          nullable: true
         file:
           type: string
           format: uri
@@ -14739,9 +14809,13 @@ components:
       description: Serializer for uploading attachments.
       properties:
         issue:
+          type: integer
+          description: Issue number (not UUID).
+        comment:
           type: string
           format: uuid
-          description: Issue this attachment belongs to.
+          description: Optional comment this attachment belongs to.
+          nullable: true
         file:
           type: string
           format: binary
@@ -14754,12 +14828,12 @@ components:
       description: Serializer for creating new comments.
       properties:
         issue:
-          type: string
-          format: uuid
-          description: The issue this comment belongs to.
+          type: integer
+          description: Issue number (not UUID).
         body:
           type: string
           description: Comment content in markdown or plain text.
+          maxLength: 10000
         commenter_email:
           type: string
           format: email
@@ -14772,18 +14846,25 @@ components:
       description: Serializer for creating new comments.
       properties:
         issue:
-          type: string
-          format: uuid
-          description: The issue this comment belongs to.
+          type: integer
+          description: Issue number (not UUID).
         body:
           type: string
           minLength: 1
           description: Comment content in markdown or plain text.
+          maxLength: 10000
         commenter_email:
           type: string
           format: email
           minLength: 1
           description: Required for anonymous users.
+        files:
+          type: array
+          items:
+            type: string
+            format: binary
+          writeOnly: true
+          description: Optional files to attach to this comment.
       required:
       - body
       - issue
@@ -14796,6 +14877,10 @@ components:
           format: uuid
           readOnly: true
           description: Universally unique identifier for this record.
+        number:
+          type: integer
+          readOnly: true
+          description: Sequential human-friendly identifier for this comment.
         issue:
           type: string
           format: uuid
@@ -14832,6 +14917,7 @@ components:
       - created_at
       - id
       - issue
+      - number
       - updated_at
     IssueCreate:
       type: object
@@ -14839,7 +14925,11 @@ components:
         Serializer for creating new issues.
 
         Exposes reporter_email only for anonymous users.
-        Authenticated identity is inhjected automatically.
+        Authenticated identity is injected automatically.
+
+        v0.6.0
+        ------
+        Supports atomic issue creation with optional attachments.
       properties:
         issue_number:
           type: integer
@@ -14901,7 +14991,11 @@ components:
         Serializer for creating new issues.
 
         Exposes reporter_email only for anonymous users.
-        Authenticated identity is inhjected automatically.
+        Authenticated identity is injected automatically.
+
+        v0.6.0
+        ------
+        Supports atomic issue creation with optional attachments.
       properties:
         title:
           type: string
@@ -14935,6 +15029,13 @@ components:
           format: email
           minLength: 1
           description: Required for anonymous users.
+        files:
+          type: array
+          items:
+            type: string
+            format: binary
+          writeOnly: true
+          description: Optional files to attach during issue creation.
       required:
       - description
       - title
@@ -15091,6 +15192,10 @@ components:
           format: uuid
           readOnly: true
           description: Universally unique identifier for this record.
+        number:
+          type: integer
+          readOnly: true
+          description: Sequential human-friendly identifier for this label.
         name:
           type: string
           readOnly: true
@@ -15119,6 +15224,7 @@ components:
       - created_at
       - id
       - name
+      - number
       - slug
       - updated_at
     LeaveApplicationReadSerializerV1:

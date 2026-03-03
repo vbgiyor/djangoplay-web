@@ -25,13 +25,13 @@ from paystream.integrations.issuetracker.services.visibility import (
 logger = logging.getLogger(__name__)
 
 
-def protected_attachment_download(request, pk):
+def protected_attachment_download(request, number: int):
     """
     Secure attachment streaming endpoint.
     """
     attachment = get_object_or_404(
         IssueAttachment.objects.select_related("issue"),
-        pk=pk,
+        number=number,
     )
 
     identity = get_identity_resolver().resolve(request)

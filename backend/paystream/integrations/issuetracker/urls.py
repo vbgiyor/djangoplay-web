@@ -54,7 +54,7 @@ router.register(r"labels-read", LabelReadViewSet, basename="label-read")
 
 urlpatterns = router.urls + [
     path(
-        "attachments/<uuid:pk>/download/",
+        "attachments/<int:number>/download/",
         protected_attachment_download,
         name="issuetracker-attachment-download",
     ),

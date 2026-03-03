@@ -181,7 +181,7 @@ class IssueTrackerAuditService:
     # ------------------------------------------------------------------
 
     @classmethod
-    def log_attachment_uploaded(cls, issue, attachment, identity):
+    def log_attachment_uploaded(cls, issue, attachment, identity, comment=None):
         try:
             actor = cls._actor_payload(identity)
 
@@ -196,6 +196,7 @@ class IssueTrackerAuditService:
                     "attachment_id": str(attachment.id),
                     "original_name": attachment.original_name,
                     "size": attachment.size,
+                    "comment_id": str(comment.id) if comment else None,
                     "is_public": issue.is_public,
                 },
                 is_system_event=False,

@@ -10,7 +10,7 @@ from .license import license_file_view
 
 # Auth views
 from .login import ApiLoginView, ConsoleLoginView
-from .logout import CustomLogoutView, LogoutSuccessView
+from .logout import CustomLogoutView
 from .manual_signup import ManualSignupView
 
 # Password reset
@@ -28,7 +28,7 @@ from .verify import UnifiedEmailVerifyView
 
 __all__ = [
     "dashboard_view", "support_view", "custom_401", "custom_403", "custom_404",
-    "ConsoleLoginView", "ApiLoginView", "CustomLogoutView", "LogoutSuccessView",
+    "ConsoleLoginView", "ApiLoginView", "CustomLogoutView",
     "CustomSignupView", "ManualSignupView", "UnifiedEmailVerifyView","ResendVerificationView",
     "CustomPasswordResetView", "CustomPasswordResetConfirmView",
     "ReportBugView", "UnsubscribeView", "license_file_view",

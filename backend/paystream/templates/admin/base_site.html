@@ -15,11 +15,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}
 
-{% block branding %}
-    {% comment %} <a href="{% url 'console_dashboard' %}" class="brand-link" id="jazzy-logo">
-        <img src="{% static 'elements/images/logo/logo_text.png' %}" alt="DjangoPlay Logo" class="img-fluid brand-image elevation-3" style="opacity: .8">
-        <span class="brand-text font-weight-light">{{ site_header|default:_('DjangoPlay Administration') }}</span>
-    </a> {% endcomment %}
+{% block branding %}    
     <a href="{{ SITE_URL }}" class="brand-link" id="jazzy-logo">
         <img src="{% static 'elements/images/logo/logo_text.png' %}" alt="DjangoPlay Logo" class="img-fluid brand-image elevation-3" style="opacity: .8">
         <span class="brand-text font-weight-light">{{ site_header|default:_('DjangoPlay Administration') }}</span>

@@ -12,13 +12,25 @@ GENERIC_ISSUETRACKER_DEFAULT_PERMISSION_CLASSES = [
 # --------------------------------------------------------------
 # Issue Status Transition Policy
 # --------------------------------------------------------------
-TRANSITION_POLICY = "paystream.integrations.issuetracker.access-control.permissions.IssueStateTransitionOwnerPolicy"
+GENERIC_ISSUETRACKER_TRANSITION_POLICY = "paystream.integrations.issuetracker.access-control.permissions.IssueStateTransitionOwnerPolicy"
 
 # --------------------------------------------------------------
 # Issue Internal Visibility (RBAC)
 # --------------------------------------------------------------
-ISSUE_INTERNAL_ALLOWED_ROLES = [
+GENERIC_ISSUETRACKER_ISSUE_INTERNAL_ALLOWED_ROLES = [
     "CEO",
     "DJGO",
     "SSO",
 ]
+
+# --------------------------------------------------------------
+# Comment Controls
+# --------------------------------------------------------------
+# Hard limit enforced in:
+#   - API serializer
+#   - UI mutation service
+#   - Database layer (TextField max_length=10000)
+#
+# Keep ≤ 10000 (database hard cap)
+# --------------------------------------------------------------
+GENERIC_ISSUETRACKER_MAX_COMMENT_LENGTH = 5000

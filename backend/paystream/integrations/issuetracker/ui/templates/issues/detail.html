@@ -1,14 +1,21 @@
 {% extends "admin/base.html" %}
 {% load humanize %}
+{% load tz %}
 
 {% block content %}
 <div class="mt-4 text-start">
+
+    <!-- Back Link -->
     <div class="mb-3">
         <a href="{% url 'issues:list' %}?status={{ request.GET.status|default:'ALL' }}"
-        class="text-decoration-none">
-            ← Back to Issues
+           class="text-decoration-none">
+            ← Back to {{ site_name }} Issues
         </a>
     </div>
+
+    <!-- ============================= -->
+    <!-- ISSUE HEADER CARD -->
+    <!-- ============================= -->
 
     <div class="card shadow-sm mb-4">
         <div class="card-body">
@@ -18,88 +25,173 @@
                 <span class="badge bg-secondary">{{ issue.status }}</span>
                 <span class="badge bg-info text-dark">{{ issue.priority }}</span>
             </h4>
+
             {% if can_change_status %}
-                <form method="post" class="mt-2">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="change_status">
-                    <div class="d-flex gap-2 align-items-center">
-                        <select name="new_status" class="form-select form-select-sm w-auto">
-                            {% for value,label in status_choices %}
-                                <option value="{{ value }}" {% if issue.status == value %}selected{% endif %}>
-                                    {{ label }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                        <button type="submit" class="btn btn-sm btn-outline-primary">
-                            Update
-                        </button>
-                    </div>
-                </form>
+            <form method="post" class="mt-2">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="change_status">
+
+                <div class="d-flex gap-2 align-items-center">
+                    <select name="new_status"
+                            class="form-select form-select-sm w-auto">
+                        {% for value,label in status_choices %}
+                            <option value="{{ value }}"
+                                {% if issue.status == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit"
+                            class="btn btn-sm btn-outline-primary">
+                        Update
+                    </button>
+                </div>
+            </form>
             {% endif %}
 
-            <p class="text-muted mb-2">
-                Opened by {{ issue.reporter_email }} • 
-                {{ issue.created_at|naturaltime }}
+            
+            <p class="text-muted mt-3 mb-2 text-nowrap">
+                <label class="mb-0 d-inline">Reporter: </label>
+                {{ issue.reporter_email }}
+                •
+                {% include "issues/partials/timestamp.html" with value=issue.created_at %}
             </p>
 
             <hr>
+            <p class="text-muted mt-3 mb-2">
+                <label>Issue Description: </label>
+            </p>
 
             <div class="mb-4">
                 {{ issue.description|linebreaks }}
             </div>
 
-            {% include "issues/partials/attachment_list.html" %}
+            <!-- Issue-level attachments (no comment) -->
+            {% if attachments %}
+                <hr>
+                <h6>Issue Attachments ({{ attachments|length }})</h6>
+                <ul class="list-unstyled">
+                    {% for attachment in attachments %}
+                        {% if not attachment.comment %}
+                            <li class="mb-1">
+                                <a href="{% url 'issuetracker-attachment-download' number=attachment.number %}">
+                                    {{ attachment.original_name }}
+                                </a>
+                                <small class="text-muted">
+                                    ({{ attachment.size|filesizeformat }})
+                                </small>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
 
         </div>
     </div>
+
+    <!-- ============================= -->
+    <!-- ADD COMMENT + ATTACHMENT -->
+    <!-- ============================= -->
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+
+            <h5>Add Comment</h5>
+
+            <form method="post"
+                  enctype="multipart/form-data"
+                  class="mt-3">
+
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_comment">
+
+                {% if not identity.is_authenticated %}
+                    {% if allow_anonymous %}
+                        <div class="mb-3">
+                            <label>Email</label>
+                            <input type="email"
+                                   name="commenter_email"
+                                   class="form-control"
+                                   required>
+                        </div>
+                    {% endif %}
+                {% endif %}
+
+                <div class="mb-3">
+                    <label>Comment (optional)</label>
+                    <textarea name="body"
+                              rows="4"
+                              class="form-control"
+                              maxlength="{{ max_comment_length }}"></textarea>
+                    <small class="text-muted">
+                        Maximum {{ max_comment_length }} characters.
+                    </small>
+                </div>
+
+                <div class="mb-3">
+                    <label>Attachments (optional)</label>
+                    <input type="file"
+                           name="files"
+                           multiple
+                           class="form-control">
+                </div>
+
+                <button type="submit"
+                        class="btn btn-primary">
+                    Submit
+                </button>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- ============================= -->
+    <!-- COMMENT LIST -->
+    <!-- ============================= -->
 
     <div class="card shadow-sm">
         <div class="card-header">
-            Comments ({{ issue.comments.count }})
+            Comments ({{ comments|length }})
         </div>
+
         <div class="card-body">
+
             {% for comment in comments %}
-                {% include "issues/partials/comment_row.html" %}
+                <div class="mb-3 border-bottom pb-3">
+                    <strong>{{ comment.commenter_email }}</strong>
+                    <span class="text-muted small">
+                        • {% include "issues/partials/timestamp.html" with value=comment.created_at %}
+                    </span>
+
+                    <div class="mt-2 text-break">
+                        {{ comment.body|linebreaks }}
+                    </div>
+
+                    {% if comment.attachments.all %}
+                        <ul class="mt-2">
+                            {% for attachment in comment.attachments.all %}
+                                <li>
+                                    <a href="{% url 'issuetracker-attachment-download' number=attachment.number %}">
+                                        {{ attachment.original_name }}
+                                    </a>
+                                    <small class="text-muted">
+                                        ({{ attachment.size|filesizeformat }})
+                                    </small>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
             {% empty %}
-                <div class="text-muted">No comments yet.</div>
+                <div class="text-muted">
+                    No comments yet.
+                </div>
             {% endfor %}
+
         </div>
     </div>
-
-    <hr class="my-4">
-
-    <h5>Add Comment</h5>
-
-    <form method="post" class="mt-3">
-        {% csrf_token %}
-        <input type="hidden" name="action" value="add_comment">
-
-        {% if not request.user.is_authenticated %}
-            {% if allow_anonymous %}
-                <div class="mb-3">
-                    <label>Email</label>
-                    <input type="email"
-                        name="commenter_email"
-                        class="form-control"
-                        required>
-                </div>
-            {% else %}
-                <p class="text-muted">Login required to comment.</p>
-            {% endif %}
-        {% endif %}
-
-        <div class="mb-3">
-            <label>Comment</label>
-            <textarea name="body"
-                    rows="4"
-                    class="form-control"
-                    required></textarea>
-        </div>
-
-        <button type="submit" class="btn btn-primary">
-            Submit Comment
-        </button>
-    </form>
 
 </div>
 {% endblock %}

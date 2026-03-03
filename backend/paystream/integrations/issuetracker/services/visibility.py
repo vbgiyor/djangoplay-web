@@ -15,7 +15,7 @@ Design Principles
 - Deterministic behavior
 """
 
-from django.conf import settings
+from genericissuetracker.settings import get_setting
 
 
 class IssueVisibilityService:
@@ -38,11 +38,7 @@ class IssueVisibilityService:
         if self.identity.get("is_superuser"):
             return True
 
-        allowed_roles = getattr(
-            settings,
-            "ISSUE_INTERNAL_ALLOWED_ROLES",
-            [],
-        )
+        allowed_roles = get_setting("ISSUE_INTERNAL_ALLOWED_ROLES") or []
 
         role_code = self.identity.get("role_code")
 

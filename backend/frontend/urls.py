@@ -69,11 +69,6 @@ urlpatterns = [
     path("unsubscribe/", UnsubscribeView.as_view(), name="unsubscribe_manual"),
 
     # ------------------------------------------------------------------
-    # Logout success page
-    # ------------------------------------------------------------------
-    path("logout/", LogoutSuccessView.as_view(), name="logout_done"),
-
-    # ------------------------------------------------------------------
     # “Who am I?” endpoints
     # ------------------------------------------------------------------
     path("auth/me/", SessionUserMeView.as_view(), name="session-user-me"),

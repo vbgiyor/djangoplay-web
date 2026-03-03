@@ -18,17 +18,23 @@ class IntegratedAttachmentReadSerializer(IssueAttachmentReadSerializer):
 
     """
     Secure attachment serializer.
+
+    - Hides raw file path
+    - Exposes secure download endpoint
     """
 
     download_url = serializers.SerializerMethodField()
 
     class Meta(IssueAttachmentReadSerializer.Meta):
-        # Remove "file" field completely
         fields = [
             "id",
+            "number",
             "issue",
+            "comment",
             "original_name",
             "size",
+            "uploaded_by_user_id",
+            "uploaded_by_email",
             "created_at",
             "updated_at",
             "download_url",
@@ -40,7 +46,7 @@ class IntegratedAttachmentReadSerializer(IssueAttachmentReadSerializer):
 
         url = reverse(
             "issuetracker-attachment-download",
-            kwargs={"pk": obj.pk},
+            kwargs={"number": obj.number},
         )
 
         if request:

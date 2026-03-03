@@ -3,6 +3,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render
 from django.views import View
 from genericissuetracker.models import IssueStatus
+from genericissuetracker.settings import get_setting
 from paystream.integrations.issuetracker.ui.services.issue_query_service import (
     IssueQueryService,
 )
@@ -38,12 +39,20 @@ class IssueListView(View):
         page_number = request.GET.get("page")
         page_obj = paginator.get_page(page_number)
 
+        allow_anonymous = get_setting("ALLOW_ANONYMOUS_REPORTING")
+
+        can_create_issue = (
+            request.user.is_authenticated
+            or allow_anonymous
+        )
+
         context = {
             "page_obj": page_obj,
             "status_filter": status,
             "status_choices": IssueStatus.choices,
             "site_name": settings.SITE_NAME,
             "site_url": settings.SITE_URL,
+            "can_create_issue": can_create_issue,
         }
 
         return render(request, self.template_name, context)

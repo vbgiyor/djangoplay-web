@@ -11,29 +11,31 @@ Contains:
    → Enterprise DRF permission for IssueTracker endpoints
 """
 
-from django.conf import settings
+from genericissuetracker.settings import get_setting
 from rest_framework.permissions import SAFE_METHODS, BasePermission
 from users.services.identity_login_policy_service import UnifiedLoginService
 from users.services.identity_query_service import IdentityQueryService
 
+
 # =====================================================================
 # 1️⃣ Status Transition Policy
 # =====================================================================
-
 class IssueStateTransitionOwnerPolicy:
 
     """
-    Allows status transition only for configured roles.
+    Enterprise-grade transition policy.
 
-    Roles are defined in settings:
-
-        ISSUE_STATUS_ALLOWED_ROLES = ["CEO", "DJGO", "SSO"]
-
-    Used by GenericIssueTracker lifecycle transition system.
+    Allows transition if:
+        1. Superuser
+        2. Issue owner
+        3. Role in configured allowed roles
     """
 
     def can_transition(self, issue, old_status, new_status, identity):
 
+        # ------------------------------------------
+        # 1️⃣ Authentication required
+        # ------------------------------------------
         if not identity or not identity.get("is_authenticated"):
             return False
 
@@ -41,7 +43,6 @@ class IssueStateTransitionOwnerPolicy:
         if not user_id:
             return False
 
-        # Superuser bypass handled by login validation
         try:
             snapshot = IdentityQueryService.get_identity_snapshot(user_id)
         except Exception:
@@ -50,18 +51,38 @@ class IssueStateTransitionOwnerPolicy:
         if not snapshot["is_active"]:
             return False
 
-        # Role restriction (if configured)
-        allowed_roles = getattr(
-            settings,
-            "ISSUE_STATUS_ALLOWED_ROLES",
-            [],
-        )
+        # ------------------------------------------
+        # 2️⃣ Fetch actual user (host responsibility)
+        # ------------------------------------------
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
 
-        # Role must be passed via identity resolver (recommended extension)
-        role_code = identity.get("role_code")
+        try:
+            user = User.objects.select_related("role").get(pk=user_id)
+        except User.DoesNotExist:
+            return False
+
+        # ------------------------------------------
+        # 3️⃣ Superuser bypass
+        # ------------------------------------------
+        if user.is_superuser:
+            return True
+
+        # ------------------------------------------
+        # 4️⃣ Owner override (optional but recommended)
+        # ------------------------------------------
+        if issue.reporter_user_id == user_id:
+            return True
+
+        # ------------------------------------------
+        # 5️⃣ Role-based governance
+        # ------------------------------------------
+        allowed_roles = get_setting("ISSUE_INTERNAL_ALLOWED_ROLES") or []
 
         if not allowed_roles:
             return True
+
+        role_code = getattr(user.role, "code", None)
 
         return role_code in allowed_roles
 
@@ -103,11 +124,7 @@ class IssueTrackerAccessPermission(BasePermission):
     # ----------------------------------------------------------
     def _validate_write_role(self, identity):
 
-        allowed_roles = getattr(
-            settings,
-            "ISSUE_WRITE_ALLOWED_ROLES",
-            None,
-        )
+        allowed_roles = get_setting("ISSUE_INTERNAL_ALLOWED_ROLES") or []
 
         if not allowed_roles:
             return True
@@ -121,11 +138,7 @@ class IssueTrackerAccessPermission(BasePermission):
     # ----------------------------------------------------------
     def has_permission(self, request, view):
 
-        allow_anonymous = getattr(
-            settings,
-            "GENERIC_ISSUETRACKER_ALLOW_ANONYMOUS_REPORTING",
-            False,
-        )
+        allow_anonymous = get_setting("ALLOW_ANONYMOUS_REPORTING")
 
         user = request.user
 

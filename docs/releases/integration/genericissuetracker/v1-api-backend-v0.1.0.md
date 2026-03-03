@@ -573,7 +573,7 @@ Final rule:
 Configured via:
 
 ```python
-ISSUE_INTERNAL_ALLOWED_ROLES = [
+GENERIC_ISSUETRACKER_ISSUE_INTERNAL_ALLOWED_ROLES = [
     "CEO",
     "DJGO",
     "SSO",
@@ -894,7 +894,7 @@ Current:
 Replace with:
 
 ```json
-"download_url": "https://.../attachments/<uuid>/download/"
+"download_url": "https://.../attachments/<number>/download/"
 ```
 
 Requirements:

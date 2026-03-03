@@ -15,34 +15,30 @@ import logging
 logger = logging.getLogger(__name__)
 
 class CustomLogoutView(LogoutView):
-    def get(self, request, *args, **kwargs):
+
+    def post(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             logger.info(f"Logging out user: {request.user}")
 
-        for _message in messages.get_messages(request):
-            pass
+        # Let Allauth perform logout + redirect resolution
+        response = super().post(request, *args, **kwargs)
 
-        super().post(request, *args, **kwargs)
+        host = request.get_host()
+        from_param = request.GET.get("from")
 
-        from_param = request.GET.get('from')
-
-        if from_param == 'swagger':
+        # Swagger / ReDoc overrides
+        if from_param == "swagger":
             return redirect(f"{reverse('frontend:api_login')}?from=api")
-        if from_param == 'redoc':
+
+        if from_param == "redoc":
             return redirect(f"{reverse('frontend:api_login')}?from=redoc")
 
-        # DASHBOARD → GO TO LOGIN
-        if request.path.startswith('/console/dashboard/') or request.path == '/console/dashboard/':
-            return redirect(reverse('account_login'))
+        # 🔥 Issues subdomain override
+        if host.startswith("issues."):
+            return redirect("/issues/")
 
-        # ALL OTHER → SHOW LOGOUT PAGE
-        return redirect('frontend:logout_done')
+        # Console dashboard → login
+        if request.path.startswith("/console/"):
+            return redirect(reverse("account_login"))
 
-
-class LogoutSuccessView(TemplateView):
-    template_name = TemplateRegistry.CONSOLE_LOGOUT
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['login_url'] = reverse('account_login')
-        return context
+        return response

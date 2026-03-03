@@ -193,7 +193,7 @@ Root on subdomain:
 
 * Production subdomain binding
 * Site-based routing
-* Final UI polish
+*  UI polish
 
 ---
 
@@ -456,7 +456,7 @@ This phase is strictly **read-only list view**.
 
 ---
 
-# 📦 Final Deliverable (UI-1)
+# 📦  Deliverable (UI-1)
 
 Visiting:
 
@@ -850,7 +850,7 @@ No write operations exposed in UI yet.
 
 ---
 
-# ✅ 📘 UI-3 — **Updated Final Scope**
+# ✅ 📘 UI-3 — **Updated  Scope**
 
 Branch:
 
@@ -907,7 +907,7 @@ Introduce controlled write operations into Issue Detail UI:
 
 ---
 
-## ✅ Architecture (Final)
+## ✅ Architecture
 
 ```
 ui/services/issue_mutation_service.py
@@ -932,7 +932,7 @@ Near status badge in header
 
 ---
 
-## ✅ Visibility Rules (Final)
+## ✅ Visibility Rules
 
 | User Type                            | Status Change Allowed?       |
 | ------------------------------------ | ---------------------------- |
@@ -973,7 +973,7 @@ Original scope mentioned:
 
 That was incorrect architecturally.
 
-Final implementation:
+Implementation:
 
 ✔ Delegates entirely to lifecycle engine
 ✔ Does NOT duplicate transition validation
@@ -983,7 +983,7 @@ This is the correct enterprise approach.
 
 ---
 
-# 🧭 View Strategy (Final)
+# 🧭 View Strategy 
 
 `IssueDetailView` handles:
 
@@ -1000,7 +1000,7 @@ elif action == "change_status":
 
 ---
 
-# 🛡 Security Guarantees (Final State)
+# 🛡 Security Guarantees 
 
 ✔ Visibility still enforced via `IssueVisibilityService`
 ✔ Internal issues masked via 404
@@ -1025,7 +1025,7 @@ elif action == "change_status":
 
 ---
 
-# 🏁 UI-3 Final Architecture State
+# 🏁 UI-3  Architecture State
 
 | Concern                        | Status |
 | ------------------------------ | ------ |
@@ -1038,5 +1038,381 @@ elif action == "change_status":
 | Attachment security            | ✅      |
 
 UI-3 is structurally sound.
+
+---
+
+# 📘 UI-4 — Issue Creation, Comment Length, Attachment policy in Issue and Comment creation
+
+---
+
+Branch:
+
+```
+feature/issue-tracker-integration-ui-4
+```
+---
+
+# 🎯 Release Objective
+
+Deliver complete write-capable Issue Tracker UI with:
+
+1. Issue creation (public + internal with RBAC)
+2. Attachment support (issue + comment level)
+3. Comment length governance
+4. Role-governed internal issue creation
+5. Strict DRY reuse of library validation
+6. PRG (Post-Redirect-Get) discipline
+7. Unified Django message rendering
+8. Standardized timestamp formatting
+9. Production-level UI consistency
+
+---
+
+# 🧱 Functional Scope
+
+---
+
+## 1️⃣ Issue Creation UI
+
+### Route
+
+```
+/issues/new/
+```
+
+### Capability Matrix
+
+| User Type                        | Can Create Public Issue | Can Create Internal Issue |
+| -------------------------------- | ----------------------- | ------------------------- |
+| Anonymous                        | ✔ (if setting enabled)  | ❌                         |
+| Authenticated (role allowed)     | ✔                       | ✔                         |
+| Authenticated (role not allowed) | ✔                       | ❌                         |
+| Soft-deleted user                | ❌ (resolver governed)   | ❌                         |
+
+---
+
+### Enforcement Location
+
+Internal issue governance enforced in:
+
+```
+IssueMutationService.create_issue()
+```
+
+Not:
+
+* Not in template
+* Not in serializer
+* Not in view
+* Not in library
+
+Library remains role-agnostic.
+
+---
+
+## 2️⃣ Attachment Support
+
+### During Issue Creation
+
+* Multiple attachments allowed
+* MAX_ATTACHMENTS enforced by library
+* MAX_ATTACHMENT_SIZE_MB enforced by library
+* Atomic behavior reused from `IssueCreateSerializer`
+
+---
+
+### From Detail Page
+
+| Scenario                      | Allowed |
+| ----------------------------- | ------- |
+| Anonymous → public issue      | ✔       |
+| Anonymous → internal issue    | ❌       |
+| Authenticated → visible issue | ✔       |
+| Invisible issue               | ❌       |
+| Soft deleted issue            | ❌       |
+
+Enforced via:
+
+* Visibility service
+* Identity resolver
+* Library validation
+
+---
+
+## 3️⃣ Comment Length Governance
+
+Setting:
+
+```python
+GENERIC_ISSUETRACKER_MAX_COMMENT_LENGTH = 5000
+```
+
+Enforced via:
+
+```python
+get_setting("MAX_COMMENT_LENGTH")
+```
+
+UI:
+
+```html
+maxlength="5000"
+```
+
+No duplication of validation logic.
+
+---
+
+## 4️⃣ Timestamp Standardization
+
+Implemented reusable partial:
+
+```
+templates/issues/partials/timestamp.html
+```
+
+Behavior:
+
+* Visible: formatted IST datetime
+* Tooltip: relative time (naturaltime)
+* Uses Django timezone framework
+* Works with USE_TZ=True
+* DRY reuse across issue + comments
+
+Usage:
+
+```django
+{% include "issues/partials/timestamp.html" with value=issue.created_at %}
+```
+
+Applied to:
+
+* Issue header timestamp
+* Comment timestamps
+
+---
+
+## 5️⃣ Django Messages System Standardization
+
+### Problem Solved
+
+* Bootstrap 5 mismatch (`alert-error` → `alert-danger`)
+* Duplicate message rendering
+* Black flicker row
+* Missing success messages
+
+### Final Architecture
+
+* Single message rendering location: `admin/base.html`
+* Custom template filter:
+
+```
+frontend/templatetags/django_message_utils.py
+```
+
+```python
+@register.filter
+def bootstrap_alert(level):
+    mapping = {
+        "error": "danger",
+        "warning": "warning",
+        "success": "success",
+        "info": "info",
+    }
+```
+
+### Base Template Rendering
+
+```django
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.level_tag|bootstrap_alert }} alert-dismissible fade show">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+```
+
+Guarantees:
+
+* Correct Bootstrap mapping
+* No duplicate rendering
+* PRG success messages visible
+* No layout flicker
+
+---
+
+# 🏗 Architecture Principles Enforced
+
+✔ Library validation reused
+✔ No domain duplication
+✔ No lifecycle duplication
+✔ No business logic in templates
+✔ No RBAC logic in serializers
+✔ Role-based internal governance
+✔ PRG discipline everywhere
+✔ Signals preserved
+✔ Visibility masking preserved
+✔ Soft delete masking preserved
+✔ DRY timestamp rendering
+✔ DRY message rendering
+
+---
+
+# 🚫 Explicitly Not Included
+
+* Edit issue
+* Delete issue
+* Delete attachment
+* AJAX
+* Label system
+* API modifications
+* Library refactor
+* Dynamic navigation system
+
+---
+
+# 🧪 Validation Checklist (UI-4)
+
+---
+
+# 1️⃣ Issue Creation
+
+### Anonymous Public Issue
+
+* [ ] Email field visible
+* [ ] Cannot submit without email
+* [ ] Issue created successfully
+* [ ] Redirect to detail (PRG)
+* [ ] Success message visible once
+* [ ] Reporter email saved correctly
+* [ ] Attachments saved
+
+---
+
+### Anonymous Internal Issue
+
+* [ ] Blocked
+* [ ] Error message styled correctly
+* [ ] No DB record created
+
+---
+
+### Authenticated Public Issue
+
+* [ ] Email auto-filled
+* [ ] Email not editable
+* [ ] Issue created successfully
+* [ ] Spoof attempt ignored
+* [ ] Redirect works
+
+---
+
+### Authenticated Internal Issue (Allowed Role)
+
+* [ ] Internal issue created
+* [ ] Visible only to allowed roles
+* [ ] Not visible to unauthorized users
+
+---
+
+### Authenticated Internal Issue (Disallowed Role)
+
+* [ ] Blocked
+* [ ] Proper error message
+* [ ] No DB write
+
+---
+
+# 2️⃣ Attachment Validation
+
+### During Issue Creation
+
+* [ ] Single attachment works
+* [ ] Multiple attachments work
+* [ ] Exceed MAX_ATTACHMENTS blocked
+* [ ] Exceed MAX_ATTACHMENT_SIZE blocked
+* [ ] Signals emitted once per file
+
+---
+
+### From Detail Page
+
+* [ ] Public issue attachment works
+* [ ] Anonymous cannot attach to internal
+* [ ] Invisible issue blocked
+* [ ] Soft deleted issue blocked
+
+---
+
+# 3️⃣ Comment Validation
+
+* [ ] Comment-only works
+* [ ] Attachment-only works
+* [ ] Empty submission blocked
+* [ ] Length > 5000 blocked
+* [ ] Anonymous email required
+* [ ] Authenticated uses identity resolver
+* [ ] PRG redirect
+* [ ] Success message visible
+
+---
+
+# 4️⃣ Timestamp Validation
+
+* [ ] Issue header shows IST formatted time
+* [ ] Tooltip shows relative time
+* [ ] Comment timestamps consistent
+* [ ] No duplicate bullets
+* [ ] Works with timezone enabled
+
+---
+
+# 5️⃣ Django Message System
+
+* [ ] Success message shown once
+* [ ] No duplicate messages
+* [ ] No black flicker row
+* [ ] Error messages styled as red
+* [ ] Warning/info styled correctly
+* [ ] No inline style hacks
+* [ ] Messages cleared after one request
+
+---
+
+# 6️⃣ Security Validation
+
+* [ ] Internal issue escalation prevented
+* [ ] Reporter spoofing prevented
+* [ ] Attachment RBAC enforced
+* [ ] Soft delete respected
+* [ ] Visibility masking respected
+* [ ] Transition policy intact
+
+---
+
+# 7️⃣ Regression (UI-1 → UI-3)
+
+* [ ] List filters intact
+* [ ] Status change works
+* [ ] Pagination intact
+* [ ] Visibility filtering intact
+* [ ] No signal duplication
+* [ ] No media leak
+
+---
+
+# 🏁 Release Readiness Criteria
+
+UI-4 is complete if:
+
+✔ All checklist items pass
+✔ No template duplication
+✔ No RBAC bypass
+✔ No double message rendering
+✔ No broken Bootstrap classes
+✔ No duplicate DB writes
+✔ No 500 errors
+✔ PRG discipline intact
 
 ---

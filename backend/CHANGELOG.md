@@ -6,6 +6,55 @@ This project follows Semantic Versioning.
 
 ---
 
+## [1.0.4] - 2026-03-03
+
+**Tag:** `v1.0.4-issuetracker-ui-4`
+
+### 🚀 Issue Tracker UI – Phase UI-4 (Write + Governance Completion)
+
+This release completes the full IssueTracker integration lifecycle.
+
+---
+
+### Added
+
+* Issue creation UI (anonymous + authenticated)
+* Comment submission with attachment support
+* Status transition form integrated with lifecycle engine
+* `IssueMutationService` for UI orchestration
+* Protected attachment download endpoint
+* Enterprise `IssueStateTransitionOwnerPolicy`
+
+  * Superuser bypass
+  * Owner override
+  * Configurable role-based governance
+* Complete domain signal → audit integration
+* Timestamp partial (IST format + naturaltime tooltip)
+* Proper Django messages handling in base template
+* IssueTracker UI mounted under dedicated issues subdomain
+
+---
+
+### Changed
+
+* Status transitions fully delegated to lifecycle engine
+* Transition policy hardened for enterprise RBAC
+* Identity resolution unified across UI and API
+* Visibility governance applied consistently (list, detail, attachments)
+
+---
+
+### Security
+
+* No direct file URL exposure
+* 404 masking preserved
+* RBAC enforcement at queryset level
+* No business logic in templates
+* No permission duplication
+* Strict PRG pattern for UI writes
+
+---
+
 ## [1.0.3] - 2026-02-28
 
 **Tag:** `v1.0.3-issuetracker-ui-3`
@@ -119,6 +168,7 @@ This project follows Semantic Versioning.
 * Thin adapter service layer
 * Integration-based routing
 * Enterprise-aligned layered architecture
+* Dedicated IssueTracker subdomain strategy (issues.<domain>)
 
 ### Security
 

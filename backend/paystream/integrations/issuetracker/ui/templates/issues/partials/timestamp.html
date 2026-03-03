@@ -1,0 +1,5 @@
+{% load humanize tz %}
+
+<span title="{{ value|naturaltime }}">
+    {{ value|localtime|date:"d M Y, h:i A" }} IST
+</span>
