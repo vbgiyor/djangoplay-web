@@ -8,8 +8,10 @@ from mailer.flows.support import (
     send_support_ticket_email_task,
 )
 from mailer.throttling.flow_throttle import allow_flow
+from paystream.integrations.issuetracker.ui.services.issue_mutation_service import IssueMutationService
 from users.services.identity_query_service import IdentityQueryService
 
+from helpdesk.adapters.issue_adapter import IssueAdapter
 from helpdesk.models import FileUpload, SupportStatus, SupportTicket
 
 logger = logging.getLogger(__name__)
@@ -117,6 +119,17 @@ class SupportService:
             return SupportRequestResult(status="error", ticket=None, error=str(e))
 
         # -----------------------------------------------------
+        # Sync Support Ticket → IssueTracker
+        # -----------------------------------------------------
+        try:
+            SupportService.sync_ticket_to_issue(ticket, request)
+        except Exception:
+            logger.exception(
+                "SupportService: Ticket sync failed",
+                extra={"ticket_number": ticket.ticket_number},
+            )
+
+        # -----------------------------------------------------
         # 3) Unified throttle check — applies to all users
         # Unregistered users will throttle via per_email & per_ip
         # -----------------------------------------------------
@@ -159,3 +172,34 @@ class SupportService:
                 e,
             )
             return SupportRequestResult(status="error", ticket=ticket, error=str(e))
+
+
+    @staticmethod
+    def sync_ticket_to_issue(ticket, request):
+        """
+        This sync allows to show corresponding SupportTicket on issues subdomain.
+        But currently with v1.1.0, not included in UI changes.
+        Will be integrated at the time when support tickets will be publicly displayed.      
+        """
+        if getattr(ticket, "migrated_issue_id", None):
+            return None
+
+        reporter_user_id = None
+
+        if request.user.is_authenticated:
+            reporter_user_id = request.user.id
+
+        payload = IssueAdapter.build_support_issue_payload(
+            ticket,
+            reporter_user_id=reporter_user_id,
+        )
+
+        issue = IssueMutationService.create_issue(
+            user=request.user,
+            **payload,
+        )
+
+        ticket.migrated_issue_id = issue.id
+        ticket.save(update_fields=["migrated_issue_id"])
+
+        return issue

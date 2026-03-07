@@ -1,7 +1,8 @@
 
-from django.db.models import Count, QuerySet
+from django.db.models import Case, CharField, Count, Exists, OuterRef, QuerySet, Value, When
 from genericissuetracker.models import Issue, IssueStatus
 from genericissuetracker.services.pagination import resolve_page_size
+from helpdesk.models import BugReport
 from paystream.integrations.issuetracker.services.visibility import (
     IssueVisibilityService,
 )
@@ -29,22 +30,38 @@ class IssueQueryService:
         Returns queryset of issues visible to the given user,
         optionally filtered by status.
         """
-        # Base queryset (soft-delete automatically respected)
-        queryset = Issue.objects.all().annotate(
-                comment_count=Count("comments", distinct=True)
+        queryset = (
+            Issue.objects.all()
+            .annotate(
+                comment_count=Count("comments", distinct=True),
+
+                is_bug=Exists(
+                    BugReport.objects.filter(
+                        migrated_issue_id=OuterRef("id")
+                    )
+                ),
             )
-        # Apply integration visibility governance
+            .annotate(
+                source=Case(
+                    When(is_bug=True, then=Value("bug_report")),
+                    default=Value("issue"),
+                    output_field=CharField(),
+                )
+            )
+        )
+
         identity = {
             "is_authenticated": user.is_authenticated,
             "is_superuser": getattr(user, "is_superuser", False),
-            "role_code": getattr(user, "role_code", None),
+            "role_code": getattr(getattr(user, "role", None), "code", None),
         }
 
         visibility_service = IssueVisibilityService(identity=identity)
 
-        queryset = visibility_service.filter_issue_queryset(queryset)
+        # # Anonymous users can see internal issues in LIST only
+        if user.is_authenticated:
+            queryset = visibility_service.filter_issue_queryset(queryset)
 
-        # Enum-driven status filtering
         if status and status != "ALL":
             valid_statuses = {choice[0] for choice in IssueStatus.choices}
             if status in valid_statuses:
@@ -52,32 +69,28 @@ class IssueQueryService:
 
         return queryset.order_by("-created_at")
 
+
+    @staticmethod
+    def get_issue_for_detail(request, issue_number: int):
+
+        from django.http import Http404
+        queryset = (
+            Issue.objects.all()
+            .prefetch_related(
+                "comments",
+                "attachments",
+                "status_history",
+            )
+        )
+        try:
+            return queryset.get(issue_number=issue_number)
+        except Issue.DoesNotExist:
+            raise Http404("Issue not found")
+
+
     @staticmethod
     def get_page_size() -> int:
         """
         Resolve page size from genericissuetracker settings.
         """
         return resolve_page_size()
-
-    @staticmethod
-    def get_issue_for_detail(user, issue_number: int):
-        from django.http import Http404
-
-        queryset = (
-            Issue.objects.all()
-            .prefetch_related("comments", "attachments")
-        )
-
-        identity = {
-            "is_authenticated": user.is_authenticated,
-            "is_superuser": getattr(user, "is_superuser", False),
-            "role_code": getattr(user, "role_code", None),
-        }
-
-        visibility_service = IssueVisibilityService(identity=identity)
-        queryset = visibility_service.filter_issue_queryset(queryset)
-
-        try:
-            return queryset.get(issue_number=issue_number)
-        except Issue.DoesNotExist:
-            raise Http404("Issue not found")

@@ -148,45 +148,21 @@
     </div>
 
     <!-- ============================= -->
-    <!-- COMMENT LIST -->
+    <!-- ISSUE ACTIVITY TIMELINE -->
     <!-- ============================= -->
 
     <div class="card shadow-sm">
         <div class="card-header">
-            Comments ({{ comments|length }})
+            Activity Timeline
         </div>
 
         <div class="card-body">
 
-            {% for comment in comments %}
-                <div class="mb-3 border-bottom pb-3">
-                    <strong>{{ comment.commenter_email }}</strong>
-                    <span class="text-muted small">
-                        • {% include "issues/partials/timestamp.html" with value=comment.created_at %}
-                    </span>
-
-                    <div class="mt-2 text-break">
-                        {{ comment.body|linebreaks }}
-                    </div>
-
-                    {% if comment.attachments.all %}
-                        <ul class="mt-2">
-                            {% for attachment in comment.attachments.all %}
-                                <li>
-                                    <a href="{% url 'issuetracker-attachment-download' number=attachment.number %}">
-                                        {{ attachment.original_name }}
-                                    </a>
-                                    <small class="text-muted">
-                                        ({{ attachment.size|filesizeformat }})
-                                    </small>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                </div>
+            {% for event in timeline %}
+                {% include "issues/partials/timeline_item.html" with event=event %}
             {% empty %}
                 <div class="text-muted">
-                    No comments yet.
+                    No activity yet.
                 </div>
             {% endfor %}
 

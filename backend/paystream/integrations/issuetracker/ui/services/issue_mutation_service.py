@@ -2,10 +2,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 
 from django.db import transaction
-from genericissuetracker.models import (
-    IssueAttachment,
-    IssueComment,
-)
+from genericissuetracker.models import IssueAttachment, IssueComment, Label
 from genericissuetracker.serializers.v1.write.attachment import (
     IssueAttachmentUploadSerializer,
 )
@@ -17,7 +14,16 @@ from genericissuetracker.signals import (
     attachment_added,
     issue_commented,
 )
+from paystream.integrations.issuetracker.constants import IssueLabelSlug
+from paystream.integrations.issuetracker.services.label_bootstrap import (
+    IssueLabelBootstrapService,
+)
+from paystream.integrations.issuetracker.services.visibility import (
+    IssueVisibilityService,
+)
 from rest_framework.exceptions import PermissionDenied, ValidationError
+from django.http import QueryDict
+
 
 # ------------------------------------------------------------------
 # Result Objects
@@ -71,7 +77,7 @@ class IssueMutationService:
     # ---------------------------------------------------------
     @staticmethod
     @transaction.atomic
-    def create_issue(*, request) -> IssueCreateResult:
+    def create_issue(*, request, data=None, files=None) -> IssueCreateResult:
 
         resolver = get_identity_resolver()
         identity = resolver.resolve(request) or {}
@@ -79,6 +85,10 @@ class IssueMutationService:
         allow_anonymous = get_setting("ALLOW_ANONYMOUS_REPORTING")
 
         is_authenticated = identity.get("is_authenticated", False)
+        
+        # Initialize payload first
+        if data is None:
+            data = request.POST.copy()
 
         # Anonymous creation governance
         if not is_authenticated and not allow_anonymous:
@@ -88,32 +98,43 @@ class IssueMutationService:
                 "Authentication required to create issue.",
             )
 
-        # Internal issue RBAC enforcement
-        is_public = request.POST.get("is_public") in ("on", "true", "True", "1")
+        # Internal issue RBAC enforcement. (payload already contains is_public)
+        is_public = data.get("is_public") in (True, "on", "true", "True", "1")
 
         if not is_public:
+
             if not is_authenticated:
                 return IssueCreateResult(
                     False,
                     None,
                     "Internal issues require authentication.",
-                )
+                )            
+            visibility = IssueVisibilityService(identity)
 
-            allowed_roles = get_setting("ISSUE_INTERNAL_ALLOWED_ROLES") or []
-
-            user_role = getattr(request.user, "role", None)
-
-            if allowed_roles and user_role not in allowed_roles:
+            if not visibility.can_access_internal():
                 return IssueCreateResult(
                     False,
                     None,
                     "You are not allowed to create internal issues.",
                 )
 
-        data = request.POST.copy()
-
         # attach files as a list
-        files = request.FILES.getlist("files")
+        if files is None:
+            files = request.FILES.getlist("files")
+
+        # If caller passed plain dict (service integrations)
+        if isinstance(data, dict):
+            q = QueryDict("", mutable=True)
+            for k, v in data.items():
+                if isinstance(v, list):
+                    q.setlist(k, v)
+                else:
+                    q[k] = v
+            data = q
+
+        # ---------------------------------------------------------
+        # Attach files
+        # ---------------------------------------------------------
         if files:
             data.setlist("files", files)
         else:
@@ -127,12 +148,38 @@ class IssueMutationService:
         try:
             serializer.is_valid(raise_exception=True)
             issue = serializer.save()
+
         except ValidationError as exc:
             return IssueCreateResult(False, None, str(exc))
+
         except Exception as exc:
             return IssueCreateResult(False, None, str(exc))
 
+        # Assign bug visibility labels (non-critical)
+        try:
+
+            # IssueLabelBootstrapService.ensure_labels_exist()
+
+            if issue.is_public:
+                label_slug = IssueLabelSlug.BUG_PUBLIC
+            else:
+                label_slug = IssueLabelSlug.BUG_INTERNAL
+
+            from genericissuetracker.models import Label
+
+            label = Label.objects.get(slug=label_slug)
+
+            if label:
+                issue.labels.add(label)
+
+        except Exception:
+            # label assignment should never break issue creation
+            pass
+
         return IssueCreateResult(True, issue)
+    
+    def _parse_checkbox(value):
+        return value in (True, "on", "true", "True", "1")
 
     # ---------------------------------------------------------
     # Add Comment

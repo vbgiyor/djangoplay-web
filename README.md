@@ -308,6 +308,12 @@ IssueTracker UI must **not** be mounted under the main domain.
 
 ## Integration Architecture
 
+Starting in **v1.1.0**, DjangoPlay introduces a convergence layer between the internal Helpdesk system and the IssueTracker domain.
+
+Bug reports and support requests generated from DjangoPlay now synchronize with the IssueTracker system through a dedicated adapter layer. This allows the platform to gradually unify issue management while preserving existing workflows, APIs, and historical data.
+
+The Helpdesk module now acts as a compatibility layer that delegates issue creation to the IssueTracker integration services.
+
 ```
 GenericIssueTracker (Library)
         │
@@ -316,10 +322,17 @@ DjangoPlay Integration Layer
         │
         ├── Identity Resolver
         ├── Transition Policy
-        ├── DRF Permission Class
         ├── Visibility Governance
-        ├── Audit Mapping
+        ├── Issue Mutation Service
+        ├── Issue Timeline Service
+        ├── Label Bootstrap
         ├── Secure Attachment Streaming
+        │
+        ▼
+Helpdesk Compatibility Layer
+        │
+        ├── BugReport Adapter
+        └── SupportTicket Adapter
         │
         ▼
 DjangoPlay UI (issues.<domain>)
@@ -392,6 +405,7 @@ Append-only. Failure-safe. No foreign keys.
 * Status transition form
 * IST timestamp formatting with naturaltime tooltip
 * PRG pattern enforced
+* Unified issue activity timeline (status history, comments, attachments)
 
 ---
 
@@ -409,7 +423,17 @@ The third-party library remains untouched, guaranteeing safe upgrades.
 
 ## Version
 
-Current Version: **1.0.4**
+Current Version: **1.1.0**
+
+---
+
+Key additions in v1.1.0:
+
+• Helpdesk → IssueTracker convergence
+• BugReport and SupportTicket now synchronize with Issues
+• Canonical bug visibility labels (🐞 INTERNAL / 🐞 PUBLIC)
+• Unified issue activity timeline
+• Migration command for historical helpdesk data
 
 ---
 
@@ -475,3 +499,7 @@ DjangoPlay - Chandrashekhar Bhosale
 * Contributors extending domains
 
 ---
+## Release Documentation
+
+Detailed architecture and migration notes for major releases are documented in:
+[docs/releases/djangoplay/](docs/releases/djangoplay/)

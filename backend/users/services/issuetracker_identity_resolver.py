@@ -32,5 +32,5 @@ class DjangoPlayIssueTrackerIdentityResolver(DefaultIdentityResolver):
             "email": snapshot["email"],
             "is_authenticated": True,
             "is_superuser": user.is_superuser,
-            "role_code": getattr(user, "role_code", None),
+            "role_code": getattr(getattr(user, "role", None), "code", None),
         }

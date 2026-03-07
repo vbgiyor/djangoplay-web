@@ -6,6 +6,41 @@ This project follows Semantic Versioning.
 
 ---
 
+## [1.1.0] - 2026-03-06
+
+**Tag:** `v1.1.0-helpdesk-issuetracker-convergence`
+
+### 🚀 Helpdesk → IssueTracker Convergence
+
+### Added
+
+* Helpdesk → Issue adapter layer
+* automatic bug and support synchronization with IssueTracker
+* management command `migrate_helpdesk_to_issues`
+* unified issue activity timeline in Issue Detail view
+* `IssueTimelineService` for event aggregation
+* timeline partial template system
+* comment attachment rendering inside timeline
+* bug visibility labels (`🐞 INTERNAL`, `🐞 PUBLIC`)
+* automatic label bootstrap service
+* role-based issue visibility governance service
+* DjangoPlay identity resolver for IssueTracker integration
+* issue source annotation (`bug_report` vs `issue`)
+
+### Changed
+
+* Helpdesk services now delegate issue creation to `IssueMutationService`
+* bug and support flows internally create Issues
+* issue UI now renders a unified activity timeline
+
+### Security
+
+* internal attachment storage paths are no longer exposed
+* attachment downloads remain protected via secure endpoints
+* visibility rules enforced through centralized service
+
+---
+
 ## [1.0.4] - 2026-03-03
 
 **Tag:** `v1.0.4-issuetracker-ui-4`

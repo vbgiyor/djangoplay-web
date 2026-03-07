@@ -64,3 +64,10 @@ class IssueVisibilityService:
             return queryset
 
         return queryset.filter(issue__is_public=True)
+
+
+    def can_access_internal(self) -> bool:
+        """
+        Public helper used by services that need RBAC checks.
+        """
+        return self._is_privileged()

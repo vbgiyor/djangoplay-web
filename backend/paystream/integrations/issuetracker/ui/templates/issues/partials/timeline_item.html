@@ -1,0 +1,45 @@
+<div class="mb-4 border-bottom pb-3">
+
+    <strong>{{ event.actor_email|default:"System" }}</strong>
+
+    <span class="text-muted small">
+        • {% include "issues/partials/timestamp.html" with value=event.timestamp %}
+    </span>
+
+    {% if event.type == "status_changed" %}
+        <div class="mt-2">
+            changed status
+            <strong>{{ event.payload.old_status }}</strong>
+            →
+            <strong>{{ event.payload.new_status }}</strong>
+        </div>
+    {% endif %}
+
+    {% if event.type == "comment_added" %}
+        <div class="mt-2">
+            {{ event.payload.body|linebreaks }}
+        </div>
+
+        {% if event.payload.attachments %}
+            <ul class="mt-2">
+                {% for file in event.payload.attachments %}
+                    <li>
+                        <a href="{% url 'issuetracker-attachment-download' number=file.attachment_number %}">
+                            {{ file.file_name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endif %}
+
+    {% if event.type == "attachment_added" %}
+        <div class="mt-2">
+            uploaded file
+            <a href="#">
+                {{ event.payload.file_name }}
+            </a>
+        </div>
+    {% endif %}
+
+</div>

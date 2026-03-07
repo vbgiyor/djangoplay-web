@@ -8,7 +8,9 @@ from django.db.models import Q
 from django.utils import timezone
 from mailer.flows.bug import send_bug_report_email_task
 from mailer.throttling.flow_throttle import allow_flow
+from paystream.integrations.issuetracker.ui.services.issue_mutation_service import IssueMutationService
 
+from helpdesk.adapters.issue_adapter import IssueAdapter
 from helpdesk.models import BugReport, FileUpload
 
 logger = logging.getLogger(__name__)
@@ -88,7 +90,7 @@ class BugService:
         request_id = getattr(request, "request_id", None)
 
         # -----------------------------------------------------
-        # 1) Create SupportTicket (always created first)
+        # 1) Create Bug
         # -----------------------------------------------------
         try:
             bug = BugReport(
@@ -135,6 +137,17 @@ class BugService:
                 extra={"email": email, "request_id": request_id},
             )
             return BugReportResult(status="error", error=str(exc))
+
+        # -----------------------------------------------------
+        # Sync Bug → IssueTracker
+        # -----------------------------------------------------
+        try:
+            BugService.sync_bug_to_issue(bug, request)
+        except Exception:
+            logger.exception(
+                "BugService: Issue sync failed",
+                extra={"bug_number": bug.bug_number},
+            )
 
         # -----------------------------------------------------
         # 2) Unified throttling
@@ -236,3 +249,40 @@ class BugService:
                 is_system_event=True,
             )
             return BugReportResult(status="error", bug=bug, error=str(exc))
+
+
+    @staticmethod
+    def sync_bug_to_issue(bug, request):
+        """
+        Creates Issue corresponding to BugReport.
+        """
+        if getattr(bug, "migrated_issue_id", None):
+            return None
+
+        reporter_user_id = None
+
+        if request.user.is_authenticated:
+            reporter_user_id = request.user.id
+
+        payload = IssueAdapter.build_bug_issue_payload(
+            bug,
+            reporter_user_id=reporter_user_id,
+        )
+
+        # enforce as internal issue created from host app
+        payload["is_public"] = False
+
+        result = IssueMutationService.create_issue(
+            request=request,
+            data=payload,
+        )
+
+        if not result.success:
+            raise Exception(result.error)
+
+        issue = result.issue
+
+        bug.migrated_issue_id = issue.id
+        bug.save(update_fields=["migrated_issue_id"])
+
+        return issue

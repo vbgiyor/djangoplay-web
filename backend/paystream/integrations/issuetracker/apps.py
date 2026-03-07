@@ -11,4 +11,17 @@ class IssueTrackerIntegrationConfig(AppConfig):
     verbose_name = "Issue Tracker Integration"
 
     def ready(self):
+
         from . import signals  # noqa
+
+        # Bootstrap labels once at startup
+        try:
+            from paystream.integrations.issuetracker.services.label_bootstrap import (
+                IssueLabelBootstrapService,
+            )
+
+            IssueLabelBootstrapService.ensure_labels_exist()
+
+        except Exception:
+            # Avoid breaking app startup if DB isn't ready
+            pass

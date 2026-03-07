@@ -12,6 +12,9 @@ from paystream.integrations.issuetracker.services.visibility import (
 from paystream.integrations.issuetracker.ui.services.issue_mutation_service import (
     IssueMutationService,
 )
+from paystream.integrations.issuetracker.ui.services.issue_timeline_service import (
+    IssueTimelineService,
+)
 
 
 class IssueDetailView(View):
@@ -32,7 +35,19 @@ class IssueDetailView(View):
     # ---------------------------------------------------------
     def get(self, request, issue_number):
 
-        issue = self._get_visible_issue(request, issue_number)
+        from paystream.integrations.issuetracker.ui.services.issue_query_service import IssueQueryService
+
+        issue = IssueQueryService.get_issue_for_detail(
+            request=request,
+            issue_number=issue_number,
+        )
+
+        if not issue.is_public and not request.user.is_authenticated:
+            messages.warning(
+                request,
+                "Viewing or creating Internal issues require authentication. Please sign in."
+            )
+            return redirect("issues:list")
 
         context = self._build_context(request, issue)
         return render(request, self.template_name, context)
@@ -117,6 +132,7 @@ class IssueDetailView(View):
         resolver = get_identity_resolver()
         identity = resolver.resolve(request) or {}
         visibility = IssueVisibilityService(identity=identity)
+        timeline = IssueTimelineService.build(issue)
 
         comment_queryset = visibility.filter_comment_queryset(
             issue.comments.all()
@@ -130,6 +146,7 @@ class IssueDetailView(View):
             "issue": issue,
             "comments": comment_queryset,
             "attachments": attachment_queryset,
+            "timeline": timeline,
             "allow_anonymous": get_setting("ALLOW_ANONYMOUS_REPORTING"),
             "status_choices": IssueStatus.choices,
             "identity": identity,

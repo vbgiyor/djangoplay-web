@@ -41,6 +41,11 @@ class BugReport(TimeStampedModel, AuditFieldsModel):
         help_text="True if email has been sent",
     )
     attachments = GenericRelation(FileUpload)
+    migrated_issue_id = models.UUIDField(
+        null=True,
+        blank=True,
+        db_index=True,
+    )
 
     history = HistoricalRecords()
 
