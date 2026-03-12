@@ -4,7 +4,13 @@ from .base import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = [
+    "djangoplay.org",
+    "www.djangoplay.org",
+    "*.djangoplay.org",
+    "localhost",
+    "127.0.0.1",
+]
 
 # Render hostname fallback
 if not SITE_HOST:
