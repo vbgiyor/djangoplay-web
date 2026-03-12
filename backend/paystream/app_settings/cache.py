@@ -1,9 +1,9 @@
-from .common import decrypt_value, env, key_bytes
+from .common import get_decrypted_value, env
 
 # Decrypt and cast REDIS_PORT and REDIS_DB
-REDIS_PORT = int(decrypt_value(env('REDIS_PORT', default='6379'), key_bytes))
-REDIS_DB = int(decrypt_value(env('REDIS_DB', default='1'), key_bytes))
-REDIS_HOST = decrypt_value(env('REDIS_HOST', default='127.0.0.1'), key_bytes)
+REDIS_PORT = int(get_decrypted_value("REDIS_PORT", default="6379"))
+REDIS_DB   = int(get_decrypted_value("REDIS_DB", default="1"))
+REDIS_HOST = get_decrypted_value("REDIS_HOST", default="127.0.0.1")
 
 CACHES = {
     'default': {

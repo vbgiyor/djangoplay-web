@@ -3,7 +3,7 @@ import logging
 import os
 from pathlib import Path
 
-from .common import BASE_DIR, decrypt_value, env, key_bytes
+from .common import BASE_DIR, get_decrypted_value, env, key_bytes
 
 logger = logging.getLogger(__name__)
 
@@ -22,13 +22,13 @@ else:
 # -------------------------
 # SMTP SETTINGS (encrypted)
 # -------------------------
-EMAIL_HOST = decrypt_value(env("EMAIL_HOST", default="smtp.gmail.com"), key_bytes)
-EMAIL_PORT = int(decrypt_value(env("EMAIL_PORT", default="587"), key_bytes))
+EMAIL_HOST = get_decrypted_value(env("EMAIL_HOST", default="smtp.gmail.com"), key_bytes)
+EMAIL_PORT = int(get_decrypted_value(env("EMAIL_PORT", default="587"), key_bytes))
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = decrypt_value(env("EMAIL_HOST_USER"), key_bytes)
-EMAIL_HOST_PASSWORD = decrypt_value(env("EMAIL_HOST_PASSWORD"), key_bytes)
+EMAIL_HOST_USER = get_decrypted_value(env("EMAIL_HOST_USER"), key_bytes)
+EMAIL_HOST_PASSWORD = get_decrypted_value(env("EMAIL_HOST_PASSWORD"), key_bytes)
 
-DEFAULT_FROM_EMAIL = decrypt_value(env("DEFAULT_FROM_EMAIL"), key_bytes)
+DEFAULT_FROM_EMAIL = get_decrypted_value(env("DEFAULT_FROM_EMAIL"), key_bytes)
 
 # -------------------------
 # BUG REPORT EMAIL SETTINGS
