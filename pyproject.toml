@@ -104,6 +104,9 @@ dev = [
     "pyOpenSSL==25.3.0",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["backend"]
+
 # ======================================================================
 # Build System
 # Even though this is not distributed via PyPI,
