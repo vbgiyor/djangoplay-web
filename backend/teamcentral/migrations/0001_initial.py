@@ -574,11 +574,7 @@ class Migration(migrations.Migration):
         migrations.RunSQL(
             sql="ALTER TABLE teamcentral_team DROP CONSTRAINT IF EXISTS unique_team_name_per_dept;",
             reverse_sql=migrations.RunSQL.noop,
-        ),
-        migrations.AddConstraint(
-            model_name='team',
-            constraint=models.UniqueConstraint(fields=('name', 'department'), name='unique_team_name_per_dept'),
-        ),
+        ),        
         migrations.AddIndex(
             model_name='role',
             index=models.Index(fields=['code'], name='role_code_idx'),
