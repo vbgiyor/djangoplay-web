@@ -568,7 +568,6 @@ class Migration(migrations.Migration):
             options={
                 'verbose_name': 'Team',
                 'verbose_name_plural': 'Teams',
-                'indexes': [models.Index(fields=['department', 'name'], name='team_dept_name_idx'), models.Index(fields=['leader'], name='team_leader_idx')],
             },
         ),        
     ]
