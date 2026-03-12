@@ -36,7 +36,13 @@ class Invoice(GenericGSTFields, TimeStampedModel, AuditFieldsModel):
     """Model representing an invoice for billing and tax operations."""
 
     def get_default_status_id():
-        status, created = Status.objects.get_or_create(code='DRAFT', defaults={'name': 'Draft', 'is_active': True})
+        from django.db import connection
+        if 'invoices_status' not in connection.introspection.table_names():
+            return None
+        status, created = Status.objects.get_or_create(
+            code='DRAFT',
+            defaults={'name': 'Draft', 'is_active': True}
+        )
         return status.id
 
     id = models.AutoField(primary_key=True)
