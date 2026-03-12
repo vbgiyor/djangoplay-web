@@ -64,7 +64,6 @@ INSTALLED_APPS = [
     "simple_history",
 
     # Styling / inline CSS / compressor
-    "django_inlinecss",
     "compressor",
 
     # Issue Tracker Integration

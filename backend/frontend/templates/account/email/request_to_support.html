@@ -1,4 +1,4 @@
-{% load i18n static inlinecss %}
+{% load i18n static %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:'en' }}">
 <head>
@@ -11,7 +11,7 @@
             {% trans "New Support Ticket" %}
         {% endif %}
     </title>
-    {% inlinecss "design/css/emails/usermails.css" %}
+    <link rel="stylesheet" href="{% static 'design/css/emails/usermails.css' %}">    
 </head>
 
 <body>
@@ -176,6 +176,5 @@
     </table>
 </td></tr>
 </table>
-{% endinlinecss %}
 </body>
 </html>

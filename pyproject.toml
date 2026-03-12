@@ -54,7 +54,6 @@ dependencies = [
     "django-select2==8.4.1",
     "django-autocomplete-light==3.12.1",
     "django-compressor==4.6.0",
-    "django-inlinecss==0.3.0",
     "django-mptt==0.17.0",
     "django-allauth==65.1.0",
     "django-simple-history==3.11.0",
