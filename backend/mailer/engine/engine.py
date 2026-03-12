@@ -210,10 +210,21 @@ class EmailEngine:
             raise
 
         # Build the message
+        NOREPLY_PREFIXES = {
+            T.PASSWORD_RESET_EMAIL,
+            # add future transactional prefixes here e.g. T.EMAIL_VERIFICATION
+        }
+
+        from_email = (
+            settings.DEFAULT_FROM_EMAIL
+            if normalized_prefix in NOREPLY_PREFIXES
+            else settings.SUPPORT_EMAIL
+        )
+
         msg = EmailMultiAlternatives(
             subject=subject,
             body=text_body,
-            from_email=getattr(settings, "DEFAULT_FROM_EMAIL", settings.EMAIL_HOST_USER),
+            from_email=from_email,
             to=[email],
         )
         msg.attach_alternative(html_body, "text/html")

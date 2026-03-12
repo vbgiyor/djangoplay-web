@@ -57,7 +57,7 @@ def send_support_ticket_email_task(self: Any, ticket_id: int) -> None:
     try:
         send_email_via_adapter(
             template_prefix=T.REQUEST_TO_SUPPORT_EMAIL,
-            to_email=settings.DEFAULT_FROM_EMAIL,
+            to_email=settings.SUPPORT_EMAIL,
             context=context,
         )
 

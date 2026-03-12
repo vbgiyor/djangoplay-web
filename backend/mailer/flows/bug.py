@@ -56,7 +56,7 @@ def send_bug_report_email_task(self: Any, bug_id: int) -> None:
         # Admin notification
         send_email_via_adapter(
             template_prefix=T.REQUEST_TO_SUPPORT_EMAIL,
-            to_email=settings.DEFAULT_FROM_EMAIL,
+            to_email=settings.SUPPORT_EMAIL,
             context=context,
         )
 

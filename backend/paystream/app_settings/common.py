@@ -56,7 +56,7 @@ def load_all_decrypted_values():
                 logger.warning(f"Failed to decrypt env var {key}")
 
 # Decrypt and expose support constants at settings import time
-SUPPORT_EMAIL = get_decrypted_value("SUPPORT_EMAIL", "")
+SUPPORT_EMAIL = get_decrypted_value("SUPPORT_EMAIL")
 SUPPORT_PHONE = get_decrypted_value("SUPPORT_PHONE", "")
 SUPPORT_LOCATION = get_decrypted_value("SUPPORT_LOCATION", "")
 GITHUB_URL = get_decrypted_value("GITHUB_URL", "")
@@ -64,5 +64,5 @@ LINKEDIN_URL = get_decrypted_value("LINKEDIN_URL", "")
 
 SITE_ID = 1
 SITE_NAME = get_decrypted_value("SITE_NAME", "")
-DEFAULT_FROM_EMAIL = get_decrypted_value("DEFAULT_FROM_EMAIL", default="codefleet0@gmail.com")
+DEFAULT_FROM_EMAIL = get_decrypted_value("DEFAULT_FROM_EMAIL")
 

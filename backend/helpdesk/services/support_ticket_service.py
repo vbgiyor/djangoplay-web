@@ -177,9 +177,9 @@ class SupportService:
     @staticmethod
     def sync_ticket_to_issue(ticket, request):
         """
-        This sync allows to show corresponding SupportTicket on issues subdomain.
+        The sync allows to show corresponding SupportTicket on issues subdomain.
         But currently with v1.1.0, not included in UI changes.
-        Will be integrated at the time when support tickets will be publicly displayed.      
+        Will be integrated at the time when support tickets will be publicly displayed.
         """
         if getattr(ticket, "migrated_issue_id", None):
             return None
@@ -195,7 +195,7 @@ class SupportService:
         )
 
         issue = IssueMutationService.create_issue(
-            user=request.user,
+            request=request,
             **payload,
         )
 

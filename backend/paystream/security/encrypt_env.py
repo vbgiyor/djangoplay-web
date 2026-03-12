@@ -95,12 +95,11 @@ def encrypt_and_update_env():
             new_lines.append(line.rstrip())
 
     # Append clean encrypted block
-    new_lines.append("")
     # new_lines.append("# === ENCRYPTED CREDENTIALS (DO NOT EDIT MANUALLY) ===")
     for key in keys_to_encrypt:
         encrypted = encrypted_values[key]
 
-        # CRITICAL FIX: Force the encrypted value to be a plain string with NO quotes at all
+        # orce the encrypted value to be a plain string with NO quotes at all
         if isinstance(encrypted, str):
             encrypted = encrypted.strip()
             # Remove any surrounding single or double quotes that might have sneaked in

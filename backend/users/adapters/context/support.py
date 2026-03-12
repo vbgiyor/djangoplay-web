@@ -22,7 +22,7 @@ class SupportContextProvider:
         Returns a context dict with support info.
         """
         return {
-            "support_email": getattr(settings, "SUPPORT_EMAIL", ""),
+            "support_email": settings.SUPPORT_EMAIL,
             "support_phone": getattr(settings, "SUPPORT_PHONE", ""),
             "support_location": getattr(settings, "SUPPORT_LOCATION", ""),
             "linkedin_url": getattr(settings, "LINKEDIN_URL", ""),

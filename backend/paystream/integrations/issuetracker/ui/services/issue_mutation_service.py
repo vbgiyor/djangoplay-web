@@ -2,6 +2,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 
 from django.db import transaction
+from django.http import QueryDict
 from genericissuetracker.models import IssueAttachment, IssueComment, Label
 from genericissuetracker.serializers.v1.write.attachment import (
     IssueAttachmentUploadSerializer,
@@ -22,8 +23,6 @@ from paystream.integrations.issuetracker.services.visibility import (
     IssueVisibilityService,
 )
 from rest_framework.exceptions import PermissionDenied, ValidationError
-from django.http import QueryDict
-
 
 # ------------------------------------------------------------------
 # Result Objects
@@ -85,7 +84,7 @@ class IssueMutationService:
         allow_anonymous = get_setting("ALLOW_ANONYMOUS_REPORTING")
 
         is_authenticated = identity.get("is_authenticated", False)
-        
+
         # Initialize payload first
         if data is None:
             data = request.POST.copy()
@@ -108,7 +107,7 @@ class IssueMutationService:
                     False,
                     None,
                     "Internal issues require authentication.",
-                )            
+                )
             visibility = IssueVisibilityService(identity)
 
             if not visibility.can_access_internal():
@@ -177,7 +176,7 @@ class IssueMutationService:
             pass
 
         return IssueCreateResult(True, issue)
-    
+
     def _parse_checkbox(value):
         return value in (True, "on", "true", "True", "1")
 

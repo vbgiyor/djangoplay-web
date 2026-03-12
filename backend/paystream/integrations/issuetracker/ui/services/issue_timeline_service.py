@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any
 
 
 @dataclass
@@ -9,7 +9,7 @@ class TimelineEvent:
     type: str
     timestamp: datetime
     actor_email: str | None
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
 
 
 class IssueTimelineService:
