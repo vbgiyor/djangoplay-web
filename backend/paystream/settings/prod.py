@@ -30,3 +30,8 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+CSRF_TRUSTED_ORIGINS = [
+    "https://djangoplay.org",
+    "https://www.djangoplay.org",
+    "https://issues.djangoplay.org",
+]
