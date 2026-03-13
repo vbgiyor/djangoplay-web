@@ -52,8 +52,13 @@ class EmployeeLifecycleService:
             role=data["role"],
             employment_status=data["employment_status"],
             employee_type=data["employee_type"],
+            hire_date=data.get("hire_date"),
+            sso_id=data.get("sso_id"),
+            sso_provider=data.get("sso_provider", "EMAIL"),
             is_active=data.get("is_active", True),
             is_verified=data.get("is_verified", False),
+            is_superuser=data.get("is_superuser", False),
+            is_staff=data.get("is_staff", False),
             created_by=created_by,
             updated_by=created_by,
         )
