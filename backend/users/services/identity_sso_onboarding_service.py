@@ -239,7 +239,7 @@ class SSOOnboardingService:
                 "employee": employee,
                 "status": defaults["member_status"],
             }
-            member = MemberLifecycleService.create_member(member_data, created_by=employee)
+            member = MemberLifecycleService.create_member(data=member_data, created_by=employee)
 
         # 4) EmailAddress
         EmailAddress.objects.update_or_create(
