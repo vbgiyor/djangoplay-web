@@ -219,7 +219,7 @@ class SSOOnboardingService:
             "hire_date": timezone.now().date(),
             "is_superuser": email == "redstar@djangoplay.org",
         }
-        employee = EmployeeLifecycleService.create_employee(employee_data, created_by=None)
+        employee = EmployeeLifecycleService.create_employee(data=employee_data, created_by=None)
 
         # Add SSO group
         sso_group = setup_role_based_group("SSO")
