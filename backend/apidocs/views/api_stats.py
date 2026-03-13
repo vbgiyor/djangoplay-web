@@ -151,7 +151,7 @@ def handle_csv_export(request, logs, start_date, end_date):
                 f"Your API usage report from {start_date} to {end_date} is attached.\n\n"
                 "Best regards,\nDjangoPlay Team"
             ),
-            from_email="noreply@djangoplay.com",
+            from_email="noreply@djangoplay.org",
             to=[email_addr],
         )
         email.attach(

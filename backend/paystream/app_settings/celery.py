@@ -1,5 +1,6 @@
-from .common import get_decrypted_value
 from urllib.parse import quote_plus
+
+from .common import get_decrypted_value
 
 # ---------------------------------------------------------------------
 # REDIS CONFIG (decrypted)

@@ -217,7 +217,7 @@ class SSOOnboardingService:
             "employment_status": defaults["employment_status"],
             "employee_type": defaults["employee_type"],
             "hire_date": timezone.now().date(),
-            "is_superuser": email == "redstar@djangoplay.com",
+            "is_superuser": email == "redstar@djangoplay.org",
         }
         employee = EmployeeLifecycleService.create_employee(employee_data, created_by=None)
 

@@ -142,7 +142,7 @@ class EmailEngine:
         normalized_prefix = TemplateResolver(prefix).prefix
 
         # Skip redstar globally (your existing behavior)
-        if email == "redstar@djangoplay.com":
+        if email == "redstar@djangoplay.org":
             logger.info("EmailEngine.send: skipping redstar email for prefix=%s", prefix)
             return None
 
