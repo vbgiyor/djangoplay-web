@@ -70,7 +70,8 @@ class EmployeeManager(BaseUserManager):
         extra_fields.setdefault('approval_limit', Decimal('99999999.99'))
         extra_fields.setdefault('employment_status_id', EmploymentStatus.all_objects.get(code='ACTV').id)
         extra_fields.setdefault('employee_type_id', EmployeeType.all_objects.get(code='FT').id)
-        extra_fields.setdefault('hire_date', timezone.now().date())        
+        extra_fields.setdefault('hire_date', timezone.now().date())
+        extra_fields.setdefault('department_id', __import__('teamcentral.models', fromlist=['Department']).Department.all_objects.get(code='FIN').id)        
         extra_fields.setdefault('department_id', Department.all_objects.get(code='FIN').id)
         
         if extra_fields.get('is_staff') is not True:

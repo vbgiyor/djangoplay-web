@@ -12,6 +12,8 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
+PARENT_HOST = "djangoplay.org"
+
 # Render hostname fallback
 if not SITE_HOST:
     SITE_HOST = os.getenv("RENDER_EXTERNAL_HOSTNAME", "")
