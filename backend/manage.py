@@ -22,6 +22,10 @@ warnings.filterwarnings(
 
 # Ensure project root is on sys.path
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+os.environ.setdefault(
+    "PYTHONWARNINGS",
+    "ignore::UserWarning:multiprocessing.resource_tracker"
+)
 
 
 def main():
