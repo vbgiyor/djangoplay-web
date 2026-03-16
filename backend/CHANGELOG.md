@@ -6,6 +6,42 @@ This project follows Semantic Versioning.
 
 ---
 
+## [1.1.0] - 2026-03-16
+
+**Tag:** `v1.1.0-cli-aligned-environment-security`
+
+### Security & Developer Experience — CLI-Aligned Environment Management
+
+This patch streamlines environment encryption and decryption to align with
+the `djangoplay-cli` library. Credentials are now read exclusively from
+`~/.dplay/config.yaml` and `~/.dplay/.secrets`, removing the previous
+dependency on `creds.txt` and `django-environ`.
+
+
+### Changed
+
+* `paystream/security/encrypt_env.py` — reads credentials from `~/.dplay/config.yaml`
+  and `~/.dplay/.secrets` instead of `creds.txt`; `django-environ` dependency removed;
+  YAML flattened via internal mapping table; `.secrets` values take precedence over
+  config for overlapping keys
+* `paystream/security/decrypt_env.py` — reads `ENCRYPTION_KEY` exclusively from
+  `~/.dplay/.secrets`; `creds.txt` and `django-environ` dependency removed
+* both scripts use direct `sys.path` injection for `crypto` import to support
+  standalone subprocess execution by `djangoplay-cli`
+* `DJANGO_SETTINGS_MODULE` sourced from `~/.dplay/config.yaml` under `django.settings_module`
+
+### Removed
+
+* dependency on `creds.txt` for encryption and decryption workflows
+* dependency on `django-environ` in security scripts
+
+### Security
+
+* `~/.dplay/.secrets` is read programmatically only — never sourced by the shell
+* SSL certificates stored locally under `~/.dplay/ssl/` — never committed to version control
+
+---
+
 ## [1.1.0] - 2026-03-06
 
 **Tag:** `v1.1.0-helpdesk-issuetracker-convergence`
