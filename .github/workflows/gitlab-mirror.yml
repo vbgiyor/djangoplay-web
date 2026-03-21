@@ -1,0 +1,29 @@
+name: Mirror GitLab to GitHub
+
+on:
+  repository_dispatch:
+    types: [gitlab-push]
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Mirror GitLab → GitHub
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          GITLAB_REPO: ${{ vars.GITLAB_REPO }}
+        run: |
+          git clone --mirror \
+            "https://oauth2:${GITLAB_TOKEN}@gitlab.com/${GITLAB_REPO}.git" \
+            repo.git
+
+          cd repo.git
+          git remote add github \
+            "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+
+          git push github --mirror --force
+          echo "✅ Mirrored ${GITLAB_REPO} → ${{ github.repository }}"
+
