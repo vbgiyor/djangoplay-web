@@ -1,0 +1,9 @@
+workflow:
+  rules:
+    - when: always
+
+stages:
+  - trigger
+
+include:
+  - local: '.gitlab/ci/github-mirror.yml'
