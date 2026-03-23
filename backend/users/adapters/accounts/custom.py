@@ -99,11 +99,11 @@ class CustomAccountAdapter(BaseAdapter, DefaultAccountAdapter):
         Delegate domain rules to SignupFlowService.
         Maintain redstar bypass as existing behavior.
         """
-        if email_address.email == "redstar@djangoplay.com":
+        if email_address.email == "redstar@djangoplay.org":
             email_address.verified = True
             email_address.primary = True
             email_address.save()
-            logger.info("Bypassed email confirmation for redstar@djangoplay.com")
+            logger.info("Bypassed email confirmation for redstar@djangoplay.org")
             return
 
         SignupFlowService.handle_email_confirmation(email_address)

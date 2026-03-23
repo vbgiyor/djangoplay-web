@@ -1,3 +1,5 @@
+from urllib.parse import quote_plus
+
 from .common import get_decrypted_value
 
 # ---------------------------------------------------------------------
@@ -8,11 +10,15 @@ REDIS_PORT = get_decrypted_value("REDIS_PORT", default="6379")
 REDIS_DB   = get_decrypted_value("REDIS_DB", default="0")
 REDIS_SSL  = get_decrypted_value("REDIS_SSL", default="False").lower() == "true"
 
-# Construct Redis URL
+
+REDIS_PASSWORD = get_decrypted_value("REDIS_PASSWORD", default=None)
+
+_auth = f":{quote_plus(REDIS_PASSWORD)}@" if REDIS_PASSWORD else ""
+
 if REDIS_SSL:
-    CELERY_BROKER_URL = f"rediss://:{''}@{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+    CELERY_BROKER_URL = f"rediss://{_auth}{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
 else:
-    CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+    CELERY_BROKER_URL = f"redis://{_auth}{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
 
 CELERY_RESULT_BACKEND = CELERY_BROKER_URL
 

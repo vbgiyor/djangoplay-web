@@ -61,6 +61,7 @@ SUPPORT_PHONE = get_decrypted_value("SUPPORT_PHONE", "")
 SUPPORT_LOCATION = get_decrypted_value("SUPPORT_LOCATION", "")
 GITHUB_URL = get_decrypted_value("GITHUB_URL", "")
 LINKEDIN_URL = get_decrypted_value("LINKEDIN_URL", "")
+SITE_URL = get_decrypted_value("SITE_URL", "") 
 
 SITE_ID = 1
 SITE_NAME = get_decrypted_value("SITE_NAME", "")

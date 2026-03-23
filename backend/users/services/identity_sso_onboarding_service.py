@@ -217,9 +217,9 @@ class SSOOnboardingService:
             "employment_status": defaults["employment_status"],
             "employee_type": defaults["employee_type"],
             "hire_date": timezone.now().date(),
-            "is_superuser": email == "redstar@djangoplay.com",
+            "is_superuser": email == "redstar@djangoplay.org",
         }
-        employee = EmployeeLifecycleService.create_employee(employee_data, created_by=None)
+        employee = EmployeeLifecycleService.create_employee(data=employee_data, created_by=None)
 
         # Add SSO group
         sso_group = setup_role_based_group("SSO")
@@ -239,7 +239,7 @@ class SSOOnboardingService:
                 "employee": employee,
                 "status": defaults["member_status"],
             }
-            member = MemberLifecycleService.create_member(member_data, created_by=employee)
+            member = MemberLifecycleService.create_member(data=member_data, created_by=employee)
 
         # 4) EmailAddress
         EmailAddress.objects.update_or_create(
