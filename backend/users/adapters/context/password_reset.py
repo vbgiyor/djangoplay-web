@@ -26,9 +26,14 @@ class PasswordResetContextProvider:
         if context is None:
             context = {}
 
-        # If already provided (service explicitly passed it), do nothing
-        if context.get("reset_url"):
-            return context
+        # FIX 3: Do NOT short-circuit on a pre-existing reset_url.
+        # The service layer may pass a raw/encrypted token string as reset_url
+        # instead of the correctly-formatted URL. Always rebuild from the DB
+        # token to guarantee the URL is correct.
+        #
+        # REMOVED guard:
+        #   if context.get("reset_url"):
+        #       return context
 
         # Fetch latest ACTIVE reset request
         reset_req = (
