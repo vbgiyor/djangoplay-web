@@ -1,44 +1,78 @@
-{% load i18n static %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <title>{% trans "Successful Verification" %}</title>
-  <link rel="stylesheet" href="{% static 'design/css/emails/usermails.css' %}">
 </head>
-<body>
-  <table width="600" class="container" cellpadding="0" cellspacing="0" style="border:1px solid #e0e0e0;">
-    <tr>
-      <td class="header" style="text-align:center; padding:12px 0; background:#fff;">
-        <img src="cid:djangoplay_logo_icon" alt="logo" height="48" style="vertical-align:middle; margin-right:8px;">
-        <img src="cid:djangoplay_logo_text" alt="DjangoPlay" height="22" style="vertical-align:middle;">
-      </td>
-    </tr>
-    <tr><td style="height:1px; background:#dcdcdc;"></td></tr>
-    <tr>
-      <td style="padding:28px; font-size:16px; line-height:1.5;">
-        <p><strong>{% trans "Hello" %} {{ member.get_full_name|default:member.first_name }},</strong></p>
+<body style="margin:0; padding:0; background:#f4f4f4;">
 
-        <p>{% trans "Your account has been successfully verified via your identity provider. You can now sign in and start using the platform." %}</p>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f4f4;">
+  <tr>
+    <td align="center" style="padding:24px 0;">
 
-        {% if login_url %}
-        <p style="text-align:center; margin:20px 0;">
-          <a href="{{ login_url }}" class="button" target="_blank" style="padding:12px 20px; border-radius:6px; text-decoration:none;">
-            {% trans "Visit Platform" %}
-          </a>
-        </p>
-        {% endif %}
+      <table width="600" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #e0e0e0; background:#ffffff;">
 
-        <p style="margin-top:18px; color:#6b7280;">{% trans "If you did not perform this action, please contact support immediately." %}</p>
+        <!-- Header -->
+        <tr>
+          <td style="text-align:center; padding:12px 0; background:#fff;">
+            <img src="cid:djangoplay_logo_icon" alt="logo" height="48" style="vertical-align:middle; margin-right:8px;">
+            <img src="cid:djangoplay_logo_text" alt="DjangoPlay" height="22" style="vertical-align:middle;">
+          </td>
+        </tr>
 
-        <p style="margin-top:20px;"><strong>{% trans "Thanks," %}<br>{% trans "The DjangoPlay Team" %}</strong></p>
-      </td>
-    </tr>
-    <tr>
-      <td style="text-align:center; padding:14px; background:#F1F7FF; font-size:13px; color:#666;">
-        &copy; {% now "Y" %} {{site_name}}<br>
-      </td>
-    </tr>
-  </table>
+        <!-- Divider -->
+        <tr><td style="height:1px; background:{{ divider_color }}; line-height:1px; font-size:1px;">&nbsp;</td></tr>
+
+        <!-- Content -->
+        <tr>
+          <td style="padding:28px; font-size:16px; line-height:1.5; color:{{ body_color }}; font-family:{{ body_font }};">
+
+            <p style="margin:0 0 16px 0;"><strong>{% trans "Hello" %} {{ member.get_full_name|default:member.first_name }},</strong></p>
+
+            <p style="margin:0 0 16px 0;">{% trans "Your account has been successfully verified via your identity provider. You can now sign in and start using the platform." %}</p>
+
+            {% if login_url %}
+            <table cellpadding="0" cellspacing="0" border="0" style="margin:20px 0;">
+              <tr>
+                <td>
+                  <a href="{{ login_url }}"
+                     target="_blank"
+                     style="display:inline-block;
+                            background-color:{{ btn_bg }};
+                            color:{{ btn_color }};
+                            font-family:{{ body_font }};
+                            font-size:15px;
+                            font-weight:600;
+                            text-decoration:none;
+                            padding:12px 28px;
+                            border-radius:6px;
+                            letter-spacing:0.3px;">
+                    {% trans "Visit Platform" %}
+                  </a>
+                </td>
+              </tr>
+            </table>
+            {% endif %}
+
+            <p style="margin:18px 0 0 0; color:{{ muted_color }};">{% trans "If you did not perform this action, please contact support immediately." %}</p>
+
+            <p style="margin:20px 0 0 0;"><strong>{% trans "Thanks," %}<br>{% trans "The DjangoPlay Team" %}</strong></p>
+
+          </td>
+        </tr>
+
+        <!-- Footer -->
+        <tr>
+          <td style="text-align:center; padding:14px; background:{{ footer_bg }}; border-top:1px solid {{ divider_color }}; font-size:13px; color:#666; font-family:{{ body_font }};">
+            &copy; {% now "Y" %} {{ site_name }}<br>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+
 </body>
 </html>

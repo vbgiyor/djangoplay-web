@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:'en' }}">
 <head>
@@ -11,179 +11,183 @@
             {% trans "Support Ticket Confirmation" %}
         {% endif %}
     </title>
-    <link rel="stylesheet" href="{% static 'design/css/emails/usermails.css' %}">
 </head>
-<body>    
-    <p style="font-size:12px; color:#6c757d; text-align:center; margin:0 0 8px 0; line-height:1.4;">
-        {% blocktrans with ticket_number=ticket.ticket_number %}
-            We've received your support request and created ticket <strong>{{ ticket_number }}</strong> for your DjangoPlay account.
-        {% endblocktrans %}
-    </p>
 
-    <!-- Full-width wrapper (same pattern as your existing templates) -->
-    <table width="600" cellpadding="0" cellspacing="0" class="container" style="border: 1px solid #c2c2c2;">
-        <tr>
-            <td align="center">
-                <!-- Inner container (card) -->
-                <table width="600" cellpadding="0" cellspacing="0" class="container">
-                    <!-- Header (shared logo) -->
-                    <tr>
-                        <td align="center" class="header" style="padding:20px 0; background:#ffffff;">
-                            <img src="cid:djangoplay_logo_icon"
-                                 alt="DjangoPlay Icon"
-                                 height="48"
-                                 style="vertical-align:middle; margin-right:8px;">
-                            <img src="cid:djangoplay_logo_text"
-                                 alt="DjangoPlay"
-                                 height="24"
-                                 style="vertical-align:middle;">
-                        </td>
-                    </tr>
+<body style="margin:0; padding:0; background:#f4f4f4;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f4f4;">
+<tr>
+    <td align="center" style="padding:16px 0 0 0;">
+        <table width="600" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td style="font-size:12px; color:{{ muted_color }}; text-align:center; padding:0 0 8px 0; line-height:1.4;">
+                    {% blocktrans with ticket_number=ticket.ticket_number %}
+                        We've received your support request and created ticket <strong>{{ ticket_number }}</strong> for your DjangoPlay account.
+                    {% endblocktrans %}
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+<tr>
+    <td align="center" style="padding:0 0 24px 0;">
 
-                    <!-- Divider -->
-                    <tr>
-                        <td style="height:1px; background:#dcdcdc; line-height:1px; font-size:1px;">&nbsp;</td>
-                    </tr>
+        <table width="600" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #c2c2c2; background:#ffffff;">
 
-                    <!-- Content -->
-                    <tr>
-                        <td>
-                            <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                                <tr>
-                                    <td class="content" style="padding:32px; font-size:16px; line-height:1.6;">
+            <!-- Header -->
+            <tr>
+                <td align="center" style="padding:20px 0; background:#ffffff;">
+                    <table align="center" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="padding-right:8px;"><img src="cid:djangoplay_logo_icon" height="48" style="display:block;"></td>
+                            <td><img src="cid:djangoplay_logo_text" height="30" style="display:block; margin-top:8px;"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
 
-                                        {% if ticket_kind == "bug" %}
-                                            {# ---------------- BUG CONFIRMATION  ---------------- #}
-                                            <p><strong>{% trans "Hi" %} {{ bug.reporter.first_name }},</strong></p>
+            <!-- Divider -->
+            <tr><td style="height:1px; background:{{ divider_color }}; line-height:1px; font-size:1px;">&nbsp;</td></tr>
 
-                                            <p>
-                                                {% trans "Thanks for letting us know about this issue. Your report has been received and logged in our system." %}
-                                            </p>                                        
+            <!-- Content -->
+            <tr>
+                <td style="padding:32px; font-size:16px; line-height:1.6; color:{{ body_color }}; font-family:{{ body_font }};">
 
-                                            <div class="highlight">
-                                                <p>
-                                                    <span class="primary">Ticket ID:</span>
-                                                    <span class="ticket-number">#{{ bug.bug_number }}</span>                                                    
-                                                </p>
-                                            </div>
+                    {% if ticket_kind == "bug" %}
+                        {# ---------------- BUG CONFIRMATION ---------------- #}
+                        <p style="margin:0 0 16px 0;"><strong>{% trans "Hi" %} {{ bug.reporter.first_name }},</strong></p>
 
-                                            <div class="subject">
-                                                <p>
-                                                    <span class="primary">Issue:</span>
-                                                    <span class="ticket-subject">{{ bug.summary }}</span>                                                    
-                                                </p>
-                                            </div>
+                        <p style="margin:0 0 16px 0;">
+                            {% trans "Thanks for letting us know about this issue. Your report has been received and logged in our system." %}
+                        </p>
 
-                                            <div class="highlight">
-                                                <span class="primary">Description:</span>
-                                                <span class="ticket-number">{{ bug.steps_to_reproduce }}</span>                                                
-                                            </div>
-                                            
-                                            {% if bug.external_issue_url %}                               
-                                                <div class="subject">
-                                                    
-                                                        <span class="primary">GitHub Issue Link:</span>
-                                                        <span class="ticket-number">{{ bug.external_issue_url }}</span>                                                                                   
-                                                </div>
-                                            {% endif %} 
-                                    
-                                            {% if has_attachments %}
-                                                <p><strong>{% trans "Attachments:" %}</strong></p>
-                                                <ul>
-                                                    {% for name in file_names %}
-                                                        <li>{{ name }}</li>
-                                                    {% endfor %}
-                                                </ul>
-                                            {% endif %}
-                                            
-                                            <p>
-                                                {% trans "Our team will review it soon. While we may not reply individually, every report helps us improve DjangoPlay for everyone." %}
-                                            </p>
+                        <div style="background:{{ code_bg }}; border:1px solid {{ code_border }}; border-radius:6px; padding:12px 16px; margin:0 0 12px 0;">
+                            <p style="margin:0;">
+                                <span style="color:{{ primary_color }}; font-weight:600;">Ticket ID:</span>
+                                <span style="font-weight:600;">#{{ bug.bug_number }}</span>
+                            </p>
+                        </div>
 
-                                            <p class="text-center">
-                                                <a href="{{ ISSUES_TRACKER_URL }}" class="button" target="_blank">
-                                                    {% trans "Visit Issue Tracker" %}
-                                                </a>
-                                            </p>
+                        <div style="background:{{ code_bg }}; border:1px solid {{ code_border }}; border-radius:6px; padding:12px 16px; margin:0 0 12px 0;">
+                            <p style="margin:0;">
+                                <span style="color:{{ primary_color }}; font-weight:600;">Issue:</span>
+                                {{ bug.summary }}
+                            </p>
+                        </div>
 
-                                            <p class="signature">
-                                                {% trans "Thanks for helping us build a better DjangoPlay." %}<br>
-                                                <strong>{% trans "— The DjangoPlay Team" %}</strong>
-                                            </p>
+                        <div style="background:{{ code_bg }}; border:1px solid {{ code_border }}; border-radius:6px; padding:12px 16px; margin:0 0 12px 0;">
+                            <p style="margin:0 0 4px 0;"><span style="color:{{ primary_color }}; font-weight:600;">Description:</span></p>
+                            <span>{{ bug.steps_to_reproduce }}</span>
+                        </div>
 
-                                        {% else %}
-                                            {# ---------------- SUPPORT CONFIRMATION  ---------------- #}
-                                            <p>
-                                                <strong>
-                                                    {% trans "Dear" %} {{ ticket.user.first_name }},                                                    
-                                                </strong>
-                                            </p>
+                        {% if bug.external_issue_url %}
+                        <div style="background:{{ code_bg }}; border:1px solid {{ code_border }}; border-radius:6px; padding:12px 16px; margin:0 0 12px 0;">
+                            <p style="margin:0;">
+                                <span style="color:{{ primary_color }}; font-weight:600;">GitHub Issue Link:</span>
+                                {{ bug.external_issue_url }}
+                            </p>
+                        </div>
+                        {% endif %}
 
-                                            <p>
-                                                {% blocktrans with site_name=site_name ticket_number=ticket.ticket_number %}
-                                                    Thank you for contacting {{ site_name }} support. Your request has been received and
-                                                    assigned ticket number <strong>{{ ticket_number }}</strong>.
-                                                {% endblocktrans %}
-                                            </p>
+                        {% if has_attachments %}
+                            <p style="margin:12px 0 4px 0;"><strong>{% trans "Attachments:" %}</strong></p>
+                            <ul style="margin:0 0 16px 0;">
+                                {% for name in file_names %}
+                                    <li>{{ name }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
 
-                                            <p>
-                                                {% trans "We will review your message and get back to you as soon as possible, usually within 24–48 hours." %}
-                                            </p>
+                        <p style="margin:16px 0;">
+                            {% trans "Our team will review it soon. While we may not reply individually, every report helps us improve DjangoPlay for everyone." %}
+                        </p>
 
-                                            <div class="ticket-details">
-                                                <p><strong>{% trans "Subject:" %}</strong> {{ ticket.subject }}</p>
+                        <table cellpadding="0" cellspacing="0" border="0" style="margin:0 0 20px 0;">
+                            <tr>
+                                <td>
+                                    <a href="{{ ISSUES_TRACKER_URL }}"
+                                       target="_blank"
+                                       style="display:inline-block;
+                                              background-color:{{ btn_bg }};
+                                              color:{{ btn_color }};
+                                              font-family:{{ body_font }};
+                                              font-size:15px;
+                                              font-weight:600;
+                                              text-decoration:none;
+                                              padding:12px 28px;
+                                              border-radius:6px;
+                                              letter-spacing:0.3px;">
+                                        {% trans "Visit Issue Tracker" %}
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
 
-                                                <div style="margin:16px 0 8px 0;">
-                                                    <strong>{% trans "Message:" %}</strong>
-                                                </div>
-                                                <div style="margin:8px 0; background:#ffffff; padding:16px; border-radius:4px; border:1px solid #e0e0e0; word-wrap:break-word; overflow-wrap:break-word;">
-                                                    {{ ticket.message|linebreaksbr }}
-                                                </div>
+                        <p style="margin:0 0 4px 0;">{% trans "Thanks for helping us build a better DjangoPlay." %}</p>
+                        <p style="margin:0;"><strong>{% trans "— The DjangoPlay Team" %}</strong></p>
 
-                                                {% if has_attachments %}
-                                                    <p><strong>{% trans "Attachments:" %}</strong></p>
-                                                    <ul>
-                                                        {% for name in file_names %}
-                                                            <li>{{ name }}</li>
-                                                        {% endfor %}
-                                                    </ul>
-                                                {% endif %}
-                                            </div>
+                    {% else %}
+                        {# ---------------- SUPPORT CONFIRMATION ---------------- #}
+                        <p style="margin:0 0 16px 0;">
+                            <strong>{% trans "Dear" %} {{ ticket.user.first_name }},</strong>
+                        </p>
 
-                                            <p>
-                                                {% trans "If you have any additional information, please reply to this email." %}
-                                            </p>                                             
-                                            <p>{% trans "Best regards," %}</p>
-                                            <p><strong>{% trans "DjangoPlay Support Team" %}</strong></p>
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
+                        <p style="margin:0 0 16px 0;">
+                            {% blocktrans with site_name=site_name ticket_number=ticket.ticket_number %}
+                                Thank you for contacting {{ site_name }} support. Your request has been received and
+                                assigned ticket number <strong>{{ ticket_number }}</strong>.
+                            {% endblocktrans %}
+                        </p>
 
-                    <!-- Footer (shared, same as existing) -->
-                    <tr>
-                        <td class="footer" style="width:100%; text-align:center; padding:18px 0;
-                                                background:#F1F7FF; border-top:1px solid #dcdcdc;
-                                                font-size:14px; color:#666;">
+                        <p style="margin:0 0 16px 0;">
+                            {% trans "We will review your message and get back to you as soon as possible, usually within 24–48 hours." %}
+                        </p>
 
-                            &copy; {% now "Y" %} {{site_name}}<br>
+                        <div style="background:{{ code_bg }}; border:1px solid {{ code_border }}; border-radius:6px; padding:16px; margin:0 0 16px 0;">
+                            <p style="margin:0 0 8px 0;"><strong>{% trans "Subject:" %}</strong> {{ ticket.subject }}</p>
+                            <div style="margin:0 0 4px 0;"><strong>{% trans "Message:" %}</strong></div>
+                            <div style="background:#ffffff; padding:16px; border-radius:4px; border:1px solid #e0e0e0; word-wrap:break-word;">
+                                {{ ticket.message|linebreaksbr }}
+                            </div>
 
-                            <span style="font-size:10px; color: #909090ff;">
-                                {% trans "If you wish to stop receiving these emails, you can" %}
-                            </span>
-                            <a href="{{ unsubscribe_url }}" style="color:#6a4c93; text-decoration:underline; font-size:12px;">
-                                {% trans "unsubscribe" %}
-                            </a>
-                            <span style="font-size:10px; color:#777;">
-                                {% trans "at any time." %}
-                            </span>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-    </table>
+                            {% if has_attachments %}
+                                <p style="margin:12px 0 4px 0;"><strong>{% trans "Attachments:" %}</strong></p>
+                                <ul style="margin:0;">
+                                    {% for name in file_names %}
+                                        <li>{{ name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </div>
+
+                        <p style="margin:0 0 8px 0;">{% trans "If you have any additional information, please reply to this email." %}</p>
+                        <p style="margin:0 0 4px 0;">{% trans "Best regards," %}</p>
+                        <p style="margin:0;"><strong>{% trans "DjangoPlay Support Team" %}</strong></p>
+                    {% endif %}
+
+                </td>
+            </tr>
+
+            <!-- Footer -->
+            <tr>
+                <td style="width:100%; text-align:center; padding:18px 0;
+                           background:{{ footer_bg }}; border-top:1px solid {{ divider_color }};
+                           font-size:14px; color:#666; font-family:{{ body_font }};">
+                    &copy; {% now "Y" %} {{ site_name }}<br>
+                    <span style="font-size:10px; color:{{ muted_color }};">
+                        {% trans "If you wish to stop receiving these emails, you can" %}
+                    </span>
+                    <a href="{{ unsubscribe_url }}" style="color:{{ primary_color }}; text-decoration:underline; font-size:12px;">
+                        {% trans "unsubscribe" %}
+                    </a>
+                    <span style="font-size:10px; color:#777;">
+                        {% trans "at any time." %}
+                    </span>
+                </td>
+            </tr>
+
+        </table>
+    </td>
+</tr>
+</table>
 </body>
 </html>

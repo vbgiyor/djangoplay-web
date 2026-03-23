@@ -1,4 +1,4 @@
-{% load i18n static %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE|default:'en' }}">
 <head>
@@ -11,35 +11,35 @@
             {% trans "New Support Ticket" %}
         {% endif %}
     </title>
-    <link rel="stylesheet" href="{% static 'design/css/emails/usermails.css' %}">    
 </head>
 
-<body>
-<table width="600" cellpadding="0" cellspacing="0" class="container" style="border:1px solid #c2c2c2;">
-<tr><td align="center">
+<body style="margin:0; padding:0; background:#f4f4f4;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f4f4;">
+<tr>
+    <td align="center" style="padding:24px 0;">
 
-    <!-- LOGO (identical for bug + support) -->
-    <table width="600" cellpadding="0" cellspacing="0" class="container">
-        <tr>
-            <td align="center" style="padding-bottom:24px; line-height:0;">
-                <table align="center" cellpadding="0" cellspacing="0">
-                    <tr>
-                        <td style="padding-right:8px;"><img src="cid:djangoplay_logo_icon" height="48" style="display:block;"></td>
-                        <td><img src="cid:djangoplay_logo_text" height="30" style="display:block; margin-top:8px;"></td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
+        <table width="600" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #c2c2c2; background:#ffffff;">
 
-        <tr><td bgcolor="#dcdcdc" height="1" style="line-height:1px; font-size:0;">&nbsp;</td></tr>
+            <!-- Header -->
+            <tr>
+                <td align="center" style="padding:20px 0 24px; background:#ffffff; line-height:0;">
+                    <table align="center" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td style="padding-right:8px;"><img src="cid:djangoplay_logo_icon" height="48" style="display:block;"></td>
+                            <td><img src="cid:djangoplay_logo_text" height="30" style="display:block; margin-top:8px;"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
 
-        <!-- CONTENT -->
-        <tr>
-            <td>
-                <table width="100%" cellpadding="0" cellspacing="0">
-                <tr><td class="content">
+            <!-- Divider -->
+            <tr><td style="height:1px; background:{{ divider_color }}; line-height:1px; font-size:1px;">&nbsp;</td></tr>
 
-                    <p>
+            <!-- Content -->
+            <tr>
+                <td style="padding:32px; font-size:16px; line-height:1.6; color:{{ body_color }}; font-family:{{ body_font }};">
+
+                    <p style="margin:0 0 16px 0;">
                         {% if ticket_kind == "bug" %}
                             {% trans "A new bug report has been submitted via the website." %}
                         {% else %}
@@ -48,7 +48,7 @@
                     </p>
 
                     <!-- USER DETAILS -->
-                    <p>
+                    <p style="margin:0 0 16px 0;">
                         <strong>{% trans "Submitted by:" %}</strong><br>
                         {% if ticket_kind == "bug" %}
                             {{ bug.reporter.first_name }}
@@ -56,77 +56,71 @@
                             (<span style="unicode-bidi:bidi-override; direction:rtl;">
                                 {{ bug.reporter.email|slice:"::-1" }}
                             </span>)
-                        </span>
+                            </span>
                         {% else %}
                             {{ ticket.user.first_name }}
                             <span style="pointer-events:none; color:inherit;">
                             (<span style="unicode-bidi:bidi-override; direction:rtl;">
                                 {{ ticket.email|slice:"::-1" }}
                             </span>)
-                        </span>
+                            </span>
                         {% endif %}
-                        
-                        {% comment %} <span style="pointer-events:none; color:inherit;">
-                            (<span style="unicode-bidi:bidi-override; direction:rtl;">
-                                {{ ticket.email|slice:"::-1" }}
-                            </span>)
-                        </span> {% endcomment %}
 
                         {% if ticket_kind == "bug" %}
                             {% if bug.reporter.id %}
-                                <br><span style="font-size:12px; color:#6c757d;">
+                                <br><span style="font-size:12px; color:{{ muted_color }};">
                                     {% trans "Employee ID:" %} {{ bug.reporter.id }}
                                 </span>
                             {% endif %}
                         {% else %}
                             {% if ticket.user.id %}
-                                <br><span style="font-size:12px; color:#6c757d;">
+                                <br><span style="font-size:12px; color:{{ muted_color }};">
                                     {% trans "Employee ID:" %} {{ ticket.user.id }}
                                 </span>
                             {% endif %}
                         {% endif %}
-
-                        
                     </p>
 
-                    <!-- TICKET META BLOCKS -->
-                    <div class="highlight">
-                        <p>
-                            <span class="primary">Ticket ID:</span>
+                    <!-- TICKET ID -->
+                    <div style="background:{{ code_bg }}; border:1px solid {{ code_border }}; border-radius:6px; padding:12px 16px; margin:0 0 12px 0;">
+                        <p style="margin:0;">
+                            <span style="color:{{ primary_color }}; font-weight:600;">Ticket ID:</span>
                             {% if ticket_kind == "bug" %}
-                                <span class="ticket-number">#{{ bug.bug_number }}</span>
+                                <span style="font-weight:600;">#{{ bug.bug_number }}</span>
                             {% else %}
-                            <span class="ticket-number">#{{ ticket.ticket_number }}</span>
+                                <span style="font-weight:600;">#{{ ticket.ticket_number }}</span>
                             {% endif %}
                         </p>
                     </div>
 
-                    <div class="subject">
-                        <p>
-                            <span class="primary">Issue:</span>
+                    <!-- ISSUE -->
+                    <div style="background:{{ code_bg }}; border:1px solid {{ code_border }}; border-radius:6px; padding:12px 16px; margin:0 0 12px 0;">
+                        <p style="margin:0;">
+                            <span style="color:{{ primary_color }}; font-weight:600;">Issue:</span>
                             {% if ticket_kind == "bug" %}
-                                <span class="ticket-subject">{{ bug.summary }}</span>
+                                {{ bug.summary }}
                             {% else %}
-                                <span class="ticket-subject">{{ ticket.subject }}</span>
-                            {% endif %}                    
+                                {{ ticket.subject }}
+                            {% endif %}
                         </p>
                     </div>
 
-                    <!-- MESSAGE BLOCK -->
-                    <div class="ticket-message-box">
-                        <p class="ticket-message-label"><span class="primary">{% trans "Message:" %}</span></p>
-                        {% if ticket_kind == "bug" %}
-                            <span class="url-text">{{ bug.steps_to_reproduce|truncatechars:350 }}</span>
-                        {% else %}
-                            <span class="url-text">{{ ticket.message|truncatechars:350 }}</span>
-                        {% endif %}
-                        
+                    <!-- MESSAGE -->
+                    <div style="background:{{ code_bg }}; border:1px solid {{ code_border }}; border-radius:6px; padding:12px 16px; margin:0 0 16px 0;">
+                        <p style="margin:0 0 6px 0;"><span style="color:{{ primary_color }}; font-weight:600;">{% trans "Message:" %}</span></p>
+                        <span style="font-size:14px; word-break:break-word;">
+                            {% if ticket_kind == "bug" %}
+                                {{ bug.steps_to_reproduce|truncatechars:350 }}
+                            {% else %}
+                                {{ ticket.message|truncatechars:350 }}
+                            {% endif %}
+                        </span>
                     </div>
 
                     <!-- ATTACHMENTS -->
                     {% if has_attachments %}
-                    <p class="attachments-label"><strong>{% trans "Attachments:" %}</strong></p>
-                    <ul class="attachments-list">
+                    <p style="margin:0 0 4px 0;"><strong>{% trans "Attachments:" %}</strong></p>
+                    <ul style="margin:0 0 16px 0;">
                         {% for name in file_names %}
                             <li>{{ name }}</li>
                         {% endfor %}
@@ -134,47 +128,67 @@
                     {% endif %}
 
                     <!-- ADMIN LINK -->
-                    <p class="url-instruction">
+                    <p style="margin:0 0 16px 0;">
                         {% trans "Please log in to the DjangoPlay admin to review and respond." %}
                     </p>
 
                     {% if admin_url %}
-                    <p class="text-center button-wrapper">
-                        <a href="{{ admin_url }}" class="button" target="_blank" rel="noopener">
-                            {% trans "View Ticket in Admin" %}
-                        </a>
-                    </p>
+                    <table cellpadding="0" cellspacing="0" border="0" style="margin:0 0 16px 0;">
+                        <tr>
+                            <td>
+                                <a href="{{ admin_url }}"
+                                   target="_blank"
+                                   rel="noopener"
+                                   style="display:inline-block;
+                                          background-color:{{ btn_bg }};
+                                          color:{{ btn_color }};
+                                          font-family:{{ body_font }};
+                                          font-size:15px;
+                                          font-weight:600;
+                                          text-decoration:none;
+                                          padding:12px 28px;
+                                          border-radius:6px;
+                                          letter-spacing:0.3px;">
+                                    {% trans "View Ticket in Admin" %}
+                                </a>
+                            </td>
+                        </tr>
+                    </table>
 
-                    <p class="url-instruction">
-                        {% trans "If the button doesn't work, copy and paste this link:" %}
-                    </p>
+                    <p style="margin:0 0 8px 0;">{% trans "If the button doesn't work, copy and paste this link:" %}</p>
 
-                    <div class="url-box">
-                        <span class="url-text">{{ admin_url }}</span>
-                    </div>
+                    <p style="margin:0 0 16px 0; padding:10px 14px;
+                              background:{{ code_bg }}; border:1px solid {{ code_border }}; border-radius:6px;
+                              word-break:break-all; font-size:12px; color:{{ body_color }};
+                              font-family:{{ mono_font }};">
+                        <a href="{{ admin_url }}" style="color:{{ body_color }}; text-decoration:none;">{{ admin_url }}</a>
+                    </p>
                     {% endif %}
 
-                    <p class="closing-line">{% trans "Thank you," %}</p>
-                    <p class="closing-signature">{% trans "DjangoPlay Team" %}</p>
+                    <p style="margin:0 0 4px 0;">{% trans "Thank you," %}</p>
+                    <p style="margin:0;"><strong>{% trans "DjangoPlay Team" %}</strong></p>
 
-                </td></tr>
-                </table>
-            </td>
-        </tr>
-
-        <!-- FOOTER -->
-        <table width="100%" cellpadding="0" cellspacing="0" style="margin:0;">
-            <tr><td class="email-divider" bgcolor="#e2e8f0" height="1"></td></tr>
-            <tr>
-                <td class="confidential-note" style="padding:16px 40px 8px;">
-                {% trans "This email and any attachments are confidential and may contain legally privileged information. If you are not the intended recipient, please delete it immediately and notify the sender. Any unauthorized use, disclosure, copying, or distribution is prohibited." %}
                 </td>
             </tr>
-            <tr><td class="footer">&copy; {% now "Y" %} {{site_name}}<br></td></tr>
-        </table>
 
-    </table>
-</td></tr>
+            <!-- Confidential note + Footer -->
+            <tr>
+                <td style="height:1px; background:#e2e8f0; line-height:1px; font-size:1px;">&nbsp;</td>
+            </tr>
+            <tr>
+                <td style="padding:16px 32px 8px; font-size:12px; color:{{ muted_color }}; font-family:{{ body_font }}; line-height:1.5;">
+                    {% trans "This email and any attachments are confidential and may contain legally privileged information. If you are not the intended recipient, please delete it immediately and notify the sender. Any unauthorized use, disclosure, copying, or distribution is prohibited." %}
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align:center; padding:12px 0 16px; font-size:14px; color:#666; font-family:{{ body_font }}; background:{{ footer_bg }};">
+                    &copy; {% now "Y" %} {{ site_name }}<br>
+                </td>
+            </tr>
+
+        </table>
+    </td>
+</tr>
 </table>
 </body>
 </html>
