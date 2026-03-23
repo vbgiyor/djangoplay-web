@@ -1,28 +1,34 @@
-{% load i18n static %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% trans "DjangoPlay | Account Signup" %}</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'design/css/emails/usermails.css' %}">
 </head>
 
-<p style="font-size:12px; color:#6c757d; text-align:center; margin:0 0 8px 0; line-height:1.4;">
-    {% trans "You’re receiving this message because a new DjangoPlay account was registered using your email address." %}
-</p>
+<body style="margin:0; padding:0; background:#f4f4f4;">
 
-<body>
-<table width="600" cellpadding="0" cellspacing="0" class="container" style="border: 1px solid #c2c2c2;">
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f4f4f4;">
     <tr>
-        <td align="center">
+        <td align="center" style="padding:16px 0 0 0;">
+            <table width="600" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                    <td style="font-size:12px; color:{{ muted_color }}; text-align:center; padding:0 0 8px 0; line-height:1.4;">
+                        {% trans "You're receiving this message because a new DjangoPlay account was registered using your email address." %}
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td align="center" style="padding:0 0 24px 0;">
 
-            <table width="600" cellpadding="0" cellspacing="0" class="container">
+            <table width="600" cellpadding="0" cellspacing="0" border="0" style="border:1px solid #c2c2c2; background:#ffffff;">
 
                 <!-- Header -->
                 <tr>
-                    <td class="header" style="text-align:center; padding:10px 0 8px; background:#ffffff;">
+                    <td style="text-align:center; padding:10px 0 8px; background:#ffffff;">
                         <img src="cid:djangoplay_logo_icon"
                              alt="DjangoPlay Icon"
                              height="48"
@@ -36,131 +42,122 @@
 
                 <!-- Divider -->
                 <tr>
-                    <td style="height:1px; background:#dcdcdc;"></td>
+                    <td style="height:1px; background:{{ divider_color }}; line-height:1px; font-size:1px;">&nbsp;</td>
                 </tr>
 
+                <!-- Content -->
                 <tr>
-                    <td style="height:1px; background:#dcdcdc; line-height:1px; font-size:1px;">&nbsp;</td>
-                </tr>
+                    <td style="padding:32px; font-size:16px; line-height:1.6; color:{{ body_color }}; font-family:{{ body_font }};">
 
-                <tr>
-                    <td>
-                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                        <p style="margin:0 0 16px 0;">
+                            <strong>
+                                {% trans "Hello" %} {{ user.get_full_name|default:user.username }},
+                            </strong>
+                        </p>
+
+                        <p style="margin:0 0 16px 0;">
+                            {% trans "Welcome to DjangoPlay — we're excited to have you on board." %}
+                        </p>
+
+                        <p style="margin:0 0 16px 0;">
+                            {% trans "Your account has been successfully created and is now active." %}
+                        </p>
+
+                        <p style="margin:0 0 16px 0;">
+                            {% trans "Username:" %}
+                            <span style="display:inline-block; word-break:break-all; padding:10px 16px;
+                                         background:{{ code_bg }}; border:1px solid {{ code_border }};
+                                         border-radius:4px; font-size:12px; font-family:{{ mono_font }};">
+                                {% blocktrans with uname=member.username|default:member.email %}
+                                    {{ uname }}
+                                {% endblocktrans %}
+                            </span>
+                        </p>
+
+                        <p style="margin:0 0 16px 0;">
+                            {% trans "If you did not create this account, please disregard this email. No further action is required." %}
+                        </p>
+
+                        <p style="margin:0 0 24px 0;">
+                            {% trans "We look forward to supporting your work with DjangoPlay." %}
+                        </p>
+
+                        <!-- Signature -->
+                        <p style="margin:0 0 12px 0;">
+                            <strong>{% trans "— The DjangoPlay Team" %}</strong>
+                        </p>
+
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
                             <tr>
-                                <td class="content" style="padding:32px; font-size:16px; line-height:1.6;">
+                                <td valign="middle" style="padding-right:20px;">
+                                    <img src="cid:email_profile_photo"
+                                        alt="Chandrashekhar Bhosale"
+                                        width="150" height="150"
+                                        style="display:block; border-radius:50%; border:3px solid #e2e8f0; box-sizing:border-box;">
+                                </td>
 
-                                    <p>
-                                        <strong>
-                                            {% trans "Hello" %} {{ user.get_full_name|default:user.username }},
-                                        </strong>
-                                    </p>
+                                <td width="1" valign="middle">
+                                    <table border="0" cellpadding="0" cellspacing="0" height="140" role="presentation">
+                                        <tr>
+                                            <td bgcolor="#e2e8f0" width="1" style="line-height:0; font-size:0;">&nbsp;</td>
+                                        </tr>
+                                    </table>
+                                </td>
 
-                                    <p>
-                                        {% trans "Welcome to DjangoPlay — we’re excited to have you on board." %}
-                                    </p>
-
-                                    <p>
-                                        {% trans "Your account has been successfully created and is now active." %}
-                                    </p>                                      
-                                    <p style="margin-top:8px;">
-                                        Username:
-                                        <span style="display:inline-block; word-break:break-all; padding:10px 16px; background-color:#f4f4fcff; border-radius:4px; font-size:12px;">                                             
-                                            {% blocktrans with uname=member.username|default:member.email %}
-                                                {{ uname }}
-                                            {% endblocktrans %}
-                                        </span>
-                                    </p>
-                                    <p>
-                                        {% trans "If you did not create this account, please disregard this email. No further action is required." %}
-                                    </p>
-                                    <p>
-                                        {% trans "We look forward to supporting your work with DjangoPlay." %}
-                                    </p>
-
-                                    <p class="signature" style="margin-top:24px;">
-                                        <strong>{% trans "— The DjangoPlay Team" %}</strong><br>
-
-                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" role="presentation">
-                                            <tr>
-                                                <td valign="middle" style="padding-right:20px;">
-                                                    <img src="cid:email_profile_photo"
-                                                        alt="Chandrashekhar Bhosale"
-                                                        width="150" height="150"
-                                                        style="display:block; border-radius:50%; border:3px solid #e2e8f0; box-sizing:border-box;">
-                                                </td>
-
-                                                <td width="1" valign="middle">
-                                                    <table border="0" cellpadding="0" cellspacing="0" height="140" role="presentation">
-                                                        <tr>
-                                                            <td bgcolor="#e2e8f0" width="1" style="line-height:0; font-size:0;">
-                                                                &nbsp;
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </td>
-
-                                                <td valign="middle" style="padding-left:20px; font-family:Arial, sans-serif;">
-
-                                                    <div style="font-size:19px; font-weight:bold; color:#1e293b; line-height:1.35; margin-bottom:2px;">
-                                                        Chandrashekhar Bhosale
-                                                    </div>
-
-                                                    <div style="font-size:14px; color:#64748b; margin-bottom:11px;">
-                                                        Software Engineer | Python, Django
-                                                    </div>
-
-                                                    <table border="0" cellpadding="0" cellspacing="0" style="font-size:13.5px; color:#374151;">
-                                                        <tr>
-                                                            <td style="padding:4px 0;">
-                                                                <a href="mailto:{{ support_email }}" style="color:#3b82f6; text-decoration:none;">
-                                                                    <img src="cid:icon_email" width="15" height="15" style="vertical-align:middle; margin-right:9px;">
-                                                                    {{ support_email }}
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td style="padding:4px 0;">
-                                                                <img src="cid:icon_phone" width="15" height="15" style="vertical-align:middle; margin-right:9px;">
-                                                                {{ support_phone }}
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td style="padding:4px 0;">
-                                                                <img src="cid:icon_location" width="15" height="15" style="vertical-align:middle; margin-right:9px;">
-                                                                {{ support_location }}
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td style="padding-top:14px;">
-                                                                <a href="{{ linkedin_url }}" style="margin-right:13px; text-decoration:none;">
-                                                                    <img src="cid:icon_linkedin" width="16" height="16" alt="LinkedIn" style="vertical-align:middle;">
-                                                                </a>
-                                                                <a href="{{ github_url }}" style="text-decoration:none;">
-                                                                    <img src="cid:icon_github" width="17" height="17" alt="GitHub" style="vertical-align:middle;">
-                                                                </a>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </p>
-
+                                <td valign="middle" style="padding-left:20px; font-family:{{ body_font }};">
+                                    <div style="font-size:19px; font-weight:bold; color:#1e293b; line-height:1.35; margin-bottom:2px;">
+                                        Chandrashekhar Bhosale
+                                    </div>
+                                    <div style="font-size:14px; color:#64748b; margin-bottom:11px;">
+                                        Software Engineer | Python, Django
+                                    </div>
+                                    <table border="0" cellpadding="0" cellspacing="0" style="font-size:13.5px; color:#374151;">
+                                        <tr>
+                                            <td style="padding:4px 0;">
+                                                <a href="mailto:{{ support_email }}" style="color:{{ primary_color }}; text-decoration:none;">
+                                                    <img src="cid:icon_email" width="15" height="15" style="vertical-align:middle; margin-right:9px;">
+                                                    {{ support_email }}
+                                                </a>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:4px 0;">
+                                                <img src="cid:icon_phone" width="15" height="15" style="vertical-align:middle; margin-right:9px;">
+                                                {{ support_phone }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:4px 0;">
+                                                <img src="cid:icon_location" width="15" height="15" style="vertical-align:middle; margin-right:9px;">
+                                                {{ support_location }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding-top:14px;">
+                                                <a href="{{ linkedin_url }}" style="margin-right:13px; text-decoration:none;">
+                                                    <img src="cid:icon_linkedin" width="16" height="16" alt="LinkedIn" style="vertical-align:middle;">
+                                                </a>
+                                                <a href="{{ github_url }}" style="text-decoration:none;">
+                                                    <img src="cid:icon_github" width="17" height="17" alt="GitHub" style="vertical-align:middle;">
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    </table>
                                 </td>
                             </tr>
                         </table>
+
                     </td>
                 </tr>
 
+                <!-- Footer -->
                 <tr>
-                    <td class="footer" style="width:100%; text-align:center; padding:18px 0;
-                                            background:#F1F7FF; border-top:1px solid #dcdcdc;
-                                            font-size:14px; color:#666;">
-
-                        &copy; {% now "Y" %} {{site_name}}<br>
-
-                        {% trans "Questions? Reach out to" %} <a href="mailto:{{ support_email }}">{{ support_email }}</a>.
+                    <td style="width:100%; text-align:center; padding:18px 0;
+                                background:{{ footer_bg }}; border-top:1px solid {{ divider_color }};
+                                font-size:14px; color:#666; font-family:{{ body_font }};">
+                        &copy; {% now "Y" %} {{ site_name }}<br>
+                        {% trans "Questions? Reach out to" %}
+                        <a href="mailto:{{ support_email }}" style="color:{{ primary_color }};">{{ support_email }}</a>.
                     </td>
                 </tr>
 
@@ -168,5 +165,6 @@
         </td>
     </tr>
 </table>
+
 </body>
 </html>

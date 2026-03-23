@@ -20,26 +20,39 @@ def get_admin_url(instance, request=None):
     print(">>>", f"{base_url}{path}")
     return f"{base_url}{path}"
 
-
-def get_site_base_url(request=None):
+import logging
+from django.conf import settings
+ 
+logger = logging.getLogger(__name__)
+ 
+ 
+def get_site_base_url(request=None) -> str:
     """
-    Critical fix: Correct priority + use localhost, not 127.0.0.1
+    Returns the canonical site base URL (no trailing slash).
+ 
+    Priority:
+      1. HttpRequest  → always authoritative for request-scoped code
+      2. settings.SITE_URL → decrypted at Django startup via common.py
+      3. settings fallback → build from SITE_PROTOCOL + SITE_HOST + SITE_PORT
     """
-    # 1. HttpRequest → always correct[](https://localhost:9999)
+    # 1. HttpRequest → always correct
     if request is not None:
         return request.build_absolute_uri("/").rstrip("/")
-
-    # 2. Celery / tasks → respect explicit SITE_URL (set by devssl)
-    site_url = os.getenv("SITE_URL")
+ 
+    # 2. settings.SITE_URL — already decrypted by get_decrypted_value()
+    #    Never read os.getenv("SITE_URL") directly: it holds raw ciphertext.
+    site_url = getattr(settings, "SITE_URL", "").strip()
     if site_url:
         return site_url.rstrip("/")
-
-    # 3. Fallback → build from settings
+ 
+    # 3. Fallback — build from parts (also decrypted via settings)
     protocol = getattr(settings, "SITE_PROTOCOL", "https")
-    host = getattr(settings, "SITE_HOST", "localhost")
-    port = getattr(settings, "SITE_PORT", "9999")
-
+    host     = getattr(settings, "SITE_HOST", "localhost")
+    port     = str(getattr(settings, "SITE_PORT", "9999"))
+ 
     base = f"{protocol}://{host}"
     if port and port not in ("80", "443", ""):
         base += f":{port}"
+ 
+    logger.debug("get_site_base_url: using settings fallback → %s", base)
     return base
