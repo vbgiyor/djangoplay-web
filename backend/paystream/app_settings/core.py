@@ -1,15 +1,24 @@
-from django.core.exceptions import ImproperlyConfigured
-
-from .common import get_decrypted_value
+import os
+from pathlib import Path
 
 # ---------------------------------------------------------------------
-# SECRET KEY (MANDATORY)
+# SECRET KEY (MANDATORY, try env first, then ~/.dplay/.secrets)
 # ---------------------------------------------------------------------
-SECRET_KEY = get_decrypted_value("DJANGO_SECRET_KEY")
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', '').strip()
+
 if not SECRET_KEY:
-    raise ImproperlyConfigured("DJANGO_SECRET_KEY must be set in encrypted .env")
+    secrets_path = Path.home() / ".dplay" / ".secrets"
+    if secrets_path.exists():
+        with open(secrets_path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("DJANGO_SECRET_KEY="):
+                    SECRET_KEY = line.split("=", 1)[1].strip()
+                    break
 
-# SECRET_KEY = "temporary-insecure-key-for-debugging-only"
+if not SECRET_KEY:
+    raise ValueError("DJANGO_SECRET_KEY not found in environment or ~/.dplay/.secrets")
+
 # ---------------------------------------------------------------------
 # CORE APPLICATION CONFIG
 # ---------------------------------------------------------------------
