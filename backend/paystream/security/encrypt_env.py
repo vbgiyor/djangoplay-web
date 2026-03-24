@@ -46,8 +46,12 @@ KEYS_TO_ENCRYPT = [
 ]
 
 # Keys allowed to be blank — encrypted as empty string, not treated as error.
-OPTIONAL_KEYS = {"REDIS_PASSWORD"}
-
+OPTIONAL_KEYS = {
+    "REDIS_PASSWORD",
+    "SITE_PORT",
+    "GOOGLE_CLIENT_ID_HTTP",
+    "GOOGLE_CLIENT_SECRET_HTTP",
+}
 # Mapping: dot-notation YAML path → env var name.
 _YAML_TO_ENV = {
     "site.name":        "SITE_NAME",
@@ -176,12 +180,12 @@ def encrypt_and_update_env():
     env_path = script_dir.parent.parent / ".env"
 
     if not env_path.exists():
-        raise FileNotFoundError(f".env not found at {env_path}")
-
-    # Backup
-    backup_path = env_path.with_suffix(".env.bak")
-    shutil.copy(env_path, backup_path)
-    print(f" • Backed up .env → {backup_path.name}")
+        env_path.touch()
+        print(f" • Created new .env at {env_path}")
+    else:
+        backup_path = env_path.with_suffix(".env.bak")
+        shutil.copy(env_path, backup_path)
+        print(f" • Backed up .env → {backup_path.name}")
 
     # Rebuild .env: strip old encrypted keys, append fresh block
     encrypted_keys_set = set(KEYS_TO_ENCRYPT)
