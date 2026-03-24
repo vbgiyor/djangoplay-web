@@ -21,15 +21,15 @@ def get_admin_url(instance, request=None):
     return f"{base_url}{path}"
 
 import logging
+
 from django.conf import settings
- 
+
 logger = logging.getLogger(__name__)
- 
- 
+
+
 def get_site_base_url(request=None) -> str:
     """
     Returns the canonical site base URL (no trailing slash).
- 
     Priority:
       1. HttpRequest  → always authoritative for request-scoped code
       2. settings.SITE_URL → decrypted at Django startup via common.py
@@ -38,21 +38,21 @@ def get_site_base_url(request=None) -> str:
     # 1. HttpRequest → always correct
     if request is not None:
         return request.build_absolute_uri("/").rstrip("/")
- 
+
     # 2. settings.SITE_URL — already decrypted by get_decrypted_value()
     #    Never read os.getenv("SITE_URL") directly: it holds raw ciphertext.
     site_url = getattr(settings, "SITE_URL", "").strip()
     if site_url:
         return site_url.rstrip("/")
- 
+
     # 3. Fallback — build from parts (also decrypted via settings)
     protocol = getattr(settings, "SITE_PROTOCOL", "https")
     host     = getattr(settings, "SITE_HOST", "localhost")
     port     = str(getattr(settings, "SITE_PORT", "9999"))
- 
+
     base = f"{protocol}://{host}"
     if port and port not in ("80", "443", ""):
         base += f":{port}"
- 
+
     logger.debug("get_site_base_url: using settings fallback → %s", base)
     return base
