@@ -3,11 +3,10 @@ import logging
 from django.apps import apps as django_apps
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.template.response import TemplateResponse
 from django.urls import reverse
-from frontend.views.errors import custom_404
+from frontend.views.errors import custom_403, custom_404
 from paystream.custom_site.admin_site import admin_site
 
 logger = logging.getLogger(__name__)
@@ -66,7 +65,6 @@ def single_app_view(request, app_label):
         logger.error(f"App {app_label} not found")
         display_name = settings.APP_DISPLAY_NAMES.get(app_label, app_label.title())
         return custom_404(request, app_label=app_label, app_display_name=display_name, exception=Http404("App not found"))
-        # return custom_404(request, app_label=app_label,  exception=Http404("App not found"))  # use global handler
     models = []
 
     # Dynamically check if the app is enabled
@@ -74,8 +72,6 @@ def single_app_view(request, app_label):
         logger.error(f"Access to {app_label} is not allowed as it is under maintainance.")
         display_name = settings.APP_DISPLAY_NAMES.get(app_label, app_label.title())
         return custom_404(request, app_label=app_label, app_display_name=display_name, exception=Http404("App not found"))
-        # return custom_404(request, app_label=app_label,  exception=Http404("App not found"))
-
 
     logger.debug(f"App label: {app_label}")
     logger.debug(f"App status (from APPS_READY): {settings.APPS_READY.get(app_label)}")
@@ -181,8 +177,7 @@ def single_app_view(request, app_label):
 
     if not models:
         logger.warning(f"No accessible models for app {app_label} for user {user}")
-        # return TemplateResponse(request, 'account/site_pages/403.html', {'app_label': app_label}, status=403)
-        raise PermissionDenied
+        return custom_403(request)
 
 
     logger.debug(f"Models for app {app_label} for user {user}: {models}")
@@ -214,8 +209,7 @@ def custom_changelist_view(request, app_label, model_name):
     if not (request.user.is_superuser or
             request.user.is_staff or
             request.user.has_perm(f"{app_label}.view_{model._meta.model_name}")):
-        # return TemplateResponse(request, 'account/site_pages/403.html', status=403)
-        raise PermissionDenied
+        return custom_403(request)
 
 
     # Get parent URL and app name
