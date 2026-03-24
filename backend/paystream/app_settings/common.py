@@ -19,10 +19,21 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'), override=True)
 # Project Root
 PROJECT_ROOT = BASE_DIR.parent
 
-# Get encryption key
-ENCRYPTION_KEY = env('ENCRYPTION_KEY')
+# Get encryption key — try env first, then ~/.dplay/.secrets
+ENCRYPTION_KEY = os.environ.get('ENCRYPTION_KEY', '').strip()
+
 if not ENCRYPTION_KEY:
-    raise ValueError("ENCRYPTION_KEY must be set in .env")
+    secrets_path = Path.home() / ".dplay" / ".secrets"
+    if secrets_path.exists():
+        with open(secrets_path, encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("ENCRYPTION_KEY="):
+                    ENCRYPTION_KEY = line.split("=", 1)[1].strip()
+                    break
+
+if not ENCRYPTION_KEY:
+    raise ValueError("ENCRYPTION_KEY not found in environment or ~/.dplay/.secrets")
 
 key_bytes = ENCRYPTION_KEY.encode('utf-8')
 
@@ -61,7 +72,7 @@ SUPPORT_PHONE = get_decrypted_value("SUPPORT_PHONE", "")
 SUPPORT_LOCATION = get_decrypted_value("SUPPORT_LOCATION", "")
 GITHUB_URL = get_decrypted_value("GITHUB_URL", "")
 LINKEDIN_URL = get_decrypted_value("LINKEDIN_URL", "")
-SITE_URL = get_decrypted_value("SITE_URL", "") 
+SITE_URL = get_decrypted_value("SITE_URL", "")
 
 SITE_ID = 1
 SITE_NAME = get_decrypted_value("SITE_NAME", "")
