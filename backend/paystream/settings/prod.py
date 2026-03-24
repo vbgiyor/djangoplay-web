@@ -7,7 +7,6 @@ DEBUG = False
 ALLOWED_HOSTS = [
     "djangoplay.org",
     "www.djangoplay.org",
-    "issues.djangoplay.org",
     "*.djangoplay.org",
     "localhost",
     "127.0.0.1",
