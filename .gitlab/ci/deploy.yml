@@ -7,9 +7,11 @@ deploy_production:
       when: manual
 
   before_script:
-    - apk add --no-cache openssh-client
+    - apk add --no-cache openssh-client coreutils
     - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - echo "$SSH_PRIVATE_KEY" | base64 -d > private_key
+    - chmod 600 private_key
+    - ssh-add private_key
     - mkdir -p ~/.ssh && chmod 700 ~/.ssh
     - ssh-keyscan -H "$SERVER_HOST" >> ~/.ssh/known_hosts
 
