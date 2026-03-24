@@ -2,12 +2,11 @@ import argparse
 import logging
 import os
 import re
-from typing import List, Set, Tuple
 
 # Set up logging for better feedback
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
-def get_models_from_app(project_path: str, app_name: str) -> Set[str]:
+def get_models_from_app(project_path: str, app_name: str) -> set[str]:
     """
     Dynamically finds all model class names in a given Django app.
 
@@ -29,7 +28,7 @@ def get_models_from_app(project_path: str, app_name: str) -> Set[str]:
     for file_name in os.listdir(models_path):
         if file_name.endswith('.py') and file_name != '__init__.py':
             file_path = os.path.join(models_path, file_name)
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(file_path, encoding='utf-8') as f:
                 content = f.read()
 
             # A simple regex to find model class definitions
@@ -43,7 +42,7 @@ def get_models_from_app(project_path: str, app_name: str) -> Set[str]:
                     models.add(match)
     return models
 
-def fix_file(file_path: str, app_name: str, models_to_fix: Set[str]) -> bool:
+def fix_file(file_path: str, app_name: str, models_to_fix: set[str]) -> bool:
     """
     Analyzes a single Python file and fixes circular imports by moving them
     into the specific functions where the models are used.
@@ -58,7 +57,7 @@ def fix_file(file_path: str, app_name: str, models_to_fix: Set[str]) -> bool:
 
     """
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding='utf-8') as f:
             lines = f.readlines()
     except FileNotFoundError:
         logging.error(f"File not found: {file_path}")
@@ -76,9 +75,7 @@ def fix_file(file_path: str, app_name: str, models_to_fix: Set[str]) -> bool:
         for model_name in models_to_fix:
             # Create a dynamic regex pattern for the app and model name
             import_pattern = re.compile(
-                r'^\s*from\s+{}.models.\w+\s+import\s+{}\s*$'.format(
-                    re.escape(app_name), re.escape(model_name)
-                )
+                rf'^\s*from\s+{re.escape(app_name)}.models.\w+\s+import\s+{re.escape(model_name)}\s*$'
             )
             if import_pattern.match(line):
                 imports_to_remove[model_name] = line.strip()
@@ -134,7 +131,7 @@ def fix_file(file_path: str, app_name: str, models_to_fix: Set[str]) -> bool:
 
     return modified
 
-def process_block(block_buffer: List[str], final_lines: List[str], imports_to_remove: dict, file_path: str):
+def process_block(block_buffer: list[str], final_lines: list[str], imports_to_remove: dict, file_path: str):
     """
     Helper function to process a block of code, add necessary imports,
     and append to the final lines list.
