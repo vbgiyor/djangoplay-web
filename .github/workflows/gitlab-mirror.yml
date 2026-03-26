@@ -1,5 +1,16 @@
 name: Mirror GitLab to GitHub
 
+# Triggered by GitLab via repository_dispatch event
+# when a merge to main happens on GitLab.
+# This workflow clones the GitLab repo and force-pushes to GitHub.
+#
+# Required secrets (set in GitHub repo → Settings → Secrets):
+#   GITLAB_TOKEN  → GitLab PAT with read_repository scope
+#   GH_TOKEN      → GitHub PAT with repo, workflow scope
+#
+# Required variables (set in GitHub repo → Settings → Variables):
+#   GITLAB_REPO   → e.g. codefleet-labs/selenium  (the GitLab path)
+
 on:
   repository_dispatch:
     types: [gitlab-push]
@@ -15,15 +26,18 @@ jobs:
         env:
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
           GITLAB_REPO: ${{ vars.GITLAB_REPO }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
           git clone --mirror \
             "https://oauth2:${GITLAB_TOKEN}@gitlab.com/${GITLAB_REPO}.git" \
             repo.git
-
           cd repo.git
+
           git remote add github \
-            "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+            "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
 
-          git push github --mirror --force
-          echo "✅ Mirrored ${GITLAB_REPO} → ${{ github.repository }}"
+          # We ONLY push heads (branches) and tags. Ignore internal GitLab refs.
+          git push github --force --prune 'refs/heads/*:refs/heads/*'
+          git push github --force --tags
 
+          echo "✅ Clean mirror complete."
