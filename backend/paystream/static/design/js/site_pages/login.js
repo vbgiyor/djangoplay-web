@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const resetPane = document.getElementById('reset');
     const resetForm = resetPane ? resetPane.querySelector('form') : null;
-    const resetIdentifierInput = document.getElementById('id_reset_identifier');
+    const resetIdentifierInput = resetPane ? resetPane.querySelector('input[name="identifier"]') : null;
     const resetSubmitBtn = resetForm ? resetForm.querySelector('button[type="submit"]') : null;
 
     // ------------------------------
@@ -115,3 +115,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 4000);
     });
 });
+
+/* ── Copyright year ─────────────────────────────────────────────────────── */
+
+  function setYear() {
+    const el = document.getElementById('footer-year');
+    if (el) el.textContent = new Date().getFullYear();
+  }

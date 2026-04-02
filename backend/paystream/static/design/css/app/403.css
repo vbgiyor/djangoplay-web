@@ -2,7 +2,7 @@
 body {
     font-family: 'Roboto', sans-serif;
     background: url('/static/elements/images/error-pages/403.jpg') no-repeat center center fixed;
-    background-size: contain;
+    background-size: 60%;
     display: flex;
     flex-direction: column; /* Match common.css but override justify-content */
     justify-content: flex-start !important; /* Override space-between from common.css */

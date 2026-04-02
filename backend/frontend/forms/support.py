@@ -3,10 +3,18 @@ from django.utils.translation import gettext as _
 
 
 class SupportForm(forms.Form):
-    subject = forms.CharField(max_length=200, required=True, label=_("Subject"))
-    name = forms.CharField(max_length=100, required=True, label=_("Name"))
-    email = forms.EmailField(required=True, label=_("Email Address"))
-    message = forms.CharField(widget=forms.Textarea, required=True, label=_("Request Message"))
+    subject = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    name = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'form-control'})
+    )
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={'class': 'form-control'})
+    )
+    message = forms.CharField(
+        widget=forms.Textarea(attrs={'class': 'form-control', 'rows': 5})
+    )
 
     def clean(self):
         cleaned_data = super().clean()

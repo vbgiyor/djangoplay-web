@@ -18,15 +18,18 @@ deploy_production:
   script:
     - |
       ssh ubuntu@$SERVER_HOST << 'EOF'
-        set -e
-        echo "==> Pulling latest code..."
-        cd /var/www/djangoplay/app
-        git pull
+        # Dynamically find the deployment path
+        TARGET_DIR=$(grep "webapp_dir:" ~/.dplay/config.yaml | cut -d ':' -f 2 | xargs)
 
-        echo "==> Restarting services..."
-        sudo systemctl restart djangoplay djangoplay-celery
+        if [ -d "$TARGET_DIR" ]; then
+          cd "$TARGET_DIR"
 
-        echo "==> Done."
+          # Run the deployment script
+          bash scripts/deploy.sh
+        else
+          echo "Error: Directory $TARGET_DIR not found"
+          exit 1
+        fi
       EOF
 
   environment:

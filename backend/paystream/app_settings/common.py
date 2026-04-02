@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 import environ
+import tomllib
 from paystream.security.crypto import decrypt_value
 
 logger = logging.getLogger(__name__)
@@ -51,6 +52,22 @@ def get_decrypted_value(env_var_name, default=None):
     else:
         return raw.strip()
 
+DOCS_ROOT = get_decrypted_value("DOCS_ROOT", default="")
+# Decrypt and expose support constants at settings import time
+SUPPORT_EMAIL = get_decrypted_value("SUPPORT_EMAIL")
+SUPPORT_PHONE = get_decrypted_value("SUPPORT_PHONE", "")
+SUPPORT_LOCATION = get_decrypted_value("SUPPORT_LOCATION", "")
+GITHUB_URL = get_decrypted_value("GITHUB_URL", "")
+LINKEDIN_URL = get_decrypted_value("LINKEDIN_URL", "")
+SITE_URL = get_decrypted_value("SITE_URL", "")
+
+print("Website url from settings:", get_decrypted_value("WEBSITE_URL"))
+WEBSITE_URL = get_decrypted_value("WEBSITE_URL")
+
+SITE_ID = 1
+SITE_NAME = get_decrypted_value("SITE_NAME", "")
+DEFAULT_FROM_EMAIL = get_decrypted_value("DEFAULT_FROM_EMAIL")
+
 def load_all_decrypted_values():
     """
     Decrypt all ciphertext values in os.environ IN PLACE.
@@ -66,15 +83,9 @@ def load_all_decrypted_values():
                 # Best effort: Keep original ciphertext if impossible to decrypt
                 logger.warning(f"Failed to decrypt env var {key}")
 
-# Decrypt and expose support constants at settings import time
-SUPPORT_EMAIL = get_decrypted_value("SUPPORT_EMAIL")
-SUPPORT_PHONE = get_decrypted_value("SUPPORT_PHONE", "")
-SUPPORT_LOCATION = get_decrypted_value("SUPPORT_LOCATION", "")
-GITHUB_URL = get_decrypted_value("GITHUB_URL", "")
-LINKEDIN_URL = get_decrypted_value("LINKEDIN_URL", "")
-SITE_URL = get_decrypted_value("SITE_URL", "")
 
-SITE_ID = 1
-SITE_NAME = get_decrypted_value("SITE_NAME", "")
-DEFAULT_FROM_EMAIL = get_decrypted_value("DEFAULT_FROM_EMAIL")
+# Process APP_VERSION
+with open(PROJECT_ROOT / "pyproject.toml", "rb") as f:
+    pyproject = tomllib.load(f)
 
+APP_VERSION = pyproject["project"]["version"]

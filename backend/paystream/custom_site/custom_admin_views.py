@@ -151,7 +151,6 @@ def single_app_view(request, app_label):
         },
     }
 
-
     for model in app_config.get_models():
         admin_instance = admin_site._registry.get(model)
         if not admin_instance:

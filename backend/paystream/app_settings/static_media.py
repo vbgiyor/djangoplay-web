@@ -11,6 +11,7 @@ STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesSto
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
+    BASE_DIR / 'paystream' / 'static' / 'design' / 'css' / 'banners',
     BASE_DIR / 'paystream' / 'static' / 'design' / 'css' / 'app',
     BASE_DIR / 'paystream' / 'static' / 'design' / 'css' / 'themes',
     BASE_DIR / 'paystream' / 'static' / 'design' / 'js',

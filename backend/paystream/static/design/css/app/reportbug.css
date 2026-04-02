@@ -239,8 +239,6 @@ body.space-theme .btn-close:hover::after {
 /* ReDoc Header Button */
 #bug-report-btn-redoc {
   position: absolute;
-  top: 2rem;
-  right: 1rem;
   width: 25px;
   height: 25px;
   border-radius: 50%;
@@ -292,33 +290,35 @@ body.space-theme #bug-report-btn-redoc:hover {
 }
 
 /* Dashboard Bug Button */
-#bug-report-btn-dashboard {
-  position: absolute;
-  bottom: 1.5rem;
-  left: 2rem;
-  width: 25px;
-  height: 25px;
+#bug-report-btn-footer {
+  position: static;
+  transform: none;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 50%;
+  left: 2rem;
   background: #eff1f3;
   border: none;
   color: #cdcccc;
   font-size: 1.2rem;
   display: flex;
-  align-items: center;
-  justify-content: center;
   box-shadow: 0 2px 8px rgba(176, 175, 175, 0.2);
   transition: all .3s ease;
   z-index: 1000;
-  animation: pulse 2s infinite; /* Adding the pulse animation */
+  animation: pulse 2s infinite;
 }
 
-body #bug-report-btn-dashboard:hover {
+body #bug-report-btn-footer:hover {
   background: #d0d8e0;
   color: #8b8888;
   box-shadow: 0 6px 16px rgba(57, 57, 57, 0.15), 0 0 0 6px rgba(57, 57, 57, 0.05);
 }
 
-body.space-theme #bug-report-btn-dashboard {
+body.space-theme #bug-report-btn-footer {
   background: #000 !important;
   border: 2px solid rgba(0, 212, 255, 0.4) !important;
   color: #00ffff !important;
@@ -326,8 +326,9 @@ body.space-theme #bug-report-btn-dashboard {
   animation: pulse 2s infinite; /* Pulse effect for space theme as well */
 }
 
-body.space-theme #bug-report-btn-dashboard:hover {
+body.space-theme #bug-report-btn-footer:hover {
   background: #111 !important;
   box-shadow: 0 0 20px rgba(0,255,255,.5);
   animation: none; /* Disable pulse animation when hovered */
 }
+
