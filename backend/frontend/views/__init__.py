@@ -5,7 +5,7 @@ from .auth import SessionUserMeView, UserMeView, social_login_cancelled_view
 from .dashboard import dashboard_view
 
 # Errors
-from .errors import custom_401, custom_403, custom_404
+from .errors import custom_401, custom_403, custom_404, custom_500
 from .license import license_file_view
 
 # Auth views
@@ -27,7 +27,8 @@ from .unsubscribe import UnsubscribeView
 from .verify import UnifiedEmailVerifyView
 
 __all__ = [
-    "dashboard_view", "support_view", "custom_401", "custom_403", "custom_404",
+    "dashboard_view", "support_view",
+    "custom_401", "custom_403", "custom_404", "custom_500",
     "ConsoleLoginView", "ApiLoginView", "CustomLogoutView",
     "CustomSignupView", "ManualSignupView", "UnifiedEmailVerifyView","ResendVerificationView",
     "CustomPasswordResetView", "CustomPasswordResetConfirmView",

@@ -1,4 +1,4 @@
-
+/* openapi.css */
 
 /* === FONTS === */
 @font-face {
@@ -185,20 +185,24 @@ body {
 }
 
 /* === REDOC DESIGN === */
-header .bug-report-btn-redoc {
-      position: absolute;
-      top: 30px;  /* Adjust this value to move it down/up */
-      left: 40px;  /* Adjust this value to move it left/right */
-      background: none;
-      border: #cbcacaff;
-      color: #e3e2e2ff; /* Icon color */
-      z-index: 15; /* Ensure it's above other elements */
+footer .bug-redoc {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    left: 20px;
+    border-radius: 50%;
+    background: #eff1f3;
+    border: none;
+    color: #cdcccc;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(176, 175, 175, 0.2);
+    transition: all .3s ease;
+    z-index: 1000;
+    animation: pulse 2s infinite; /* Adding the pulse animation */
   }
-
-  header .bug-report-btn-redoc i {
-    /* You can further style the icon here */
-    font-size: 20px;
-}
 /* === RESPONSIVE DESIGN === */
 
 /* Tablet */

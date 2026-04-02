@@ -9,6 +9,7 @@ ALLOWED_HOSTS = [
     "www.djangoplay.org",
     "issues.djangoplay.org",
     "*.djangoplay.org",
+    "docs.djangoplay.org",
     "localhost",
     "127.0.0.1",
 ]
@@ -35,4 +36,5 @@ CSRF_TRUSTED_ORIGINS = [
     "https://djangoplay.org",
     "https://www.djangoplay.org",
     "https://issues.djangoplay.org",
+    "https://docs.djangoplay.org",
 ]

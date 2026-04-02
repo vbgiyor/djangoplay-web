@@ -1,4 +1,4 @@
-{% load i18n static compress actions%}
+{% load i18n static compress actions %}
 {% load django_message_utils %}
 <!DOCTYPE html>
 <html lang="en">
@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% trans "DjangoPlay Admin" %}</title>
+
     <link rel="icon" type="image/png" href="{% static 'elements/images/logo/logo_icon.png' %}">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -19,101 +20,119 @@
     <link rel="stylesheet" href="{% static 'design/css/themes/toggle.css' %}">
     {% endcompress %}
 </head>
+
 <body class="has-relative-footer {% if request.COOKIES.theme == 'space' %}space-theme{% endif %}">
     <div id="stars"></div>
 
     <!-- HEADER -->
-    <header class="text-center">
+    <header>
         <div class="header-container">
             <a href="{% if 'issues.' in request.get_host %}
                         {% url 'issues:list' %}
                     {% else %}
                         {% url 'console_dashboard' %}
                     {% endif %}">
-                <img src="{% static 'elements/images/logo/logo_icon.png' %}" class="logo-icon"><img src="{% static 'elements/images/logo/logotext-color.png' %}" class="logo">
+                <img src="{% static 'elements/images/logo/logo_icon.png' %}" class="logo-icon">
+                <img src="{% static 'elements/images/logo/logotext-color.png' %}" class="logo">
             </a>
+
             {% if request.user.is_authenticated %}
-                <div class="user-section">
-                    <div class="user-info">Hello, {{ user.first_name|default:user.username }}</div>
-                    <a href="{% url 'account_logout' %}" class="logout-btn">
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span class="logout-label">Logout</span>
-                    </a>
+            <div class="user-section">
+                <div class="user-info">
+                    Hello, {{ user.first_name|default:user.username }}
                 </div>
+                <a href="{% url 'account_logout' %}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="logout-label">Logout</span>
+                </a>
+            </div>
             {% endif %}
         </div>
     </header>
 
     <div class="theme-toggle-container">
-        <input type="checkbox" id="theme-switch" class="theme-toggle" {% if request.COOKIES.theme == 'space' %}checked{% endif %}>
+        <input type="checkbox" id="theme-switch" class="theme-toggle"
+               {% if request.COOKIES.theme == 'space' %}checked{% endif %}>
         <label for="theme-switch" class="slider"></label>
     </div>
 
-    <main class="container text-center mt-15 mb-8">
-        {% if messages %}
-            <div class="container mt-3">
-                {% for message in messages %}
-                    <div class="alert alert-{{ message.level_tag|bootstrap_alert }} alert-dismissible fade show shadow-sm"
-                        role="alert">
+    <!-- GLOBAL MESSAGES (ONLY HERE) -->
+    {% if messages %}
+    <div id="django-messages"
+        class="position-fixed start-50 translate-middle-x w-100"
+        style="top: calc(var(--header-height) + 10px);
+                z-index: 2000;
+                max-width: 600px;">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.level_tag|bootstrap_alert }} alert-dismissible fade show mx-auto text-center shadow">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-                        {{ message }}
+    <!-- PAGE CONTENT -->
+    {% block page_layout %}
+    <div class="page-wrapper">
+        <main class="page-content container py-3">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    {% endblock %}
 
-                        <button type="button"
-                                class="btn-close"
-                                data-bs-dismiss="alert"
-                                aria-label="Close"></button>
-                    </div>
-                {% endfor %}
+    <footer class="footer-container">
+        <div class="footer-content">
+
+            <div class="footer-left">
+                {% block footer_left %}
+                <img src="{% static 'elements/images/logo/logo_icon.png' %}" class="footer-logo">
+                <span class="footer-title">{{ SITE_NAME }}</span>
+                <small class="footer-version">v{{ APP_VERSION }}</small>
+                {% endblock %}
             </div>
-        {% endif %}
-        {% block content %}{% endblock %}
-    </main>
 
-    <footer class="footer-container">       
-        <div class="links-container">
-            &copy; {% now "Y" %} {{ SITE_NAME }}<br>  
+            <div class="footer-right">
 
-            <i class="fas fa-book"></i>            
-            {% if request.user.is_authenticated %}
-                <a href="{{ SITE_URL }}{% url 'apidocs:redoc' %}"
-                class="primary-text"
-                target="_blank"
-                rel="noopener noreferrer">
-                    Documentation
-                </a>
-            {% else %}
-                <a href="{{ SITE_URL }}{% url 'frontend:api_login' %}?from=redoc&next={% url 'apidocs:redoc' %}"
-                class="primary-text"
-                target="_blank"
-                rel="noopener noreferrer">
-                    Documentation
-                </a>
-            {% endif %}
+                <span class="copyright">© {% now "Y" %}</span>
 
-            <i class="fas fa-headset"></i>
-            <a href="{{ SITE_URL }}{% url 'support' %}"
-            class="primary-text"
-            target="_blank"
-            rel="noopener noreferrer">
-                Support
-            </a>
+                <span class="divider">|</span>
 
-            <i class="fas fa-signature"></i>
-            <a href="{{ SITE_URL }}{% url 'frontend:license' %}"
-            class="primary-text"
-            target="_blank"
-            rel="noopener noreferrer">
-                Apache License 2.0
-            </a>
+                <a href="{{ WEBSITE_URL }}" target="_blank">Website</a>
+
+                <span class="divider">•</span>
+
+                <a href="{{ DOCS_URL }}" target="_blank">Docs Portal</a>
+
+                <span class="divider">•</span>
+
+                {% if request.user.is_authenticated %}
+                    <a href="{{ SITE_URL }}{% url 'apidocs:redoc' %}" target="_blank">API Docs</a>
+                {% else %}
+                    <a href="{{ SITE_URL }}{% url 'frontend:api_login' %}?from=redoc&next={% url 'apidocs:redoc' %}" target="_blank">API Docs</a>
+                {% endif %}
+
+                <span class="divider">•</span>
+
+                <a href="{{ SITE_URL }}{% url 'support' %}" target="_blank">Support</a>
+
+                <span class="divider">•</span>
+
+                <a href="{{ SITE_URL }}{% url 'frontend:license' %}" target="_blank">License</a>
+
+            </div>
+
         </div>
     </footer>
 
     {% include 'admin/bug_report_include.html' with show_bug_report=True %}
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     {% compress js %}
     <script src="{% static 'design/js/space.js' %}"></script>
-    {% endcompress %}  
+    {% endcompress %}
+
     <audio id="m-sound" src="{% static 'sounds/strings.mp3' %}" preload="auto" loop></audio>
 
     {% block footer_scripts %}{% endblock %}

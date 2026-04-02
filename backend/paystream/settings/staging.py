@@ -4,7 +4,13 @@ from .base import *
 
 DEBUG = False
 
-ALLOWED_HOSTS = ["*", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = [
+    "*",
+    "localhost",
+    "127.0.0.1",
+    "issues.localhost",
+    "docs.localhost"
+]
 
 # Load from encrypted env or fallback
 if not SITE_HOST:

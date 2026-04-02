@@ -12,6 +12,7 @@ from django.conf import settings
 from paystream.app_settings.cache import *
 from paystream.app_settings.celery import *
 from paystream.app_settings.common import *
+from paystream.app_settings.common import DOCS_ROOT
 from paystream.app_settings.core import *
 from paystream.app_settings.database import *
 from paystream.app_settings.drf_spectacular import SPECTACULAR_SETTINGS
@@ -42,9 +43,11 @@ SPECTACULAR_SETTINGS["SERVE_INCLUDE_SCHEMA"] = DEBUG
 SITE_PROTOCOL = get_decrypted_value("SITE_PROTOCOL", default="https").strip()
 SITE_HOST     = get_decrypted_value("SITE_HOST", default="localhost").strip()
 SITE_PORT     = get_decrypted_value("SITE_PORT", default="").strip()
+DOCS_ROOT = DOCS_ROOT
 
 # Canonical SITE_URL
 SITE_URL = build_site_url(SITE_PROTOCOL, SITE_HOST, SITE_PORT)
+
 
 # ---------------------------------------------------------------------
 # GOOGLE OAUTH (must load AFTER SITE_PROTOCOL is known)

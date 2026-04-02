@@ -249,7 +249,6 @@
     wrapFetchWithAuthHeader();
     wrapFetchWith401Handler();
     scheduleTokenRefresh();
-    initGoTop();
   }
 
   if (document.readyState === 'loading') {
