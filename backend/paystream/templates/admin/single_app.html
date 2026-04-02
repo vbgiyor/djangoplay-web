@@ -2,127 +2,70 @@
 {% load i18n static compress %}
 
 {% block extrastyle %}
-    {{ block.super }}
+{{ block.super }}
 
-    <!-- Bootstrap, Font Awesome, Roboto -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Aoboshi+One&display=swap" rel="stylesheet">
 
-    <!-- Aoboshi One -->
-    <link href="https://fonts.googleapis.com/css2?family=Aoboshi+One&display=swap" rel="stylesheet">
+{% compress css %}
+<link rel="stylesheet" href="{% static 'design/css/app/common.css' %}">
+<link rel="stylesheet" href="{% static 'design/css/themes/space.css' %}">
+<link rel="stylesheet" href="{% static 'design/css/themes/toggle.css' %}">
+{% endcompress %}
 
-    {% compress css %}
-    <link rel="stylesheet" href="{% static 'design/css/app/common.css' %}">
-    <link rel="stylesheet" href="{% static 'design/css/themes/space.css' %}">
-    <link rel="stylesheet" href="{% static 'design/css/themes/toggle.css' %}">
-    {% endcompress %}
-    <style>
-        .app-heading { font-family: 'Aoboshi One', sans-serif !important; font-size: 2rem !important; color: #464B92 !important;}
-    </style>
-{% endblock %}
-
-{% block extrahead %}
-    {{ block.super }}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+.app-heading {
+    font-family: 'Aoboshi One', sans-serif !important;
+    font-size: 2rem !important;
+    color: #464B92 !important;
+}
+</style>
 {% endblock %}
 
 {% block content %}
-<main class="container text-center my-4">
-    {% for message in messages %}
-        <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+
+<h1 class="app-heading">
+{% if app_label == 'entities' %}Businesses
+{% elif app_label == 'fincore' %}Business Contact & Tax Info
+{% elif app_label == 'industries' %}Industries
+{% elif app_label == 'invoices' %}Invoices
+{% elif app_label == 'locations' %}Locations
+{% elif app_label == 'users' %}Users
+{% else %}{{ app_name }}{% endif %}
+</h1>
+
+<div class="text-start mt-3 mb-4">
+    <a href="{% url 'console_dashboard' %}">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+{% if models %}
+<div class="card-grid">
+    {% for model in models %}
+    <a href="{{ model.admin_url }}" class="e-card">
+        <i class="icon {{ model.icon|default:'fas fa-circle' }}"></i>
+        <span class="card-label">{{ model.name }}</span>
+    </a>
     {% endfor %}
-
-    
-
-    <h1 class="app-heading">
-        {% if app_label == 'entities' %}Businesses
-        {% elif app_label == 'fincore' %}Business Contact & Tax Info
-        {% elif app_label == 'industries' %}Industries
-        {% elif app_label == 'invoices' %}Invoices
-        {% elif app_label == 'locations' %}Locations
-        {% elif app_label == 'users' %}Users
-        {% else %}{{ app_name }}{% endif %}
-    </h1>
-
-    <div class="text-start mt-3">
-        <a href="{% url 'console_dashboard' %}">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
-    </div>
-
-    {% if models %}
-        <div class="card-grid">
-            {% for model in models %}
-                <a href="{{ model.admin_url }}" class="e-card" aria-label="{{ model.name }} Dashboard">
-                    <i class="icon {{ model.icon|default:'fas fa-circle' }}"></i>
-                    <span class="card-label">{{ model.name }}</span>
-                </a>
-            {% endfor %}
-        </div>
-    {% else %}
-        <p>No models available for {{ app_name }}.</p>
-    {% endif %}
-
-    
-</main>
+</div>
+{% else %}
+<p>No models available for {{ app_name }}.</p>
+{% endif %}
 {% endblock %}
 
-{% comment %} {% extends "admin/base.html" %}
-{% load i18n static compress%}
+{% block footer_left %}
+<button id="bug-report-btn-footer"
+    class="bug-report-btn-footer"
+    data-bs-toggle="modal"
+    data-bs-target="#bug-modal"
+    title="{% trans 'Report Bug' %}">
+    <i class="fas fa-bug"></i>
+</button>
 
-{% block extrastyle %}
-    {{ block.super }}
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    {% compress css %}
-    <link rel="stylesheet" href="{% static 'design/css/app/common.css' %}">
-    <link rel="stylesheet" href="{% static 'design/css/themes/space.css' %}">
-    <link rel="stylesheet" href="{% static 'design/css/themes/toggle.css' %}">
-    {% endcompress %}
+<img src="{% static 'elements/images/logo/logo_icon.png' %}" class="footer-logo">
+<span class="footer-title">{{ SITE_NAME }}</span>
+<small class="footer-version">v{{ APP_VERSION }}</small>
 {% endblock %}
-
-{% block extrahead %}
-    {{ block.super }}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-{% endblock %}
-
-{% block content %}    
-    <main class="container text-center my-4">
-        {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                {{ message }}
-            </div>
-        {% endfor %}
-        <h1 class="welcome-title">
-            {% if app_label == 'entities' %}Businesses
-            {% elif app_label == 'fincore' %}Business Contact & Tax Info
-            {% elif app_label == 'industries' %}Industries
-            {% elif app_label == 'invoices' %}Invoices
-            {% elif app_label == 'locations' %}Locations
-            {% elif app_label == 'users' %}Users
-            {% else %}{{ app_name }}{% endif %}
-        </h1>
-        {% if models %}
-            <div class="card-grid">
-                {% for model in models %}
-                    <a href="{{ model.admin_url }}" class="e-card" aria-label="{{ model.name }} Dashboard">
-                        <i class="icon {{ model.icon|default:'fas fa-circle' }}"></i>
-                        <span class="card-label">{{ model.name }}</span>
-                    </a>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p>No models available for {{ app_name }}.</p>
-        {% endif %}
-
-        <div class="text-start mt-3">
-            <a href="{% url 'console_dashboard' %}">
-                <i class="fas fa-arrow-left"></i> Back to Dashboard
-            </a>
-        </div>
-
-    </main>
-{% endblock %} {% endcomment %}

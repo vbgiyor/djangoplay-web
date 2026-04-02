@@ -2,250 +2,139 @@
 
 All notable changes to the DjangoPlay web application will be documented here.
 
-This project follows Semantic Versioning.
+This project follows Semantic Versioning starting from **v1.0.0 (First Production Release)**.
 
 ---
 
-## [1.1.0] - 2026-03-16
+## [1.0.0] - 2026-04-02
 
-**Tag:** `v1.1.0-cli-aligned-environment-security`
+**Tag:** `v1.0.0-first-production-release`
 
-### Security & Developer Experience — CLI-Aligned Environment Management
+# 🎉 First Production Release
 
-This patch streamlines environment encryption and decryption to align with
-the `djangoplay-cli` library. Credentials are now read exclusively from
-`~/.dplay/config.yaml` and `~/.dplay/.secrets`, removing the previous
-dependency on `creds.txt` and `django-environ`.
+This release marks the first production-ready version of DjangoPlay.
+It stabilizes the platform architecture, admin console UX, layout system,
+error handling, authentication flows, and environment configuration model.
 
+This version represents the transition from internal development and
+integration phases to a stable production-ready platform.
+
+---
+
+### Added
+
+#### Platform UI & Layout System
+
+* Unified header, footer, and page layout across admin, console, login, Redoc, and site pages
+* Footer system with logo, version, links, and bug report button
+* Bug report modal integration across console and documentation pages
+* Consistent page wrapper and spacing system
+* Unified card grid layout for app pages
+* Theme toggle and space theme improvements
+
+#### Error Handling System
+
+* Centralized error handling for:
+
+  * 401 Unauthorized
+  * 403 Permission Denied
+  * 404 Not Found
+  * 500 Server Error
+* Custom styled error pages with background images and themed CSS
+* Django Admin permission handling integrated with custom error pages
+* CSRF failures routed to custom error page
+* Admin permission redirects converted to custom 403 page via AdminSite override
+
+#### Authentication & Login
+
+* Refactored login and API login pages to use unified layout
+* Improved Django messages rendering and positioning
+* Session expiry and login required handling improvements
+* Logout redirect handling improvements
+
+#### Documentation & API UI
+
+* Redoc API documentation UI integrated with platform header/footer
+* Bug report button added to Redoc interface
+* Improved API login flow integration
+
+---
 
 ### Changed
 
-* `paystream/security/encrypt_env.py` — reads credentials from `~/.dplay/config.yaml`
-  and `~/.dplay/.secrets` instead of `creds.txt`; `django-environ` dependency removed;
-  YAML flattened via internal mapping table; `.secrets` values take precedence over
-  config for overlapping keys
-* `paystream/security/decrypt_env.py` — reads `ENCRYPTION_KEY` exclusively from
-  `~/.dplay/.secrets`; `creds.txt` and `django-environ` dependency removed
-* both scripts use direct `sys.path` injection for `crypto` import to support
-  standalone subprocess execution by `djangoplay-cli`
-* `DJANGO_SETTINGS_MODULE` sourced from `~/.dplay/config.yaml` under `django.settings_module`
+#### Admin & Console UI Refactor
+
+* Refactored admin templates:
+
+  * changelist_add.html
+  * changelist_edit.html
+  * custom_changelist.html
+  * single_app.html
+* Unified layout and spacing across all admin pages
+* Improved header and footer alignment
+* Fixed Django messages hidden under header
+* Improved responsive layout behavior
+
+#### Styling & CSS Refactor
+
+* Refactored common.css and layout styles
+* Updated support.css, openapi.css, reportbug.css
+* Improved footer alignment and header spacing
+* Fixed layout overlap issues
+* Improved theme styling and toggle behavior
+
+#### Error Templates Refactor
+
+* Removed legacy error templates
+* Introduced styled standalone error pages
+* Unified error page styling and layout behavior
+
+---
 
 ### Removed
 
-* dependency on `creds.txt` for encryption and decryption workflows
-* dependency on `django-environ` in security scripts
-
-### Security
-
-* `~/.dplay/.secrets` is read programmatically only — never sourced by the shell
-* SSL certificates stored locally under `~/.dplay/ssl/` — never committed to version control
+* Legacy error page templates
+* Obsolete CSS files
+* Old layout templates and duplicated structures
+* Deprecated layout patterns and unused assets
 
 ---
 
-## [1.1.0] - 2026-03-06
+### Overall Result
 
-**Tag:** `v1.1.0-helpdesk-issuetracker-convergence`
+This release stabilizes the DjangoPlay platform and introduces:
 
-### 🚀 Helpdesk → IssueTracker Convergence
+* Unified UI layout system
+* Centralized error handling
+* Consistent admin and console interface
+* Improved authentication and session handling
+* Integrated documentation and bug reporting
+* Clean template and CSS structure
+* Production-ready admin console experience
 
-### Added
-
-* Helpdesk → Issue adapter layer
-* automatic bug and support synchronization with IssueTracker
-* management command `migrate_helpdesk_to_issues`
-* unified issue activity timeline in Issue Detail view
-* `IssueTimelineService` for event aggregation
-* timeline partial template system
-* comment attachment rendering inside timeline
-* bug visibility labels (`🐞 INTERNAL`, `🐞 PUBLIC`)
-* automatic label bootstrap service
-* role-based issue visibility governance service
-* DjangoPlay identity resolver for IssueTracker integration
-* issue source annotation (`bug_report` vs `issue`)
-
-### Changed
-
-* Helpdesk services now delegate issue creation to `IssueMutationService`
-* bug and support flows internally create Issues
-* issue UI now renders a unified activity timeline
-
-### Security
-
-* internal attachment storage paths are no longer exposed
-* attachment downloads remain protected via secure endpoints
-* visibility rules enforced through centralized service
+This version is considered the **first production-ready release** of DjangoPlay.
 
 ---
 
-## [1.0.4] - 2026-03-03
+## Previous Development Releases (Pre-1.0)
 
-**Tag:** `v1.0.4-issuetracker-ui-4`
+### Version History Note
 
-### 🚀 Issue Tracker UI – Phase UI-4 (Write + Governance Completion)
+Before the first production release (v1.0.0), several internal releases were
+tagged using feature-based version names. For clarity and proper semantic
+versioning, the changelog maps those tags to logical pre-production versions
+(0.x series).
 
-This release completes the full IssueTracker integration lifecycle.
+Starting from **v1.0.0**, DjangoPlay follows Semantic Versioning strictly.
 
----
 
-### Added
-
-* Issue creation UI (anonymous + authenticated)
-* Comment submission with attachment support
-* Status transition form integrated with lifecycle engine
-* `IssueMutationService` for UI orchestration
-* Protected attachment download endpoint
-* Enterprise `IssueStateTransitionOwnerPolicy`
-
-  * Superuser bypass
-  * Owner override
-  * Configurable role-based governance
-* Complete domain signal → audit integration
-* Timestamp partial (IST format + naturaltime tooltip)
-* Proper Django messages handling in base template
-* IssueTracker UI mounted under dedicated issues subdomain
-
----
-
-### Changed
-
-* Status transitions fully delegated to lifecycle engine
-* Transition policy hardened for enterprise RBAC
-* Identity resolution unified across UI and API
-* Visibility governance applied consistently (list, detail, attachments)
-
----
-
-### Security
-
-* No direct file URL exposure
-* 404 masking preserved
-* RBAC enforcement at queryset level
-* No business logic in templates
-* No permission duplication
-* Strict PRG pattern for UI writes
-
----
-
-## [1.0.3] - 2026-02-28
-
-**Tag:** `v1.0.3-issuetracker-ui-3`
-
-### 🚀 Issue Tracker UI – Phase UI-3 (Write Operations)
-
-### Added
-
-* Comment submission from Issue Detail page (anonymous + authenticated)
-* Policy-driven status transition form in issue header
-* `IssueMutationService` for UI write orchestration
-* PRG (Post-Redirect-Get) pattern for UI mutations
-* Identity resolution via integration identity resolver
-* Delegation to lifecycle engine for status changes
-* Signal-driven audit consistency for comments and transitions
-
-### Changed
-
-* Status transitions fully delegated to lifecycle engine
-* IssueDetailView reduced to thin orchestration layer
-* No manual status mutation from UI
-
-### Security
-
-* Anonymous users blocked from commenting on internal issues
-* Lifecycle transition policy enforced centrally
-* 404 masking preserved for unauthorized access
-* No business logic inside templates
-* No manual signal emission from UI layer
-
----
-
-## [1.0.2] - 2026-02-26
-
-**Tag:** `v1.0.2-issuetracker-ui-2`
-
-### 📘 Issue Tracker UI – Phase UI-2 (Detail View, Read-Only)
-
-### Added
-
-* Server-rendered Issue Detail page (`/issues/<issue_number>/`)
-* Read-only comment thread rendering
-* Secure attachment download integration
-* Visibility-governed single-issue retrieval
-* Prefetch optimization for comments and attachments
-* Back-navigation with filter preservation
-* 404 masking for unauthorized access
-
-### Changed
-
-* Issue list links updated to use human-friendly `issue_number`
-* Query service extended for single-object retrieval
-
-### Security
-
-* No direct MEDIA URL exposure
-* Soft-deleted issues return 404
-* Strict reuse of domain visibility service
-* No role checks implemented in UI layer
-* No lifecycle mutation logic introduced
-
----
-
-## [1.0.1] - 2026-02-24
-
-**Tag:** `v1.0.1-issuetracker-ui-1`
-
-### 📘 Issue Tracker UI – Phase UI-1 (Read-Only List)
-
-### Added
-
-* `issues_ui` integration module scaffold
-* Subdomain-aware routing (`issues.<domain>`)
-* Server-rendered Issue List page
-* Enum-driven status filtering
-* Config-driven pagination
-* Deterministic ordering (`-created_at`)
-* GitHub-style issue list layout
-* Status and priority badge rendering
-* Lock indicator for internal issues
-* `IssueQueryService` abstraction layer
-* Strict visibility reuse via domain visibility service
-
-### Changed
-
-* Introduced thin presentation boundary for Issue Tracker integration
-* Explicit avoidance of API-layer HTTP calls
-* Business logic removed from presentation layer
-
-### Security
-
-* Views never call unrestricted `.all()`
-* Visibility filtering centralized
-* No lifecycle or permission duplication
-* No direct file URL exposure
-* No business logic inside templates
-
----
-
-## [1.0.0] - 2026-02-20
-
-**Tag:** `v1.0.0-issuetracker-foundation`
-
-### 🎉 Issue Tracker Integration Foundation
-
-### Added
-
-* Integration boundary for Issue Tracker domain
-* Subdomain strategy (`issues.localhost`)
-* Strict DRY architectural enforcement
-* Thin adapter service layer
-* Integration-based routing
-* Enterprise-aligned layered architecture
-* Dedicated IssueTracker subdomain strategy (issues.<domain>)
-
-### Security
-
-* Domain logic treated as immutable
-* No shadow models created
-* No duplicate permission systems
-* Lifecycle and RBAC fully delegated to domain layer
-
----
+| Logical Version | Git Tag                  | Description                            | Details |
+|-----------------|--------------------------|----------------------------------------|--------|
+| 0.9.4 | v1.1.0 | CLI environment security alignment | Environment encryption/decryption aligned with CLI; credentials moved to ~/.dplay config; removed django-environ; improved secrets handling; SSL and environment workflow standardized |
+| 0.9.3 | v1.0.4 | Platform improvements and integrations | Helpdesk integrated with IssueTracker; unified issue timeline; attachment security improvements; RBAC visibility governance; service layer convergence |
+| 0.9.2 | v1.0.3-issuetracker-ui-3 | Issue Tracker UI Phase 3 | Comment submission; status transitions; mutation service orchestration; PRG pattern for UI writes; lifecycle integration |
+| 0.9.1 | v1.0.1-issuetracker-ui-2 | Issue Tracker UI Phase 2 | Issue detail view; comment thread rendering; secure attachment downloads; visibility-governed issue retrieval; prefetch optimization |
+| 0.9.0 | v1.0.0-issuetracker-ui-1 | Issue Tracker UI Phase 1 | Issue list UI; status filtering; pagination; GitHub-style list layout; visibility service integration |
+| 0.1.1 | v0.1.1 | Early platform improvements | Service layer refinements; identity and permission improvements; audit logging enhancements; infrastructure cleanup; architecture refinements |
+| 0.1.0 | v0.1.0 | Platform foundation | Initial domain architecture; identity system; permission model; service-first architecture; audit system foundation |
+| 0.0.1 | v0.0.0.1 | Initial project setup | Initial Django project; repository structure; base apps; configuration setup; initial environment configuration |

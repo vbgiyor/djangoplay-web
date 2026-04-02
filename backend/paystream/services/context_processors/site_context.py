@@ -40,6 +40,7 @@ def site_context(request):
 
     Rules:
         - issues.*  → /issues/
+        - docs.*  → /docs/
         - default   → /console/dashboard/
 
     Returns:
@@ -49,6 +50,7 @@ def site_context(request):
     SUBDOMAIN_HOME_MAP = {
         "issues": "issues:list",
         "console": "console_dashboard",
+        "docs": "docs:index",
         # future:
         # "billing": "billing:dashboard",
         # "reports": "reports:home",
@@ -65,6 +67,7 @@ def site_context(request):
 
     # Build issues subdomain absolute URL
     issues_tracker_url = build_subdomain_url("issues", "/issues/")
+    docs_url = build_subdomain_url("docs", "/")
 
     return {
         "HOME_URL": home_url,
@@ -72,4 +75,6 @@ def site_context(request):
         "SITE_URL": settings.SITE_URL,
         "SITE_NAME": settings.SITE_NAME,
         "ISSUES_TRACKER_URL": issues_tracker_url,
+        "DOCS_URL": docs_url,
+        "WEBSITE_URL": getattr(settings, "WEBSITE_URL", "https://djangoplay.org/")
     }

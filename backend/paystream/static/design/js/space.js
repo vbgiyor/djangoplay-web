@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function applyPulse() {
-        const btn = document.getElementById('bug-report-btn-dashboard') || document.getElementById('bug-report-btn');
+        const btn = document.getElementById('bug-report-btn-footer') || document.getElementById('bug-report-btn');
         if (btn) {
             btn.style.animation = 'none';
             requestAnimationFrame(() => {
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function fixBugButton() {
-        const btn = document.getElementById('bug-report-btn-dashboard') || document.getElementById('bug-report-btn');
+        const btn = document.getElementById('bug-report-btn-footer') || document.getElementById('bug-report-btn');
         if (btn) {
             btn.style.display = 'none';
             requestAnimationFrame(() => btn.style.display = '');
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function resetBugButton() {
-        const btn = document.getElementById('bug-report-btn-dashboard') || document.getElementById('bug-report-btn');
+        const btn = document.getElementById('bug-report-btn-footer') || document.getElementById('bug-report-btn');
         if (btn) btn.style.display = '';
     }
 
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function () {
 //     }
 
 //     function applyPulse() {
-//         const btn = document.getElementById('bug-report-btn-dashboard') || document.getElementById('bug-report-btn');
+//         const btn = document.getElementById('bug-report-btn-footer') || document.getElementById('bug-report-btn');
 //         if (btn) {
 //             btn.style.animation = 'none';
 //             requestAnimationFrame(() => {
@@ -240,7 +240,7 @@ document.addEventListener('DOMContentLoaded', function () {
 //     }
 
 //     function fixBugButton() {
-//         const btn = document.getElementById('bug-report-btn-dashboard') || document.getElementById('bug-report-btn');
+//         const btn = document.getElementById('bug-report-btn-footer') || document.getElementById('bug-report-btn');
 //         if (btn) {
 //             btn.style.display = 'none';
 //             requestAnimationFrame(() => btn.style.display = '');
@@ -248,7 +248,7 @@ document.addEventListener('DOMContentLoaded', function () {
 //     }
 
 //     function resetBugButton() {
-//         const btn = document.getElementById('bug-report-btn-dashboard') || document.getElementById('bug-report-btn');
+//         const btn = document.getElementById('bug-report-btn-footer') || document.getElementById('bug-report-btn');
 //         if (btn) btn.style.display = '';
 //     }
 

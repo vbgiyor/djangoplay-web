@@ -1,13 +1,13 @@
 import logging
 
 from django.contrib.admin import AdminSite
-from django.shortcuts import redirect
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from utilities.context_processors.report_bug import report_bug_context
 
 logger = logging.getLogger(__name__)
-
 
 
 class PaystreamAdminSite(AdminSite):
@@ -18,9 +18,20 @@ class PaystreamAdminSite(AdminSite):
     login_template = 'account/site_pages/login.html'
     logout_template = 'account/site_pages/logout.html'
 
-    # from utilities.constants.template_registry import TemplateRegistry
-    # login_template = TemplateRegistry.CONSOLE_LOGIN
-    # logout_template = TemplateRegistry.CONSOLE_LOGOUT
+    def permission_denied(self, request, exception=None):
+        back_url = request.META.get("HTTP_REFERER", "/")
+        return render(
+            request,
+            "errors/403.html",
+            {"back_url": back_url},
+            status=403,
+        )
+
+    def catch_all_view(self, request, url):
+        try:
+            return super().catch_all_view(request, url)
+        except PermissionDenied:
+            return self.permission_denied(request)
 
     def get_urls(self):
         urls = super().get_urls()
@@ -43,10 +54,39 @@ class PaystreamAdminSite(AdminSite):
         return redirect('console_dashboard')
 
     def admin_view(self, view, cacheable=False):
+        original_admin_view = super().admin_view(view, cacheable)
+
         def inner(request, *args, **kwargs):
             if not request.user.is_authenticated:
-                return redirect('account_login')  # Redirect unauthenticated users
-            return view(request, *args, **kwargs)
+                return redirect('account_login')
+
+            # Detect add/change/delete URLs
+            path = request.path.lower()
+            if path.endswith("/add/") or "/change/" in path or path.endswith("/delete/"):
+                # Force permission check by calling the view and catching redirect
+                response = original_admin_view(request, *args, **kwargs)
+                if response.status_code == 302:
+                    # This means permission denied redirect happened
+                    back_url = request.META.get("HTTP_REFERER", reverse("console_dashboard"))
+                    return render(
+                        request,
+                        "errors/403.html",
+                        {"back_url": back_url},
+                        status=403,
+                    )
+                return response
+
+            try:
+                return original_admin_view(request, *args, **kwargs)
+            except PermissionDenied:
+                back_url = request.META.get("HTTP_REFERER", reverse("console_dashboard"))
+                return render(
+                    request,
+                    "errors/403.html",
+                    {"back_url": back_url},
+                    status=403,
+                )
+
         return inner
 
     def each_context(self, request):

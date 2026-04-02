@@ -107,12 +107,12 @@ class CustomResetPasswordForm(forms.Form):
 
 class CustomResetPasswordKeyForm(forms.Form):
     new_password1 = forms.CharField(
-        widget=forms.PasswordInput,
-        label="New password",
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        label="New password"
     )
     new_password2 = forms.CharField(
-        widget=forms.PasswordInput,
-        label="Confirm new password",
+        widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+        label="Confirm new password"
     )
 
     def __init__(self, *args, user=None, **kwargs):

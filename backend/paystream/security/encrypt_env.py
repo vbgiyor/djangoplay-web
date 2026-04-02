@@ -43,6 +43,7 @@ KEYS_TO_ENCRYPT = [
     "DEFAULT_FROM_EMAIL",
     "SUPPORT_PHONE", "SUPPORT_EMAIL", "SUPPORT_LOCATION",
     "LINKEDIN_URL", "GITHUB_URL",
+    "DOCS_ROOT", "WEBSITE_URL"
 ]
 
 # Keys allowed to be blank — encrypted as empty string, not treated as error.
@@ -75,6 +76,8 @@ _YAML_TO_ENV = {
     "support.location": "SUPPORT_LOCATION",
     "social.linkedin":  "LINKEDIN_URL",
     "social.github":    "GITHUB_URL",
+    "repository.docs_root": "DOCS_ROOT",
+    "site.website": "WEBSITE_URL",
 }
 
 

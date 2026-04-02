@@ -72,13 +72,15 @@ def custom_403(request, exception=None):
     if not back_url:
         back_url = reverse("console_dashboard")
 
-    context = {
-        "source": from_param,
-        "back_url": back_url,
-        "u": "true" if request.user.is_authenticated else "false",
-    }
-
-    return render(request, TemplateRegistry.ACCOUNT_403, context, status=403)
+    back_url = request.META.get("HTTP_REFERER", "/")
+    return render(
+        request,
+        "errors/403.html",
+        {
+            "back_url": back_url,
+        },
+        status=403,
+    )
 
 
 # -------------------------------------------------------------
@@ -130,7 +132,21 @@ def custom_401(exc, context):
         "modal_title": "Log In Again" if had_token else "Log In to Continue",
     }
 
-    return render(request, TemplateRegistry.ACCOUNT_401, context, status=401)
+    request = context.get("request")
+
+    return render(
+        request,
+        "errors/401.html",
+        {
+            "title": "Session Expired",
+            "icon": "clock",
+            "message": "Your session has expired.",
+            "subtitle": "Please log in again.",
+            "button_text": "Log In Again",
+            "modal_title": "Log In Again",
+        },
+        status=401,
+    )
 
 
 # -------------------------------------------------------------
@@ -152,13 +168,33 @@ def custom_404(request, exception=None, app_label=None, app_display_name=None):
     if not back_url:
         back_url = reverse("console_dashboard")
 
-    context = {
-        "back_url": back_url,
-        "app_label": app_label,
-        "app_display_name": app_display_name or (app_label.title() if app_label else None),
-    }
+    back_url = request.META.get("HTTP_REFERER", "/")
 
-    return render(request, TemplateRegistry.ACCOUNT_404, context, status=404)
+    return render(
+        request,
+        "errors/404.html",
+        {
+            "back_url": back_url,
+            "app_display_name": app_display_name,
+        },
+        status=404,
+    )
+
+
+# -------------------------------------------------------------
+# Global 500 handler
+# -------------------------------------------------------------
+def custom_500(request):
+    return render(
+        request,
+        "errors/error.html",
+        {
+            "title": "Server Error",
+            "error_image": "elements/images/error-pages/500.jpg",
+            "back_url": "/",
+        },
+        status=500,
+    )
 
 # -------------------------------------------------------------
 # Read localStorage fallback via cookies or GET

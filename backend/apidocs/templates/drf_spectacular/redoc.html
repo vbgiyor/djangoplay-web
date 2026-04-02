@@ -25,31 +25,33 @@
   data-public-monitor-url="{% url 'apidocs:api-stats-public' %}"
   data-my-monitor-url="{% url 'apidocs:api-stats-private' %}"
 >
-  
-  <header class="text-center position-relative">
-    <div class="header-container">
-        {% if request.user.is_authenticated %}
-            <a href="{% url 'apidocs:redoc' %}">
-                <img src="{% static 'elements/images/logo/logo_icon.png' %}" alt="DjangoPlay Logo" class="logo-icon">
+  <header>
+        <div class="header-container">
+            {% if request.user.is_authenticated %}
+            <a href="{% if request.user.is_authenticated %}{% url 'console_dashboard' %}{% else %}{% url 'account_login' %}{% endif %}">
+                <img src="{% static 'elements/images/logo/logo_icon.png' %}" alt="DjangoPlay Logo" class="logo-icon"><img src="{% static 'elements/images/logo/logotext-color.png' %}" alt="DjangoPlay Logo" class="logo">
             </a>
-            <img src="{% static 'elements/images/logo/logotext-color.png' %}" alt="DjangoPlay Logo" class="logo">                
             <div class="user-section">
-                <div class="user-info">Hello, {{ request.user.first_name }}</div>
-                <a href="{% url 'account_logout' %}?from=redoc" class="logout-btn">
+                <div class="user-info"
+                    title="{{ request.user.get_full_name|default:request.user.get_username }}"
+                    style="cursor: default;">
+                    Hello,
+                    <span class="truncated-name">
+                        {{ request.user.first_name|truncatechars:15|default:"User" }}
+                    </span>
+                </div>
+                <a href="{% url 'account_logout' %}?next=/api/v1/accounts/api-login/?from=redoc&next=/api/v1/redoc/" class="logout-btn">
                     <i class="fas fa-sign-out-alt"></i>
                     <span class="logout-label">Logout</span>
                 </a>
-            </div>             
-            <button id="bug-report-btn-redoc"
-                    class="bug-report-btn-redoc"
-                    data-bs-toggle="modal"
-                    data-bs-target="#bug-modal"
-                    title="{% trans 'Report Bug' %}">
-                <i class="fas fa-bug"></i>
-            </button>
-        {% endif %}
+            </div>
+            {% endif %}
+        </div>                
+        </div>
+    </header>
 
-        <!-- Messages -->    
+  <main class="container-fluid px-4 mb-8">              
+    <!-- Messages -->    
         {% if messages %}
         <div id="django-messages"
             class="position-fixed start-50 translate-middle-x w-100"
@@ -77,11 +79,7 @@
             {% endfor %}
         </div>
         {% endif %}
-    </div>
-  </header>
-
-  <main class="container-fluid px-4 mb-8">              
-    {% comment %} <div id="redoc-container" class="lazy-load"></div> {% endcomment %}
+        
     <div id="redoc-top-anchor" aria-hidden="true"></div>
     <div id="redoc-container"></div>
     <!-- Session Expired Modal -->
@@ -110,6 +108,43 @@
         title="Go to top">
     ↑
   </button>
+  <!-- Footer -->
+    <footer class="footer-container">
+        <div class="footer-content">
+            <button
+                class="bug-redoc"
+                data-bs-toggle="modal"
+                data-bs-target="#bug-modal"
+                title="{% trans 'Report Bug' %}">
+                <i class="fas fa-bug"></i>
+            </button>
+
+            <div class="footer-left">
+                <img src="{% static 'elements/images/logo/logo_icon.png' %}" class="footer-logo">
+                <span class="footer-title">{{ SITE_NAME }}</span>
+                <small class="footer-version">v{{ APP_VERSION }}</small>
+            </div>
+
+            <div class="footer-right">
+
+                <span class="copyright">© {% now "Y" %}</span>
+
+                <span class="divider">|</span>
+
+                <a href="{{ WEBSITE_URL }}" target="_blank">Website</a>
+
+                <span class="divider">•</span>
+
+                <a href="{{ DOCS_URL }}" target="_blank">Docs Portal</a>
+
+                <span class="divider">•</span>
+                
+                <a href="{{ SITE_URL }}{% url 'console_dashboard' %}" target="_blank">Platform</a>
+                
+            </div>
+
+        </div>
+    </footer>
 
   <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/redoc@2.0.0/bundles/redoc.standalone.js"></script>
@@ -120,5 +155,3 @@
   {% include 'admin/bug_report_include.html' %}
 </body>
 </html>
-
-

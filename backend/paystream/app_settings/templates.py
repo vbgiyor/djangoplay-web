@@ -7,6 +7,7 @@ TEMPLATES = [
             BASE_DIR / 'paystream' / 'integrations' / 'issuetracker' / 'ui' / 'templates',
             BASE_DIR / 'paystream' / 'templates',
             BASE_DIR / 'templates',
+            BASE_DIR / 'templates' / 'admin',
             BASE_DIR / 'frontend' / 'templates',
             BASE_DIR / 'invoices' / 'templates',
             BASE_DIR / 'users' / 'templates',
@@ -20,9 +21,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                # 'utilities.context_processors.report_bug.report_bug_context',
                 'paystream.services.context_processors.report_bug_context.report_bug_context',
                 'paystream.services.context_processors.site_context.site_context',
+                'paystream.services.context_processors.app_version.app_version',
             ],
             'loaders': [
                 ('django.template.loaders.cached.Loader', [

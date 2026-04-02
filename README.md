@@ -1,8 +1,40 @@
-# DjangoPlay
+<p>
+  <img src="backend/paystream/static/elements/images/logo/logo_icon.png" width="40" style="vertical-align: middle;">
+  <img src="backend/paystream/static/elements/images/logo/logotext.png" width="140" style="vertical-align: middle;"> 
+</p>
 
 **DjangoPlay** is a modular, enterprise-grade backend platform built with **Django and Django REST Framework**, designed for **internal organizational systems** where **identity, permissions, auditability, and correctness** are first-class concerns.
 
 It is intentionally structured to support **long-lived systems**, regulatory requirements, and complex organizational workflows.
+
+---
+
+## Release Status
+
+**Current Version:** 1.0.0
+**Status:** Production Ready
+**Release:** First Production Release
+
+DjangoPlay has reached its first production-ready milestone.
+Version 1.0.0 stabilizes the platform architecture, admin console,
+error handling system, authentication flows, environment configuration,
+and IssueTracker integration.
+
+The platform is designed for learning and developing workflow platforms, and enterprise backend services where identity,
+auditability, and permission governance are critical.
+
+---
+
+## Versioning Strategy
+
+DjangoPlay follows Semantic Versioning starting from **v1.0.0**.
+
+| Version | Meaning                                  |
+| ------- | ---------------------------------------- |
+| 0.x     | Early development and architecture phase |
+| 1.0     | First production-ready release           |
+| 1.x     | Feature additions and improvements       |
+| 2.0     | Major architectural changes              |
 
 ---
 

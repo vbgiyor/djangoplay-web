@@ -1,183 +1,111 @@
 {% extends "admin/change_form.html" %}
-{% load i18n static compress%}
+{% load i18n static compress %}
+<!-- changelist_edit.html -->
 
-{# --------------------------------------------------------------- #}
-{#  HEAD – CSS / JS                                                #}
-{# --------------------------------------------------------------- #}
 {% block extrastyle %}
-    {{ block.super }}
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="{% static 'design/css/app/admin/changelist_modify.css' %}">
+{{ block.super }}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+<link rel="stylesheet" href="{% static 'design/css/app/admin/changelist_modify.css' %}">
+{{ adminform.media }}
+{{ adminform.form.media }}
+
+<script src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+<script src="{% static 'admin/js/jquery.init.js' %}"></script>
+<script src="{% static 'admin/js/autocomplete.js' %}"></script>
 {% endblock %}
 
-{% block extrahead %}
-    {{ block.super }}
-{% endblock %}
-
-
-{# --------------------------------------------------------------- #}
-{#  MAIN CONTENT                                                   #}
-{# --------------------------------------------------------------- #}
 {% block content %}
 <div class="admin-custom-page">
     <div class="admin-custom-card">
 
-        {# ------------------- HEADER ------------------- #}        
-        <div class="admin-custom-header d-flex justify-content-between align-items-center flex-wrap">            
-            <div class="header-links d-flex flex-column" style="text-align:left;">
+        <!-- HEADER -->
+        <div class="admin-custom-header d-flex justify-content-between align-items-center flex-wrap mb-3">
+            <div class="header-links d-flex flex-column">
                 <a href="{% url 'console_dashboard' %}">
-                    <i class="fas fa-arrow-left"></i>
-                    <small>Dashboard</small>
+                    <i class="fas fa-arrow-left"></i> <small>Dashboard</small>
                 </a>
                 <a href="{{ parent_url }}">
-                    <i class="fas fa-arrow-left"></i>
-                    {{ opts.verbose_name_plural|capfirst }}
+                    <i class="fas fa-arrow-left"></i> {{ opts.verbose_name_plural|capfirst }}
                 </a>
             </div>
+
             <h5 class="header-title mb-0 text-center flex-grow-1">
                 <i class="fas fa-pen me-2"></i>
                 {% if add %}Add{% else %}Edit{% endif %} {{ opts.verbose_name|capfirst }}
             </h5>
+
             <div style="width:60px;"></div>
-        </div> 
-        
-        {% if messages %}
-            <div class="messages text-center my-3">
-            {% for message in messages %}
-            {% if message.tags == 'warning' %}
-            <div class="warning-text">
-                <i class="fas fa-exclamation-triangle me-2"></i>
-                <strong>{{ message }}</strong>
-            </div>
-            {% elif message.tags == 'success' %}
-            <div class="text-success fw-semibold">
-                <i class="fas fa-check-circle me-2"></i> {{ message }}
-            </div>
-            {% elif message.tags == 'error' %}
-            <div class="text-danger fw-semibold">
-                <i class="fas fa-times-circle me-2"></i> {{ message }}
-            </div>
-            {% elif message.tags == 'info' %}
-            <div class="text-info fw-semibold">
-                <i class="fas fa-info-circle me-2"></i> {{ message }}
-            </div>
-            {% endif %}
-            {% endfor %}
-            </div>
-        {% endif %}
+        </div>
 
-        {% comment %} {% if request.user.is_superuser %}
-            <div class="alert alert-warning">
-                <strong>DEBUG audit_fields:</strong> {{ audit_fields|join:", " }}
-            </div>
-        {% endif %} {% endcomment %}
-
-        {# ------------------- FORM ------------------- #}
+        <!-- FORM -->
         <div class="form-section">
-            {% comment %} <form method="post" enctype="multipart/form-data" novalidate> {% endcomment %}
-                <form method="post"
-                    enctype="multipart/form-data"
-                    novalidate
-                    data-is-add="{{ add|yesno:'true,false' }}"
-                    data-has-change="{{ has_change_permission|yesno:'true,false' }}">
+            <form method="post"
+                  enctype="multipart/form-data"
+                  novalidate
+                  data-is-add="{{ add|yesno:'true,false' }}"
+                  data-has-change="{{ has_change_permission|yesno:'true,false' }}">
                 {% csrf_token %}
 
-                {# --- i18n shim so calendar.js / DateTimeShortcuts.js don't explode --- #}
-                <script>
-                    window.gettext = window.gettext || function (msg) {
-                        return msg;
-                    };
-                    window.gettext_noop = window.gettext_noop || function (msg) {
-                        return msg;
-                    };
-                    window.ngettext = window.ngettext || function (singular, plural, count) {
-                        return count === 1 ? singular : plural;
-                    };
-                    window.pgettext = window.pgettext || function (context, msg) {
-                        return msg;
-                    };
-                    window.npgettext = window.npgettext || function (context, singular, plural, count) {
-                        return count === 1 ? singular : plural;
-                    };
-                    window.interpolate = window.interpolate || function (fmt, obj, named) {
-                        if (named) {
-                            for (var key in obj) {
-                                if (Object.prototype.hasOwnProperty.call(obj, key)) {
-                                    fmt = fmt.replace('%(' + key + ')s', obj[key]);
-                                }
-                            }
-                        } else {
-                            for (var i = 0; i < obj.length; i++) {
-                                fmt = fmt.replace('%s', obj[i]);
-                            }
-                        }
-                        return fmt;
-                    };
-                </script>
-
-                {{ adminform.form.media }}
-
-                {# ---- NON-FIELD ERRORS ---- #}
                 {% if adminform.form.non_field_errors %}
-                <div class="alert alert-danger border-left-danger mb-4">
+                <div class="alert alert-danger mb-4">
                     <strong>Fix errors:</strong>
                     <ul class="mb-0 mt-2">
                         {% for error in adminform.form.non_field_errors %}
-                            <li>{{ error }}</li>
+                        <li>{{ error }}</li>
                         {% endfor %}
                     </ul>
                 </div>
                 {% endif %}
 
-                {# ---- MAIN FIELDS (ALL NON-AUDIT) ---- #}
+                <!-- MAIN FIELDS -->
                 <div class="row">
                     <div class="col-12">
                         <div class="form-group">
                             <div class="row">
-
                                 {% for fieldset in adminform %}
                                     {% for line in fieldset %}
                                         {% for field in line %}
                                             {% if field.field.name not in audit_fields %}
-                                                <div class="col-md-6 col-12">
-                                                    <div class="single-line-field">
-                                                        <label for="{{ field.field.id_for_label }}" class="form-label">
-                                                            {{ field.field.label }}
-                                                            {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
-                                                        </label>
+                                            <div class="col-md-6 col-12 mb-3">
+                                                <label class="form-label">
+                                                    {{ field.field.label }}
+                                                    {% if field.field.required %}
+                                                    <span class="text-danger">*</span>
+                                                    {% endif %}
+                                                </label>
 
-                                                        <div class="field-wrapper">
-                                                            {% if field.is_readonly %}
-                                                                <div class="form-control-plaintext">
-                                                                    {{ field.contents|default:"—" }}
-                                                                </div>
-                                                            {% else %}
-                                                                {{ field.field }}
-                                                            {% endif %}
-
-                                                            {% if field.field.help_text %}
-                                                                <small class="form-text text-muted">
-                                                                    {{ field.field.help_text|safe }}
-                                                                </small>
-                                                            {% endif %}
-                                                        </div>
-
-                                                        {% if field.field.errors %}
-                                                            <div class="text-danger">{{ field.field.errors|striptags }}</div>
-                                                        {% endif %}
+                                                <div class="field-wrapper">
+                                                    {% if field.is_readonly %}
+                                                    <div class="form-control-plaintext">
+                                                        {{ field.contents|default:"—" }}
                                                     </div>
+                                                    {% else %}
+                                                    {{ field.field }}
+                                                    {% endif %}
                                                 </div>
+
+                                                {% if field.field.help_text %}
+                                                <small class="form-text text-muted">
+                                                    {{ field.field.help_text|safe }}
+                                                </small>
+                                                {% endif %}
+
+                                                {% if field.field.errors %}
+                                                <div class="text-danger">
+                                                    {{ field.field.errors|striptags }}
+                                                </div>
+                                                {% endif %}
+                                            </div>
                                             {% endif %}
                                         {% endfor %}
                                     {% endfor %}
                                 {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-                            </div>{# /.row inside main form-group #}
-                        </div>{# /.form-group #}
-                    </div>{# /.col-12 #}
-                </div>{# /.row #}
-
-                {# ---- AUDIT SECTION (conditional) ---- #}
+                <!-- AUDIT SECTION -->
                 {% if user_can_see_audit %}
                 <div class="row mt-4">
                     <div class="col-12">
@@ -192,199 +120,112 @@
 
                             <div class="collapse show" id="auditCollapse">
                                 <div class="row">
-
                                     {% for fieldset in adminform %}
                                         {% for line in fieldset %}
                                             {% for field in line %}
                                                 {% if field.field.name in audit_fields %}
-                                                    <div class="col-md-6 col-12">
-                                                        <div class="single-line-field">
-                                                            <label for="{{ field.field.id_for_label }}" class="form-label">
-                                                                {{ field.field.label }}
-                                                            </label>
+                                                <div class="col-md-6 col-12 mb-3">
+                                                    <label class="form-label">
+                                                        {{ field.field.label }}
+                                                    </label>
 
-                                                            <div class="field-wrapper">
-                                                                {% if field.is_readonly %}
-                                                                    <div class="form-control-plaintext">
-                                                                        {{ field.contents|default:"—" }}
-                                                                    </div>
-                                                                {% else %}
-                                                                    {{ field.field }}
-                                                                {% endif %}
-
-                                                                {% if field.field.help_text %}
-                                                                    <small class="form-text text-muted">{{ field.field.help_text|safe }}</small>
-                                                                {% endif %}
-
-                                                                {% if field.field.errors %}
-                                                                    <div class="text-danger">{{ field.field.errors|striptags }}</div>
-                                                                {% endif %}
-                                                            </div>
+                                                    <div class="field-wrapper">
+                                                        {% if field.is_readonly %}
+                                                        <div class="form-control-plaintext">
+                                                            {{ field.contents|default:"—" }}
                                                         </div>
+                                                        {% else %}
+                                                        {{ field.field }}
+                                                        {% endif %}
                                                     </div>
+
+                                                    {% if field.field.errors %}
+                                                    <div class="text-danger">
+                                                        {{ field.field.errors|striptags }}
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
                                                 {% endif %}
                                             {% endfor %}
                                         {% endfor %}
                                     {% endfor %}
-
-                                </div>{# /.row #}
-                            </div>{# /.collapse #}
-                        </div>{# /.form-group #}
-                    </div>{# /.col-12 #}
-                </div>{# /.row #}
-                {% endif %}
-
-                {% if request.user.is_superuser %}
-                <div class="alert alert-info">
-                    <strong>DEBUG:</strong> history has {{ history|length }} entries
-                    {% if history %}
-                    <ul>
-                    {% for h in history %}
-                        <li>{{ h.action_time }} | {{ h.user }} | {{ h.field }}: {{ h.old_value }} → {{ h.new_value }}</li>
-                    {% endfor %}
-                    </ul>
-                    {% endif %}
-                </div>
-                {% if request.user.is_superuser %}
-                <div class="alert alert-danger">
-                    <strong>RAW DB HISTORY:</strong>
-                    {{ obj.history.count }} records in DB
-                    <br>
-                    {% for h in obj.history.all %}
-                    [{{ h.history_type }} @ {{ h.history_date }} by {{ h.history_user }}]
-                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 {% endif %}
-                {% endif %}
-                
-                
-                {# -------------------  CHANGE HISTORY (Compact & Beautiful) ------------------- #}
+
+                <!-- CHANGE HISTORY -->
                 {% if history %}
                 <div class="mt-5">
-                    <h5 class="mb-3 text-primary fw-bold clickable-header d-flex align-items-center gap-2"
-                        data-bs-toggle="collapse" data-bs-target="#historyCollapse" style="cursor:pointer;">
+                    <h5 class="mb-3 text-primary fw-bold clickable-header"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#historyCollapse"
+                        style="cursor:pointer;">
                         <i class="fas fa-history"></i> Change History ({{ history|length }})
-                        <i class="fas fa-chevron-down ms-auto transition-transform"></i>
                     </h5>
 
                     <div class="collapse show" id="historyCollapse">
                         <div class="border rounded-3 overflow-hidden shadow-sm">
                             {% for entry in history %}
-                            <div class="px-3 py-2 border-bottom hover-bg-light d-flex align-items-center gap-3 flex-wrap" 
-                                style="font-size: 0.875rem; min-height: 44px;">
-                                
-                                {# Timestamp + User #}
-                                <div class="text-muted small text-nowrap" style="min-width: 140px;">
-                                    <i class="far fa-clock me-1"></i>
+                            <div class="px-3 py-2 border-bottom d-flex align-items-center gap-3 flex-wrap"
+                                 style="font-size: 0.875rem;">
+                                <div class="text-muted small">
                                     {{ entry.action_time|date:"M d, H:i" }}
                                 </div>
-
-                                <div class="text-muted small text-nowrap" style="min-width: 130px;">
-                                    <i class="far fa-user me-1"></i>
-                                    <strong>{{ entry.user.get_short_name|default:entry.user }}</strong>
+                                <div class="text-muted small">
+                                    {{ entry.user }}
                                 </div>
-
-                                {# Field name badge #}
-                                <div>
-                                    <span class="badge bg-primary-subtle text-primary px-2 py-1">
-                                        {{ entry.field|capfirst }}
-                                    </span>
+                                <div class="badge bg-primary-subtle text-primary">
+                                    {{ entry.field|capfirst }}
                                 </div>
-
-                                {# Change arrow + values #}
-                                <div class="flex-grow-1 text-truncate">
-                                    {% if entry.old_value == "(none)" %}
-                                        <span class="text-success fw-500">Created as</span>
-                                        <span class="fw-bold text-success">“{{ entry.new_value|truncatechars:60 }}”</span>
-                                    {% else %}
-                                        <span class="text-danger"><del>{{ entry.old_value|truncatechars:50 }}</del></span>
-                                        <span class="text-muted mx-1">→</span>
-                                        <span class="text-success fw-bold">{{ entry.new_value|truncatechars:60 }}</span>
-                                    {% endif %}
-                                </div>                                
-                            </div>
-                            {% empty %}
-                            <div class="text-center py-4 text-muted">
-                                <i class="fas fa-history fa-2x mb-3 opacity-25"></i>
-                                <p>No changes recorded yet.</p>
+                                <div class="flex-grow-1">
+                                    {{ entry.old_value }} → {{ entry.new_value }}
+                                </div>
                             </div>
                             {% endfor %}
                         </div>
                     </div>
-                </div>                
+                </div>
                 {% endif %}
 
-                {# ------------------- FOOTER BUTTONS ------------------- #}
-                <div class="admin-form-footer d-flex justify-content-end gap-3 flex-wrap mt-3">
+                <!-- FOOTER BUTTONS -->
+                <div class="admin-form-footer d-flex justify-content-end gap-3 flex-wrap mt-4">
                     <button type="submit" class="btn btn-primary px-4 shadow-sm">
-                        <i class="fas fa-save me-2"></i>{% if add %}Save{% else %}Save Changes{% endif %}
+                        <i class="fas fa-save me-2"></i>
+                        {% if add %}Save{% else %}Save Changes{% endif %}
                     </button>
 
                     {% if has_delete_permission and not add %}
-                        <button type="button" class="btn btn-danger px-4 shadow-sm"
-                                data-bs-toggle="modal" data-bs-target="#deleteModal">
-                            <i class="fas fa-trash me-2"></i>Delete
-                        </button>
+                    <button type="button" class="btn btn-danger px-4 shadow-sm"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="fas fa-trash me-2"></i>Delete
+                    </button>
                     {% endif %}
 
                     <a href="{{ parent_url }}" class="btn btn-cancel px-4 shadow-sm">
                         <i class="fas fa-times me-2"></i>Cancel
                     </a>
                 </div>
-            </form>
-        </div>{# /.form-section #}
-    </div>{# /.admin-custom-card #}
-</div>{# /.admin-custom-page #}
 
-{# ------------------- DELETE MODAL ------------------- #}
-{% if has_delete_permission and not add %}
-<div class="modal fade" id="deleteModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-danger text-white">
-                <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Confirm Delete</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to delete "<strong>{{ object }}</strong>"?</p>
-                <p class="text-danger"><strong>This action cannot be undone.</strong></p>
-            </div>
-            <div class="modal-footer">
-                <form method="post" action="{{ delete_url }}">
-                    {% csrf_token %}
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
-                </form>
-            </div>
+            </form>
         </div>
+
     </div>
 </div>
-{% endif %}
 {% endblock %}
 
-{# --------------------------------------------------------------- #}
-{#  FOOTER SCRIPTS                                                 #}
-{# --------------------------------------------------------------- #}
+{% block footer_left %}
+<button id="bug-report-btn-footer"
+    class="bug-report-btn-footer"
+    data-bs-toggle="modal"
+    data-bs-target="#bug-modal"
+    title="{% trans 'Report Bug' %}">
+    <i class="fas fa-bug"></i>
+</button>
 
-{% block footer_scripts %}
-    {{ block.super }} 
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-    {% compress js %}
-        <script src="{% static 'design/js/admin/changelist_modify.js' %}"></script>
-        <script src="{% static 'design/js/space.js' %}"></script>
-        <script src="{% static 'design/js/file_upload.js' %}"></script>
-        <script src="{% static 'design/js/admin/change_form_permissions.js' %}"></script>
-    {% endcompress %}
-
-    <audio id="m-sound" src="{% static 'sounds/strings.mp3' %}" preload="auto" loop></audio>
-
-    <button id="bug-report-btn-dashboard" class="bug-report-btn-dashboard" style="position: fixed !important;"
-            data-bs-toggle="modal" data-bs-target="#bug-modal"
-            title="{% trans 'Report Bug' %}">
-        <i class="fas fa-bug"></i> 
-    </button>
+<img src="{% static 'elements/images/logo/logo_icon.png' %}" class="footer-logo">
+<span class="footer-title">{{ SITE_NAME }}</span>
+<small class="footer-version">v{{ APP_VERSION }}</small>
 {% endblock %}
-

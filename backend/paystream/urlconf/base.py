@@ -16,6 +16,7 @@ from paystream.custom_site.custom_admin_views import (
 handler403 = custom_403
 handler401 = custom_401
 handler404 = custom_404
+handler500 = custom_500
 
 
 # -----------------------------------------------------------------
